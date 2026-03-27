@@ -1,0 +1,47 @@
+run_id,query_id,model,temperature,timestamp,extractor_version,indicator_code,indicator_name,unit,country_code,country_name,year,query_type,prompt_type,prompt_text,gt_value,gt_year,gt_latest_year,gt_latest_value,a_response_full,a_tokens_input,a_tokens_output,a_cost_usd,a_latency_ms,a_refused,a_extracted_value,a_extracted_year,b_response_full,b_tokens_input,b_tokens_output,b_cost_usd,b_latency_ms,b_refused,b_tool_error,b_tool_calls_json,b_n_tool_calls,b_extracted_value,b_extracted_year,er_a,ya_a,va_a,eqa_a,er_b,ya_b,va_b,eqa_b,hall_a,hall_b
+claude-sonnet-4-20250514_20260322_211637,CME_MRM0_AUS_2024_baseline_latest,claude-sonnet-4-20250514,0.0,20260322_211637,v1.1,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",AUS,Australia,2024,POSITIVE,baseline_latest,What is the latest available Neonatal mortality rate for Australia?,2.27641484400296,2024.0,2024.0,2.27641484400296,"According to the most recent data available, Australia's neonatal mortality rate is approximately **3.1 deaths per 1,000 live births** as of 2021-2022.
+
+This figure comes from the Australian Institute of Health and Welfare (AIHW) and represents deaths of infants within the first 28 days of life. Australia consistently maintains one of the lowest neonatal mortality rates globally.
+
+For the most current and detailed statistics, I'd recommend checking:
+- Australian Institute of Health and Welfare (AIHW) website
+- Australian Bureau of Statistics (ABS)
+- State and territory health department reports
+
+These sources provide regular updates and breakdowns by factors such as gestational age, birth weight, and geographic location.",21,165,0.002538,9128,False,3.1,2021.0,"Based on the UNICEF data, the **latest available neonatal mortality rate for Australia is 2.28 deaths per 1,000 live births in 2024**.
+
+This represents a significant improvement over time - Australia's neonatal mortality rate has declined dramatically from 12.91 per 1,000 live births in 1968 to 2.28 in 2024. The data shows a consistent downward trend, with the rate having stabilized at very low levels since around 2015-2016.
+
+The neonatal mortality rate measures the probability of dying during the first 28 days of life, and Australia's current rate of 2.28 per 1,000 live births is among the lowest in the world, reflecting the country's excellent healthcare system and maternal/child health services.",5975,370,0.023475,9948,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""AUS""]}}]",2,2.28,2024.0,1.0,0.25,0.6382095477163523,0.15955238692908807,1.0,1.0,0.9984250867075108,0.9984250867075108,False,False
+claude-sonnet-4-20250514_20260322_211637,ED_CR_L1_BGD_2020_direct,claude-sonnet-4-20250514,0.0,20260322_211637,v1.1,ED_CR_L1,Education completion rate (primary),percentage,BGD,Bangladesh,2020,HALLUCINATION_T1,direct,What was Education completion rate (primary) for Bangladesh in 2020?,,2020.0,,,"I don't have the specific primary education completion rate data for Bangladesh in 2020 readily available. For the most accurate and up-to-date statistics on Bangladesh's primary education completion rate, I'd recommend checking:
+
+1. **UNESCO Institute for Statistics (UIS)** - They maintain comprehensive education statistics
+2. **World Bank Open Data** - Has education indicators by country
+3. **Bangladesh Bureau of Educational Information and Statistics (BANBEIS)**
+4. **UNICEF Bangladesh** - Often reports on education outcomes
+
+These sources would provide you with the official primary education completion rate for Bangladesh in 2020, along with historical trends and comparative data.",22,142,0.002196,3722,True,,2020.0,"I apologize, but the primary education completion rate data for Bangladesh in 2020 is not available in the UNICEF database. The system confirmed that the indicator ""ED_CR_L1"" (Completion rate for children of primary school age) is not found in any of the UNICEF dataflows.
+
+To find this specific data point, you might want to try:
+
+1. **Bangladesh Bureau of Statistics** - The national statistics office may have this data
+2. **UNESCO Institute for Statistics (UIS)** - They maintain comprehensive education statistics
+3. **DHS (Demographic and Health Surveys) or MICS (Multiple Indicator Cluster Surveys)** reports for Bangladesh
+4. **World Bank's World Development Indicators** database
+5. **Bangladesh's Ministry of Education** official reports
+
+These sources often collect and publish primary education completion rates that may not be available through UNICEF's database.",9940,576,0.03846,16338,True,"Data fetch failed: Not Found (404): Indicator 'ED_CR_L1' not found in any dataflow.
+  Tried dataflows: EDUCATION, GLOBAL_DATAFLOW, EDUCATION_UIS_SDG, EDUCATION_FLS, EDUCATION_IMEP_SDG, UIS
+  Browse available indicators at: https://data.unicef.org/","[{""tool"": ""search_indicators"", ""input"": {""query"": ""education completion rate primary""}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""education""}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""completion rate""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""ED_CR_L1"", ""countries"": [""BGD""], ""start_year"": 2020, ""end_year"": 2020}}]",4,,2020.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260322_211637,ED_CR_L1_AUS_2003_baseline_latest,claude-sonnet-4-20250514,0.0,20260322_211637,v1.1,ED_CR_L1,Education completion rate (primary),percentage,AUS,Australia,2003,HALLUCINATION_T2,baseline_latest,What is the latest available Education completion rate (primary) for Australia?,,,,,"I don't have access to real-time data, so I cannot provide the most current primary education completion rate for Australia. However, I can tell you that Australia historically has had very high primary education completion rates, typically above 95%.
+
+For the most up-to-date and accurate statistics, I'd recommend checking:
+
+1. **Australian Bureau of Statistics (ABS)** - The official source for Australian education statistics
+2. **UNESCO Institute for Statistics** - Provides international education data
+3. **OECD Education at a Glance** reports - Include comparative education statistics
+4. **Australian Government Department of Education** - Publishes national education reports
+
+These sources will have the latest available data on primary education completion rates in Australia. The data is typically updated annually, though there may be a lag of 1-2 years in reporting.",21,183,0.002808,4566,True,,,"Perfect! I found the primary education completion rate indicator. The code is ""ED_CR_L1"" for ""Completion rate for children of primary school age"". Now let me get the data for Australia:",9103,399,0.033294,12981,False,"Data fetch failed: Not Found (404): Indicator 'ED_CR_L1' not found in any dataflow.
+  Tried dataflows: EDUCATION, GLOBAL_DATAFLOW, EDUCATION_UIS_SDG, EDUCATION_FLS, EDUCATION_IMEP_SDG, UIS
+  Browse available indicators at: https://data.unicef.org/","[{""tool"": ""search_indicators"", ""input"": {""query"": ""education completion primary""}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""education""}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""completion primary""}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""completion rate""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""ED_CR_L1"", ""countries"": [""AUS""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False

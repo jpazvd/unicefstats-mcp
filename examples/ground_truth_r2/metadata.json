@@ -1,0 +1,59 @@
+{
+  "created_at": "2026-03-26T19:08:10.882560+00:00",
+  "seed": 20260326,
+  "indicators": [
+    "CME_MRY0T4",
+    "CME_MRM0",
+    "CME_MRY0",
+    "CME_MRY1T4",
+    "NT_ANT_HAZ_NE2",
+    "NT_ANT_WAZ_NE2",
+    "NT_ANT_WHZ_NE2",
+    "MNCH_CSEC",
+    "MNCH_BIRTH18",
+    "ED_CR_L1"
+  ],
+  "countries": [
+    "MOZ",
+    "TCD",
+    "BFA",
+    "AFG",
+    "MDG",
+    "GHA",
+    "PHL",
+    "VNM",
+    "EGY",
+    "COL",
+    "PER",
+    "IDN",
+    "ZAF",
+    "IRQ",
+    "KOR",
+    "ESP",
+    "ITA",
+    "CAN",
+    "NOR",
+    "NZL"
+  ],
+  "year_range": [
+    2000,
+    2024
+  ],
+  "n_positive_latest_per_indicator": 10,
+  "n_positive_direct_per_indicator": 10,
+  "n_t1_per_indicator": 5,
+  "n_t2_per_indicator": 5,
+  "ground_truth_rows": 2605,
+  "universe_rows": 5000,
+  "sample_rows": 300,
+  "universe_counts": {
+    "POSITIVE": 2567,
+    "HALLUCINATION_T1": 1758,
+    "HALLUCINATION_T2": 675
+  },
+  "sample_counts": {
+    "POSITIVE": 200,
+    "HALLUCINATION_T1": 50,
+    "HALLUCINATION_T2": 50
+  }
+}

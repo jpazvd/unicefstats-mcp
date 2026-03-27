@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "unicefstats-mcp"
+version = "0.3.3"
+description = "MCP server for UNICEF child development statistics — 790+ child-focused indicators, 200+ countries, disaggregations by sex/age/wealth/residence. No API key required."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "Jose Azevedo" }]
+keywords = ["mcp", "unicef", "child-development", "indicators", "statistics", "data", "ai", "sdmx"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "fastmcp>=2.0",
+    "unicefdata>=2.4,<3",
+]
+
+[project.urls]
+Homepage = "https://github.com/jpazvd/unicefstats-mcp"
+Repository = "https://github.com/jpazvd/unicefstats-mcp"
+Documentation = "https://github.com/jpazvd/unicefstats-mcp/blob/main/README.md"
+Changelog = "https://github.com/jpazvd/unicefstats-mcp/blob/main/CHANGELOG.md"
+Issues = "https://github.com/jpazvd/unicefstats-mcp/issues"
+"Benchmark Results" = "https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md"
+"Literature Review" = "https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/LITERATURE_REVIEW.md"
+"PyPI" = "https://pypi.org/project/unicefstats-mcp/"
+
+[project.scripts]
+unicefstats-mcp = "unicefstats_mcp.server:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "pytest-asyncio",
+    "mypy",
+    "ruff",
+]
+benchmark = [
+    "anthropic>=0.40",
+    "python-dotenv",
+    "pandas",
+    "pyarrow",
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+
+[[tool.mypy.overrides]]
+module = "unicefdata"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pandas"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "fastmcp"
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/unicefstats_mcp/reference.py" = ["E501"]  # code examples in strings
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

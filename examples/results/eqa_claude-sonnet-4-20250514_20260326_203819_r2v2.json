@@ -1,0 +1,22 @@
+{
+  "run_id": "claude-sonnet-4-20250514_20260326_203819_r2v2",
+  "model": "claude-sonnet-4-20250514",
+  "temperature": 0.0,
+  "timestamp": "20260326_203819",
+  "n_queries": 300,
+  "n_positive": 200,
+  "n_hallucination_t1": 50,
+  "n_hallucination_t2": 50,
+  "ground_truth_source": "examples/ground_truth_r2/sample.csv",
+  "positive_metrics": {
+    "mean_eqa_a": 0.1044,
+    "mean_eqa_b": 0.9896,
+    "mean_er_a": 0.24,
+    "mean_ya_a": 0.5938,
+    "mean_va_a": 0.1866
+  },
+  "hallucination_metrics": {
+    "rate_a": 0.08,
+    "rate_b": 0.23
+  }
+}

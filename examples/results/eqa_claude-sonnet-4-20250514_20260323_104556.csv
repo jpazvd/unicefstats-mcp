@@ -1,0 +1,52 @@
+run_id,query_id,model,temperature,timestamp,extractor_version,indicator_code,indicator_name,unit,country_code,country_name,year,query_type,prompt_type,prompt_text,gt_value,gt_year,gt_latest_year,gt_latest_value,a_response_full,a_tokens_input,a_tokens_output,a_cost_usd,a_latency_ms,a_refused,a_extracted_value,a_extracted_year,b_response_full,b_tokens_input,b_tokens_output,b_cost_usd,b_latency_ms,b_refused,b_tool_error,b_tool_calls_json,b_n_tool_calls,b_extracted_value,b_extracted_year,er_a,ya_a,va_a,eqa_a,er_b,ya_b,va_b,eqa_b,hall_a,hall_b
+claude-sonnet-4-20250514_20260323_104556,CME_MRM0_AUS_2023_direct,claude-sonnet-4-20250514,0.0,20260323_104556,v1.2,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",AUS,Australia,2023,POSITIVE,direct,What was Neonatal mortality rate for Australia in 2023?,2.31053033062887,2023.0,,2.31053033062887,"I don't have access to the specific neonatal mortality rate for Australia in 2023, as my knowledge has limitations regarding the most recent statistical data.
+
+However, I can tell you that Australia historically has had one of the lowest neonatal mortality rates in the world. In recent years prior to 2023, Australia's neonatal mortality rate was typically around 2-3 deaths per 1,000 live births.
+
+For the most current and accurate 2023 data, I'd recommend checking:
+- Australian Institute of Health and Welfare (AIHW)
+- Australian Bureau of Statistics (ABS)
+- World Health Organization (WHO) Global Health Observatory
+- UNICEF's State of the World's Children reports
+
+These sources would provide the official, up-to-date statistics for Australia's neonatal mortality rate in 2023.",22,188,0.002886,3945,True,,2023.0,"The neonatal mortality rate for Australia in 2023 was 2.31053033062887 per 1,000 live births.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births.",3604,288,0.015132,8467,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""AUS""], ""start_year"": 2023, ""end_year"": 2023}}]",2,2.31053033062887,2023,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260323_104556,CME_MRM0_BGD_2028_direct,claude-sonnet-4-20250514,0.0,20260323_104556,v1.2,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",BGD,Bangladesh,2028,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Bangladesh in 2028?,,2028.0,,,"I don't have data for Bangladesh's neonatal mortality rate in 2028, as that year is in the future and such statistics can only be recorded after they occur.
+
+However, I can tell you that Bangladesh has made significant progress in reducing neonatal mortality in recent decades. According to available data up to the early 2020s, Bangladesh's neonatal mortality rate had decreased substantially from previous decades, though it remained a public health challenge.
+
+If you're looking for:
+- **Historical data**: I can help with neonatal mortality rates from past years
+- **Projections**: International organizations like WHO, UNICEF, or the World Bank sometimes publish projected estimates for health indicators
+- **Current data**: The most recent actual data would be from 2022-2023
+
+Would any of these alternatives be helpful for your research or inquiry?",22,183,0.002811,5811,True,,2028.0,"This data is not available in the UNICEF database. The neonatal mortality rate for Bangladesh in 2028 cannot be found in the UNICEF data system.
+
+This could be because:
+1. 2028 is a future year, and mortality data is typically only available for past years
+2. The most recent data may not yet be available for that specific year
+
+To find neonatal mortality data for Bangladesh, you might want to:
+- Check for the most recent available years in the UNICEF database
+- Consult Bangladesh's national statistics office
+- Look at Demographic and Health Survey (DHS) or Multiple Indicator Cluster Survey (MICS) reports for Bangladesh
+- Try searching for alternative related indicators that might be available
+
+Would you like me to check what years of neonatal mortality data are actually available for Bangladesh?",3652,412,0.017136,11528,True,"Data fetch failed: Not Found (404): Indicator 'CME_MRM0' not found in any dataflow.
+  Tried dataflows: CME, GLOBAL_DATAFLOW, CME_DF_2021_WQ, CME_COUNTRY_ESTIMATES, CME_SUBNATIONAL, CME_ESTIMATE_2021, MORTALITY
+  Browse available indicators at: https://data.unicef.org/","[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""BGD""], ""start_year"": 2028, ""end_year"": 2028}}]",2,,2028,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260323_104556,CME_MRM0_AND_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260323_104556,v1.2,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Andorra?,,,,,"I don't have access to the most current neonatal mortality rate data for Andorra. Neonatal mortality statistics are typically published by organizations like the World Health Organization (WHO), UNICEF, and the World Bank, but there can be delays in reporting.
+
+For the most up-to-date neonatal mortality rate for Andorra, I'd recommend checking:
+
+1. **WHO Global Health Observatory** - their online database often has the latest available statistics
+2. **UNICEF's State of the World's Children reports**
+3. **World Bank Open Data portal**
+4. **Andorra's Ministry of Health** official statistics
+
+Historically, Andorra has had very low neonatal mortality rates (typically under 3 per 1,000 live births) due to its high-quality healthcare system, but for the most recent figures, the sources above would provide the most reliable and current data.
+
+Would you like me to help you understand what neonatal mortality rates typically indicate or how they're calculated?",23,224,0.003429,7643,True,,,"Based on the UNICEF data, the latest available neonatal mortality rate for Andorra is **1.24546609412777** per 1,000 live births for the year 2024.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births. The data shows a consistent declining trend in Andorra's neonatal mortality rate over the years, from 6.77 per 1,000 live births in 1989 to 1.25 per 1,000 live births in 2024.",5295,333,0.02088,9827,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""AND""]}}]",2,6.76897558285004,1989,0.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,False,True

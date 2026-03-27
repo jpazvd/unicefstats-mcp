@@ -1,0 +1,1827 @@
+indicator_code,country_code,country_name,year,query_type,prompt_type,gt_value,gt_year,gt_latest_year,gt_latest_value,c_extracted_value,c_extracted_year,c_refused,c_response_full,c_tokens_input,c_tokens_output,c_latency_ms,c_n_tool_calls,c_tool_error,er_c,ya_c,va_c,eqa_c,hall_c,c_cost_usd
+CME_MRM0,BGD,Bangladesh,2028,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results, I can see that data for UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Bangladesh (BGD) is available in the UNICEF Global Dataflow, but only up to 2024. The most recent data shows:
+
+- 2020: 18.6381072302567
+- 2021: 18.2319895434299  
+- 2022: 18.0338941847738
+- 2023: 17.9768444562327
+- 2024: 17.9123757821351
+
+**Data not available** for 2028. The UNICEF data warehouse only contains data for this indicator up to 2024, and there is no data available for Banglades",46265,1231,240625,7,,0.0,0.0,0.0,0.0,0,0.15726
+CME_MRM0,DEU,Germany,2027,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results, I can see that data for UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Germany (DEU) is available from 2020 to 2024, but **data for 2027 is not available**.
+
+The available data shows:
+- 2020: 2.27017003297904
+- 2021: 2.2616706317359  
+- 2022: 2.2645888156315
+- 2023: 2.28189022813945
+- 2024: 2.29629054104967
+
+**Data not available** for UNICEF indicator CME_MRM0 for Germany (DEU) in 2027.",18304,830,20102,5,,0.0,0.0,0.0,0.0,0,0.067362
+CME_MRM0,ETH,Ethiopia,2029,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results, I can see that the UNICEF data for indicator CME_MRM0 (Neonatal mortality rate) for Ethiopia is available up to 2024, but **data for 2029 is not available**.
+
+The most recent data available shows:
+- 2024: 25.2315106843066 deaths per 1,000 live births
+- 2023: 25.9388629477387 deaths per 1,000 live births
+- 2022: 26.865306796622 deaths per 1,000 live births
+- 2021: 27.5515632875827 deaths per 1,000 live births  
+- 2020: 27.9425807836603 deaths per 1,000 live births
+
+**D",17048,945,28614,5,,0.0,0.0,0.0,0.0,0,0.065319
+CME_MRM0,FRA,France,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF SDMX dataflow, **data is not available** for the indicator CME_MRM0 (Neonatal mortality rate) for France in 2026.
+
+The latest available data for this indicator shows values through 2024, with the most recent value being 2.83730354037707 deaths per 1,000 live births in 2024. The data appears to be projected/estimated values from UN IGME (UN Inter-agency Group for Child Mortality Estimation), but no data is available for 2026 in the official UNICEF datafl",16954,805,20399,5,,0.0,0.0,0.0,0.0,0,0.062937
+CME_MRM0,NER,Niger,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), **data is not available** for the indicator CME_MRM0 (Neonatal mortality rate) for Niger (NER) in 2025.
+
+The latest available data for this indicator for Niger is from 2024, with a value of 32.7507182301293 deaths per 1,000 live births. However, since you specifically asked for the 2025 value, the answer is:
+
+**Data not available** for CME_MRM0 for Niger (NER) in 2025.",22020,713,65292,4,,0.0,0.0,0.0,0.0,0,0.076755
+CME_MRM0,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRM0 (Neonatal mortality rate) for Andorra (AND) is:
+
+**Value: 1.24546609412777** (deaths per 1,000 live births)
+**Year: 2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, for Andorra in 2024.",14671,562,15013,4,,0.0,0.0,0.0,0.0,1,0.052443000000000004
+CME_MRM0,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries of the UNICEF GLOBAL_DATAFLOW, **data is not available** for the indicator CME_MRM0 (Neonatal mortality rate) for Liechtenstein (LIE). 
+
+The UNICEF data warehouse query returned a 404 error indicating ""No data for data query against the dataflow"" for this specific indicator-country combination, even when searching across the full time period from 2000-2024.",20688,916,20050,6,,0.0,0.0,0.0,0.0,0,0.075804
+CME_MRM0,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,28.0,2024.0,False,"Based on the data retrieved from the UNICEF Global Dataflow, the latest available value of indicator CME_MRM0 (Neonatal mortality rate) for Monaco (MCO) is:
+
+**Value: 1.39920690577113**
+**Year: 2024**
+
+This represents the neonatal mortality rate (probability of dying during the first 28 days of life) expressed per 1,000 live births for Monaco in 2024.",12108,571,14181,4,,0.0,0.0,0.0,0.0,1,0.044889
+CME_MRM0,PLW,Palau,2023,HALLUCINATION_T2,baseline_latest,,,,,28.0,2024.0,False,"Based on the data retrieved from the UNICEF Global Dataflow, the latest available value of indicator CME_MRM0 (Neonatal mortality rate) for Palau (PLW) is:
+
+**Value: 11.2229040372304**
+**Year: 2024**
+
+This represents the neonatal mortality rate (probability of dying during the first 28 days of life) expressed per 1,000 live births for Palau in 2024.",12127,578,13044,4,,0.0,0.0,0.0,0.0,1,0.04505100000000001
+CME_MRM0,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of indicator CME_MRM0 (Neonatal mortality rate) for San Marino (SMR) is:
+
+**Value: 0.544286241340752** deaths per 1,000 live births
+**Year: 2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, for San Marino in 2024. The data source is UN_IGME (UN Inter-agency Group for Child Mortality Estimation).",14681,583,12285,4,,0.0,0.0,0.0,0.0,0,0.052788
+CME_MRM0,AUS,Australia,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Perfect! I found the exact value for the UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Australia in 2023.
+
+The exact value is **2.31053033062887** deaths per 1,000 live births.
+
+This data comes from the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0) and represents the neonatal mortality rate for Australia in 2023, sourced from UN_IGME (United Nations Inter-agency Group for Child Mortality Estimation).",12172,626,12546,4,,1.0,1.0,0.0,0.0,0,0.045906
+CME_MRM0,AUS,Australia,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Perfect! I found the exact value for the UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Australia in 2024.
+
+The exact value is **2.27641484400296** deaths per 1,000 live births.
+
+This data comes from the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0) and represents the neonatal mortality rate for Australia in 2024, sourced from UN_IGME (United Nations Inter-agency Group for Child Mortality Estimation).",12181,630,13809,4,,1.0,1.0,0.0,0.0,0,0.045993
+CME_MRM0,BGD,Bangladesh,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the exact value of indicator CME_MRM0 (Neonatal mortality rate) for Bangladesh (BGD) in 2024 is:
+
+**17.9123757821351**
+
+This value represents deaths per 1,000 live births and has a status of ""Normal value"" (A). The data comes from the UN Inter-agency Group for Child Mortality Estimation (UN_IGME) source.",14433,534,51787,3,,1.0,1.0,0.0,0.0,0,0.05130900000000001
+CME_MRM0,BRA,Brazil,2024,POSITIVE,baseline_latest,,,,,7.12497324182585,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRM0 (Neonatal mortality rate) for Brazil (BRA) is:
+
+**7.12497324182585** deaths per 1,000 live births in **2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, for the total population (both sexes, all wealth quintiles) in Brazil.",14374,494,52967,3,,1.0,0.0,0.0,0.0,0,0.050532
+CME_MRM0,CHN,China,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the exact value of indicator CME_MRM0 (Neonatal mortality rate) for China (CHN) in 2023 is:
+
+**2.7822834194674**
+
+This value represents deaths per 1,000 live births and has a status of ""Normal value"" (A).",11799,422,49967,2,,1.0,1.0,0.0,0.0,0,0.041727
+CME_MRM0,CHN,China,2024,POSITIVE,baseline_latest,,,,,28.0,2024.0,False,"Based on the data retrieved from the UNICEF Global Dataflow, the latest available value of UNICEF indicator CME_MRM0 (Neonatal mortality rate) for China (CHN) is:
+
+**Value: 2.59426436001617**
+**Year: 2024**
+
+This represents the neonatal mortality rate (probability of dying during the first 28 days of life, expressed per 1,000 live births) for China. The data source is UN_IGME (United Nations Inter-agency Group for Child Mortality Estimation).",13572,567,15250,4,,1.0,0.0,0.0,0.0,0,0.049221
+CME_MRM0,COD,DR Congo,2023,POSITIVE,baseline_latest,,,,,23.6186279023827,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRM0 (Neonatal mortality rate) for DR Congo (COD) is:
+
+**23.6186279023827** deaths per 1,000 live births in **2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, with a confidence interval of 17.27 to 32.40 deaths per 1,000 live births.",11761,421,52196,2,,1.0,0.0,0.0,0.0,0,0.041598
+CME_MRM0,COD,DR Congo,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the exact value of indicator CME_MRM0 (Neonatal mortality rate) for DR Congo (COD) in 2024 is:
+
+**23.6186279023827**
+
+This value represents deaths per 1,000 live births and has an observation status of ""Normal value"" (A).",11811,422,55876,2,,1.0,1.0,0.0,0.0,0,0.041763
+CME_MRM0,DEU,Germany,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the exact value of indicator CME_MRM0 (Neonatal mortality rate) for Germany (DEU) in 2024 is:
+
+**2.29629054104967**
+
+This value represents deaths per 1,000 live births and comes from the UN Inter-agency Group for Child Mortality Estimation (UN_IGME) data source.",11787,425,53383,2,,1.0,1.0,0.0,0.0,0,0.041736
+CME_MRM0,FRA,France,2023,POSITIVE,baseline_latest,,,,,28.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of UNICEF indicator CME_MRM0 (Neonatal mortality rate) for France is:
+
+**Exact value: 2.83730354037707**
+**Year: 2024**
+
+This represents the neonatal mortality rate (probability of dying during the first 28 days of life) expressed per 1,000 live births in France for 2024.",11761,424,54084,2,,1.0,0.0,0.0,0.0,0,0.041643
+CME_MRM0,JPN,Japan,2023,POSITIVE,baseline_latest,,,,,0.867752023543302,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Japan is:
+
+**Value: 0.867752023543302 deaths per 1,000 live births**
+**Year: 2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, for Japan in 2024.",12876,369,54212,2,,1.0,0.0,0.0,0.0,0,0.044163
+CME_MRM0,JPN,Japan,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data retrieved from the UNICEF Global Dataflow, the exact value of indicator CME_MRM0 (Neonatal mortality rate) for Japan (JPN) in 2024 is:
+
+**0.867752023543302**
+
+This represents the neonatal mortality rate expressed as deaths per 1,000 live births for Japan in 2024.",12132,571,11478,4,,1.0,1.0,0.0,0.0,0,0.044961
+CME_MRM0,MLI,Mali,2023,POSITIVE,baseline_latest,,,,,27.9933206308862,2024.0,False,"Perfect! I found the latest available value for the UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Mali.
+
+**The latest available value of UNICEF indicator CME_MRM0 for Mali (MLI) is 27.9933206308862 deaths per 1,000 live births for the year 2024.**
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN_IGME) and represents the neonatal mortality rate - the probability of dying during the first 28 days of life, expressed per 1,000 live births.",12902,423,54337,2,,1.0,0.0,0.0,0.0,0,0.04505100000000001
+CME_MRM0,NGA,Nigeria,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the exact value of indicator CME_MRM0 (Neonatal mortality rate) for Nigeria (NGA) in 2023 is:
+
+**39.2394184711156**
+
+This represents deaths per 1,000 live births, with a confidence interval of 32.8080955038625 to 47.2585661555017.",14428,506,56464,3,,1.0,1.0,0.0,0.0,0,0.050874
+CME_MRM0,NGA,Nigeria,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the SDMX data query from the UNICEF Global Dataflow, the exact value of indicator CME_MRM0 (Neonatal mortality rate) for Nigeria (NGA) in 2024 is:
+
+**39.0457229325518**
+
+This represents the neonatal mortality rate expressed as deaths per 1,000 live births, with a confidence interval of 31.91 to 48.08. The data source is UN_IGME (United Nations Inter-agency Group for Child Mortality Estimation).",13626,593,13691,4,,1.0,1.0,0.0,0.0,0,0.049773
+CME_MRM0,PAK,Pakistan,2024,POSITIVE,baseline_latest,,,,,36.0985019506477,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Pakistan is:
+
+**36.0985019506477** deaths per 1,000 live births in **2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, for Pakistan in 2024.",11751,399,49714,2,,1.0,0.0,0.0,0.0,0,0.041238
+CME_MRM0,THA,Thailand,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Perfect! I found the exact value for the UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Thailand in 2023.
+
+The exact value is **5.26085083341958** deaths per 1,000 live births.
+
+This data comes from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0) and represents the neonatal mortality rate for Thailand in 2023, with a confidence interval of 3.11 to 7.29 deaths per 1,000 live births.",14422,531,51835,3,,1.0,1.0,0.0,0.0,0,0.051231
+CME_MRM0,THA,Thailand,2024,POSITIVE,baseline_latest,,,,,7.2,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of indicator CME_MRM0 (Neonatal mortality rate) for Thailand (THA) is:
+
+**Value: 5.11123279693856** deaths per 1,000 live births
+**Year: 2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, with a confidence interval of 2.98 to 7.20 deaths per 1,000 live births.",14655,568,14883,4,,1.0,0.0,0.0,0.0,0,0.052485000000000004
+CME_MRM0,TUR,Turkiye,2024,POSITIVE,baseline_latest,,,,,28.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRM0 (Neonatal mortality rate) for Turkiye (TUR) is:
+
+**Value: 4.63051800912933**
+**Year: 2024**
+
+This represents the neonatal mortality rate (probability of dying during the first 28 days of life, expressed per 1,000 live births) for Turkiye in 2024, sourced from UN_IGME (UN Inter-agency Group for Child Mortality Estimation).",14727,593,14221,4,,1.0,0.0,0.0,0.0,0,0.053076
+CME_MRM0,USA,United States,2024,POSITIVE,baseline_latest,,,,,,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRM0 (Neonatal mortality rate) for the United States is:
+
+**Value: 3.65238486479785** deaths per 1,000 live births
+**Year: 2024**
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births, for the United States in 2024.",11738,395,49754,2,,1.0,0.0,0.0,0.0,0,0.041139
+CME_MRY0,COD,DR Congo,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data returned, I can see that the latest available data for UNICEF indicator CME_MRY0 (Infant mortality rate) for DR Congo (COD) goes up to 2024, not 2025. The data shows values for 2020-2024, but there is no data available for 2025.
+
+**Data not available** for UNICEF indicator CME_MRY0 for DR Congo (COD) in 2025. The latest available data in the UNICEF Child Mortality dataflow is for 2024, where the infant mortality rate was 50.29 deaths per 1,000 live births (total population).",32733,870,59583,5,,0.0,0.0,0.0,0.0,0,0.11124900000000001
+CME_MRY0,ETH,Ethiopia,2029,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries of the UNICEF Data Warehouse, **data is not available** for UNICEF indicator CME_MRY0 (Under-five mortality rate) for Ethiopia in 2029.
+
+The most recent data available for this indicator and country goes up to 2024. The query for 2029 did not resolve from the official UNICEF flows (UNICEF/GLOBAL_DATAFLOW/1.0 and UNICEF/CME/1.0), indicating that data for that year has not been published or does not exist in the system.",30270,757,59071,4,,0.0,0.0,0.0,0.0,0,0.102165
+CME_MRY0,KEN,Kenya,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results, I can see that the data for indicator CME_MRY0T4 (Under-five mortality rate) for Kenya is available, but only up to 2024. The time period dimension shows values from 2020 to 2024, and there is no data available for 2026.
+
+Data not available. The UNICEF data for indicator CME_MRY0T4 (Under-five mortality rate) for Kenya (KEN) only contains observations through 2024. No data exists for 2026 in the official UNICEF flows.",27434,744,57908,4,,0.0,0.0,0.0,0.0,0,0.093462
+CME_MRY0,THA,Thailand,2027,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data returned, I can see that the UNICEF CME dataflow contains data for Thailand (THA) with indicator CME_MRY0 (Infant mortality rate), but the latest available data is only through 2024. The data shows values for years 2020-2024, but there is no data available for 2027.
+
+Data not available for UNICEF indicator CME_MRY0 for Thailand (THA) in 2027. The latest available data in the UNICEF Child Mortality dataflow is through 2024.",32664,822,59743,5,,0.0,0.0,0.0,0.0,0,0.110322
+CME_MRY0,USA,United States,2028,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF Data Warehouse, **data is not available** for the indicator CME_MRY0T4 (Under-five mortality rate) for the United States in 2028.
+
+The latest available data for this indicator shows values only up to 2024. The most recent data point for the United States shows:
+- 2024: 6.47246274379297 deaths per 1,000 live births (total)
+
+The UNICEF/GLOBAL_DATAFLOW does not contain projections or estimates for 2028 for this indicator and country combination.",27196,831,60735,4,,0.0,0.0,0.0,0.0,0,0.09405300000000001
+CME_MRY0,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,2.50713368030659,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRY0T4 (Under-five mortality rate) for Andorra (AND) is:
+
+**2.50713368030659** deaths per 1,000 live births for the year **2024** (total for both sexes).
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN_IGME) and represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",11963,427,50512,2,,0.0,0.0,0.0,0.0,1,0.042294000000000005
+CME_MRY0,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,False,Great! I found data for Liechtenstein. Now let me get the structure to understand what indicators are available and identify the CME_MRY0T4 indicator.,61022,1132,108699,8,,0.0,0.0,0.0,0.0,1,0.200046
+CME_MRY0,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,2.66087014851938,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Monaco (MCO) is:
+
+**2.66087014851938** deaths per 1,000 live births for the year **2024** (total for both sexes).
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN IGME) and represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",11960,428,50129,2,,0.0,0.0,0.0,0.0,1,0.042300000000000004
+CME_MRY0,PLW,Palau,2023,HALLUCINATION_T2,baseline_latest,,,,,18.5683091274643,2024.0,False,"Based on the data retrieved from the UNICEF Global Dataflow, the latest available value for indicator CME_MRY0 (Infant mortality rate) for Palau (PLW) is:
+
+**18.5683091274643** deaths per 1,000 live births for the year **2024** (Total for both sexes).
+
+The data also shows sex-disaggregated values for 2024:
+- Female: 16.4325764087196 deaths per 1,000 live births
+- Male: 20.5902757249938 deaths per 1,000 live births
+
+Source: UN Inter-agency Group for Child Mortality Estimation (UN_IGME) via UNICEF",12440,642,13627,4,,0.0,0.0,0.0,0.0,1,0.04695
+CME_MRY0,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,1.25951779206628,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for San Marino (SMR) is:
+
+**1.25951779206628** deaths per 1,000 live births for the year **2024** (total for both sexes).
+
+This represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births. The data also shows sex-disaggregated values:
+- Female: 1.1461590912373
+- Male: 1.36328558209477
+
+The da",11969,466,50748,2,,0.0,0.0,0.0,0.0,1,0.042897000000000005
+CME_MRY0,AUS,Australia,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the value of indicator CME_MRY0T4 (Under-five mortality rate) for Australia in 2023 is:
+
+**3.66421101428569** deaths per 1,000 live births (total for both sexes)
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN IGME) and represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.
+
+Note: The data also shows sex-disaggregated values:
+- Female: 3",11987,479,51935,2,,1.0,1.0,0.0,0.0,0,0.043146000000000004
+CME_MRY0,AUS,Australia,2024,POSITIVE,baseline_latest,,,,,3.60660143105608,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Australia is:
+
+**3.60660143105608** deaths per 1,000 live births for the year **2024** (total for both sexes).
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN IGME) and represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",11952,421,59924,2,,1.0,0.0,0.0,0.0,0,0.042171
+CME_MRY0,BRA,Brazil,2023,POSITIVE,direct,,,,,0.0,2023.0,False,"Perfect! I found the data for Brazil's under-five mortality rate (CME_MRY0T4) in 2023. Looking at the results, I can see multiple breakdowns by sex and wealth quintile. The overall total (both sexes, all wealth quintiles) is represented by the series ""0:0:0:0"" which corresponds to BRA.CME_MRY0T4._T._T (Brazil, Total sex, Total wealth quintile).
+
+The exact value for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Brazil in 2023 is **12.794930523466** deaths per 1,000 live births.
+
+Thi",13803,495,57891,2,,1.0,1.0,0.0,0.0,0,0.048834
+CME_MRY0,COD,DR Congo,2023,POSITIVE,baseline_latest,,,,,89.6781339947253,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRY0T4 (Under-five mortality rate) for DR Congo (COD) is:
+
+**89.6781339947253** deaths per 1,000 live births for the year **2024**.
+
+This represents the total under-five mortality rate (both sexes, all wealth quintiles combined) for DR Congo. The data source is UN_IGME (UN Inter-agency Group for Child Mortality Estimation).",12462,426,54833,2,,1.0,0.0,0.0,0.0,0,0.043776
+CME_MRY0,DEU,Germany,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the value of indicator CME_MRY0T4 (Under-five mortality rate) for Germany (DEU) in 2023 is:
+
+**3.70656558159219** deaths per 1,000 live births
+
+This is the total value (both sexes combined). The data also shows separate values for females (3.43404203658038) and males (3.96652160731917), but the overall total for Germany in 2023 is 3.70656558159219.",11990,448,54925,2,,1.0,1.0,0.0,0.0,0,0.042690000000000006
+CME_MRY0,ETH,Ethiopia,2023,POSITIVE,baseline_latest,,,,,44.5044643885028,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Ethiopia is:
+
+**44.5044643885028** deaths per 1,000 live births for the year **2024**.
+
+This represents the total under-five mortality rate for Ethiopia (both sexes, all wealth quintiles combined). The data source is UN_IGME (UN Inter-agency Group for Child Mortality Estimation).",12410,409,55856,2,,1.0,0.0,0.0,0.0,0,0.043365
+CME_MRY0,ETH,Ethiopia,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data returned from the UNICEF Child Mortality dataflow, I can see the exact values for the CME_MRY0 (Infant mortality rate) indicator for Ethiopia in 2024:
+
+- **Total (both sexes)**: 34.4908411549248 deaths per 1,000 live births
+- **Female**: 29.0631433992359 deaths per 1,000 live births  
+- **Male**: 39.5812243921425 deaths per 1,000 live births
+
+The exact value for UNICEF indicator CME_MRY0 (Infant mortality rate) for Ethiopia (ETH) in 2024 is **34.4908411549248** deaths per 1,000",18583,637,59758,3,,1.0,1.0,0.0,0.0,0,0.065304
+CME_MRY0,FRA,France,2023,POSITIVE,baseline_latest,,,,,4.34251513025836,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for France is:
+
+**4.34251513025836** deaths per 1,000 live births for the year **2024** (total for both sexes).
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN IGME) and represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",11952,421,56197,2,,1.0,0.0,0.0,0.0,0,0.042171
+CME_MRY0,FRA,France,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the value of indicator CME_MRY0T4 (Under-five mortality rate) for France in 2024 is:
+
+**4.34251513025836** deaths per 1,000 live births (total for both sexes)
+
+The data also shows breakdowns by sex:
+- Female: 3.97182999101226
+- Male: 4.69440203127626
+
+The exact number you requested for the total (both sexes combined) is **4.34251513025836**.",11987,449,52929,2,,1.0,1.0,0.0,0.0,0,0.042696
+CME_MRY0,GBR,United Kingdom,2023,POSITIVE,baseline_latest,,,,,4.67995627032345,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRY0T4 (Under-five mortality rate) for the United Kingdom (GBR) is:
+
+**4.67995627032345** deaths per 1,000 live births for the year **2024**
+
+This represents the total under-five mortality rate (both sexes combined). The data also shows sex-disaggregated values:
+- Female: 4.17038667997752 deaths per 1,000 live births
+- Male: 5.16463658594573 deaths per 1,000 live births
+
+The data so",11974,469,53151,2,,1.0,0.0,0.0,0.0,0,0.042957
+CME_MRY0,IND,India,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can see multiple values for the CME_MRY0T4 indicator (Under-five mortality rate) for India in 2023, broken down by sex and wealth quintile.
+
+The overall total value (for both sexes combined, total population) for India in 2023 is **28.1251954126099** deaths per 1,000 live births.
+
+This represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births, according to the UN Inter-agen",13887,446,53141,2,,1.0,1.0,0.0,0.0,0,0.048351000000000005
+CME_MRY0,IND,India,2024,POSITIVE,baseline_latest,,,,,26.5799002990667,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for India (IND) is:
+
+**26.5799002990667** deaths per 1,000 live births for the year **2024**.
+
+This represents the total under-five mortality rate for India across all sexes and wealth quintiles combined. The data comes from the UN Inter-agency Group for Child Mortality Estimation (UN IGME).",12725,421,58666,2,,1.0,0.0,0.0,0.0,0,0.04449
+CME_MRY0,JPN,Japan,2024,POSITIVE,baseline_latest,,,,,2.43375404904177,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Japan is:
+
+**2.43375404904177** deaths per 1,000 live births for the year **2024** (total for both sexes).
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN IGME) and represents the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",11950,419,57601,2,,1.0,0.0,0.0,0.0,0,0.042135
+CME_MRY0,MEX,Mexico,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can see that there are multiple values for indicator CME_MRY0T4 (Under-five mortality rate) for Mexico in 2023, broken down by sex:
+
+- **Total (both sexes): 13.4326998909888** deaths per 1,000 live births
+- Female: 12.1089977509744 deaths per 1,000 live births  
+- Male: 14.6974308375934 deaths per 1,000 live births
+
+Since you asked for ""CME_MRY0"" and the closest match is CME_MRY0T4 (Under-five mortality rate), and typically ",11990,515,57186,2,,1.0,1.0,0.0,0.0,0,0.043695000000000005
+CME_MRY0,MLI,Mali,2023,POSITIVE,baseline_latest,,,,,72.9812656876394,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Mali (MLI) is:
+
+**72.9812656876394** deaths per 1,000 live births in **2024**
+
+This represents the total under-five mortality rate for Mali across all sexes and wealth quintiles combined. The data shows this is the most recent observation available, with a confidence interval of 61.32 to 85.83 deaths per 1,000 live births",12421,445,51409,2,,1.0,0.0,0.0,0.0,0,0.043938
+CME_MRY0,NER,Niger,2024,POSITIVE,baseline_latest,,,,,110.720344180286,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Niger (NER) is:
+
+**110.720344180286** deaths per 1,000 live births for the year **2024**.
+
+This represents the total under-five mortality rate for Niger (both sexes, all wealth quintiles combined). The data shows the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",12399,418,51300,2,,1.0,0.0,0.0,0.0,0,0.043467
+CME_MRY0,NGA,Nigeria,2023,POSITIVE,direct,,,,,0.0,2023.0,False,"I can see the data for Nigeria's under-five mortality rate (CME_MRY0T4) in 2023. Looking at the series data, I need to find the total value (not broken down by sex or wealth quintile). The series ""0:0:0:0"" corresponds to Total sex (_T) and Total wealth quintile (_T), which gives us the overall national rate.
+
+The exact value for UNICEF indicator CME_MRY0 (Under-five mortality rate) for Nigeria in 2023 is **110.762813102121** deaths per 1,000 live births.
+
+This data comes from the UNICEF Child Mo",13776,491,50434,2,,1.0,1.0,0.0,0.0,0,0.048693
+CME_MRY0,PAK,Pakistan,2024,POSITIVE,baseline_latest,,,,,55.9592821596922,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Pakistan is:
+
+**55.9592821596922** deaths per 1,000 live births for the year **2024**.
+
+This represents the total under-five mortality rate for Pakistan (both sexes, all wealth quintiles combined). The data shows the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",12418,415,49487,2,,1.0,0.0,0.0,0.0,0,0.043479000000000004
+CME_MRY0,THA,Thailand,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the value of UNICEF indicator CME_MRY0 (Infant mortality rate) for Thailand (THA) in 2023 is:
+
+**7.94178158249588** deaths per 1,000 live births
+
+This is the total value (both sexes combined, all wealth quintiles) for Thailand's infant mortality rate in 2023, as reported by UN IGME (UN Inter-agency Group for Child Mortality Estimation).",42431,919,111133,5,,1.0,1.0,0.0,0.0,0,0.14107799999999998
+CME_MRY0,USA,United States,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Perfect! I found the data for the UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for the United States in 2024. Looking at the data, I can see there are three values for different sex categories:
+
+- Total (both sexes): **5.90830206887392** deaths per 1,000 live births
+- Male: 7.01156259345784 deaths per 1,000 live births  
+- Female: 6.47246274379297 deaths per 1,000 live births
+
+Since you asked for the indicator CME_MRY0 for the United States in 2024, and this appears to be the under-fi",13198,554,62142,2,,1.0,1.0,0.0,0.0,0,0.047904
+CME_MRY0T4,DEU,Germany,2029,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF Data Warehouse, I can see that data for indicator CME_MRY0T4 (Under-five mortality rate) for Germany (DEU) is available through 2024, but **data for 2029 is not available**.
+
+The most recent data available shows:
+- 2024: 3.71122243056873 deaths per 1,000 live births (total)
+
+The query specifically for 2029 returned no data from the official SDMX flows, indicating that projections or estimates for 2029 are not currently available in the UNICEF Data Wareh",27258,892,67193,4,,0.0,0.0,0.0,0.0,0,0.095154
+CME_MRY0T4,IND,India,2028,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF Global Dataflow, I can see that data for indicator CME_MRY0T4 (Under-five mortality rate) for India is available through 2024, but **data for 2028 is not available**.
+
+The latest available data shows:
+- 2024: 26.5799002990667 deaths per 1,000 live births (Total)
+
+**Data not available** for UNICEF indicator CME_MRY0T4 for India (IND) in 2028. The UNICEF data warehouse only contains data for this indicator through 2024.",27875,875,57776,4,,0.0,0.0,0.0,0.0,0,0.09675
+CME_MRY0T4,KEN,Kenya,2027,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data returned, I can see that the latest available data for indicator CME_MRY0T4 (Under-five mortality rate) for Kenya goes up to 2024, not 2027. The data shows values for 2020-2024, but there is no data available for 2027.
+
+Data not available for UNICEF indicator CME_MRY0T4 for Kenya (KEN) in 2027. The latest available data in the UNICEF Global Dataflow goes up to 2024 only.",30878,853,61851,5,,0.0,0.0,0.0,0.0,0,0.10542900000000001
+CME_MRY0T4,MLI,Mali,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries of the UNICEF Data Warehouse, **data is not available** for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Mali (MLI) in 2025.
+
+The most recent data available for this indicator for Mali is from 2024, where the total (both sexes combined) under-five mortality rate was 72.9812656876394 deaths per 1,000 live births. However, you specifically asked for 2025 data, which is not available in the UNICEF SDMX dataflows I queried (UNICEF/CME/1.0 and UNICEF/GLOBAL_DATAFLOW",41781,1102,68369,6,,0.0,0.0,0.0,0.0,0,0.141873
+CME_MRY0T4,NGA,Nigeria,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF SDMX dataflows, **data is not available** for the indicator CME_MRY0T4 (Under-five mortality rate) for Nigeria (NGA) in 2026.
+
+The most recent data available for this indicator shows values through 2024:
+- 2024: 115.649433639974 deaths per 1,000 live births (total)
+
+The data for 2026 has not been published in the UNICEF Data Warehouse yet, which is expected since 2026 is a future year and mortality statistics are typically published with a lag of 1-2 ye",30575,944,61509,5,,0.0,0.0,0.0,0.0,0,0.105885
+CME_MRY0T4,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,2.50713368030659,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of indicator CME_MRY0T4 (Under-five mortality rate) for Andorra (AND) is:
+
+**2.50713368030659** deaths per 1,000 live births for the year **2024** (total for both sexes).
+
+The data also shows sex-disaggregated values for 2024:
+- Female: 2.16128146147666 deaths per 1,000 live births
+- Male: 2.82922266732385 deaths per 1,000 live births
+
+Source: UNICEF Child Mortality Estimates (UN IGME)",12001,482,57880,2,,0.0,0.0,0.0,0.0,1,0.043233
+CME_MRY0T4,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my searches across multiple UNICEF dataflows, **data is not available** for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Liechtenstein (LIE). 
+
+I attempted to query several dataflows where this indicator is available:
+- UNICEF/CME/1.0 (Child Mortality)
+- UNICEF/GLOBAL_DATAFLOW/1.0 (Cross-sector indicators) 
+- ECARO/TRANSMONEE/1.0 (ECARO for TransMonEE)
+- EAPRO/DF_EAPRO_CROSS_SECTOR/1.0 (EAPRO Cross Sector)
+
+While Liechtenstein (LIE) exists as a valid country code in some ",45774,1268,74416,7,,0.0,0.0,0.0,0.0,0,0.156342
+CME_MRY0T4,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,2024.0,2024.0,False,"Perfect! I found the latest available data for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Monaco (MCO). The data shows three values for different sex categories, all for the year 2024:
+
+- **Total (both sexes): 2.66087014851938** deaths per 1,000 live births for **2024**
+- Female: 2.37850975288685 deaths per 1,000 live births for 2024  
+- Male: 2.92987105846528 deaths per 1,000 live births for 2024
+
+The latest available value for the total population (which is typically the main ",13204,489,57474,2,,0.0,0.0,0.0,0.0,1,0.046947
+CME_MRY0T4,PLW,Palau,2023,HALLUCINATION_T2,baseline_latest,,,,,21.4256952122423,2024.0,False,"Perfect! I found the data for Palau. Let me extract the exact values from the response. I can see there are three series with different sex breakdowns:
+
+1. Female (F): 19.0111005763443
+2. Male (M): 23.7196903386674  
+3. Total (_T): 21.4256952122423
+
+All values are for the year 2024. Let me provide you with the total (both sexes combined) value as that's typically what's requested when asking for ""the"" indicator value:
+
+**The latest available value of UNICEF indicator CME_MRY0T4 (Under-five morta",15874,652,59508,3,,0.0,0.0,0.0,0.0,1,0.05740200000000001
+CME_MRY0T4,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,1.25951779206628,2024.0,False,"Perfect! I found the latest data for San Marino. Let me extract the specific values from the response. The data shows three series for different sex categories (Female, Male, and Total), all for 2024.
+
+Based on the SDMX data from UNICEF's Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY0T4 (Under-five mortality rate) for San Marino (SMR) is:
+
+**1.25951779206628** deaths per 1,000 live births for **2024** (Total population)
+
+The data also includes breakdo",15071,632,58281,3,,0.0,0.0,0.0,0.0,1,0.054693000000000006
+CME_MRY0T4,AUS,Australia,2023,POSITIVE,direct,,,,,0.0,2023.0,False,"Perfect! I found the data for Australia's under-five mortality rate (CME_MRY0T4) in 2023. The data shows three values broken down by sex:
+
+- Total (both sexes): **3.66421101428569** deaths per 1,000 live births
+- Female: **3.35161741569905** deaths per 1,000 live births  
+- Male: **3.96314005943182** deaths per 1,000 live births
+
+Since you asked for the value of indicator CME_MRY0T4 for Australia in 2023 without specifying sex, the total value is: **3.66421101428569**
+
+This represents the probab",15097,594,55861,3,,1.0,1.0,0.0,0.0,0,0.054201
+CME_MRY0T4,AUS,Australia,2024,POSITIVE,baseline_latest,,,,,3.60660143105608,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY0T4 (Under-five mortality rate) for Australia is:
+
+**3.60660143105608** deaths per 1,000 live births in **2024**
+
+This represents the total under-five mortality rate for Australia. The data also shows sex-disaggregated values:
+- Female: 3.2978098427687 deaths per 1,000 live births
+- Male: 3.8994816636253 deaths per 1,000 live births
+
+The data source is UN_IGME (Un",12006,510,53437,2,,1.0,0.0,0.0,0.0,0,0.043668
+CME_MRY0T4,BGD,Bangladesh,2024,POSITIVE,baseline_latest,,,,,30.4978239397929,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRY0T4 (Under-five mortality rate) for Bangladesh (BGD) is:
+
+**30.4978239397929** deaths per 1,000 live births for the year **2024**
+
+This represents the total under-five mortality rate for Bangladesh. The data also shows breakdowns by sex and wealth quintiles, but the overall total rate is 30.4978239397929 per 1,000 live births in 2024.",12454,444,57108,2,,1.0,0.0,0.0,0.0,0,0.044022
+CME_MRY0T4,CHN,China,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the value of indicator CME_MRY0T4 (Under-five mortality rate) for China (CHN) in 2023 is:
+
+**6.12285931932728** deaths per 1,000 live births
+
+This is the total value (both sexes combined). The data also shows:
+- Female: 5.7986744823709 deaths per 1,000 live births
+- Male: 6.42883823208665 deaths per 1,000 live births
+
+The data source is UN_IGME (UN Inter-agency Group for Child Mortality Estimation) and has nor",12010,495,57936,2,,1.0,1.0,0.0,0.0,0,0.043455
+CME_MRY0T4,CHN,China,2024,POSITIVE,baseline_latest,,,,,5.72393504988453,2024.0,False,"Perfect! I found the latest available data for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for China.
+
+**Latest available value for China (CHN):**
+- **Exact number:** 5.72393504988453 deaths per 1,000 live births
+- **Year:** 2024
+- **Indicator:** CME_MRY0T4 (Under-five mortality rate)
+- **Sex:** Total (both male and female combined)
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN_IGME) and represents the probability of dying between birth and exactl",11991,483,53560,2,,1.0,0.0,0.0,0.0,0,0.043218
+CME_MRY0T4,DEU,Germany,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the value of indicator CME_MRY0T4 (Under-five mortality rate) for Germany (DEU) in 2024 is:
+
+**3.71122243056873** deaths per 1,000 live births (Total/both sexes)
+
+The data also shows breakdowns by sex:
+- Female: 3.43674850616519
+- Male: 3.97272418645486
+
+The exact number you requested for the total (both sexes combined) is **3.71122243056873**.",15106,548,57983,3,,1.0,1.0,0.0,0.0,0,0.053538
+CME_MRY0T4,ETH,Ethiopia,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data returned from the UNICEF Child Mortality dataflow, I can see multiple values for CME_MRY0T4 (Under-five mortality rate) for Ethiopia in 2023, broken down by sex and wealth quintile. 
+
+Looking at the series data, the overall total value (for both sexes combined and total wealth quintile) corresponds to series ""0:0:0:0"" which has the value **45.3538927788402**.
+
+This represents the under-five mortality rate for Ethiopia in 2023, expressed as deaths per 1,000 live births.
+
+The exa",16482,569,60752,3,,1.0,1.0,0.0,0.0,0,0.057981000000000005
+CME_MRY0T4,FRA,France,2024,POSITIVE,baseline_latest,,,,,4.34251513025836,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value of indicator CME_MRY0T4 (Under-five mortality rate) for France is:
+
+**4.34251513025836** deaths per 1,000 live births in **2024**
+
+This represents the total (both sexes combined) under-five mortality rate for France. The data also shows sex-disaggregated values:
+- Female: 3.97182999101226 deaths per 1,000 live births
+- Male: 4.69440203127626 deaths per 1,000 live births
+
+The data source is UN_IGME (U",11981,486,54267,2,,1.0,0.0,0.0,0.0,0,0.043233
+CME_MRY0T4,IND,India,2023,POSITIVE,baseline_latest,,,,,26.5799002990667,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY0T4 (Under-five mortality rate) for India is:
+
+**26.5799002990667** deaths per 1,000 live births for the year **2024**
+
+This represents the total under-five mortality rate for India (both sexes, all wealth quintiles combined). The data source is UN IGME (United Nations Inter-agency Group for Child Mortality Estimation).",12752,443,59080,2,,1.0,0.0,0.0,0.0,0,0.044900999999999996
+CME_MRY0T4,IND,India,2024,POSITIVE,baseline_latest,,,,,26.5799002990667,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY0T4 (Under-five mortality rate) for India is:
+
+**26.5799002990667** deaths per 1,000 live births for the year **2024**
+
+This represents the total under-five mortality rate for India (both sexes, all wealth quintiles combined). The data source is UN IGME (United Nations Inter-agency Group for Child Mortality Estimation).",12752,443,53859,2,,1.0,0.0,0.0,0.0,0,0.044900999999999996
+CME_MRY0T4,JPN,Japan,2024,POSITIVE,baseline_latest,,,,,2024.0,2024.0,False,"Perfect! I found the latest available data for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Japan.
+
+**Latest available value:** 2.43375404904177 deaths per 1,000 live births
+**Year:** 2024
+
+This represents the total under-five mortality rate for Japan in 2024. The data also shows sex-disaggregated values:
+- Female: 2.3363992521422 deaths per 1,000 live births
+- Male: 2.52633311429291 deaths per 1,000 live births
+
+The data source is UN_IGME (United Nations Inter-agency Group for Ch",11988,491,58902,2,,1.0,0.0,0.0,0.0,0,0.043329000000000006
+CME_MRY0T4,MEX,Mexico,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), I can see the values for CME_MRY0T4 (Under-five mortality rate) for Mexico in 2023, broken down by sex:
+
+- **Total (both sexes)**: 13.4326998909888 deaths per 1,000 live births
+- Female: 12.1089977509744 deaths per 1,000 live births  
+- Male: 14.6974308375934 deaths per 1,000 live births
+
+The exact value for UNICEF indicator CME_MRY0T4 (Under-five mortality rate) for Mexico in 2023 is **13.4326998909888** deat",15870,590,59544,3,,1.0,1.0,0.0,0.0,0,0.056459999999999996
+CME_MRY0T4,MEX,Mexico,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), I can see the values for indicator CME_MRY0T4 (Under-five mortality rate) for Mexico in 2024, broken down by sex:
+
+- **Total (both sexes)**: 13.0522428741257 deaths per 1,000 live births
+- **Female**: 11.7507207499667 deaths per 1,000 live births  
+- **Male**: 14.2903822070879 deaths per 1,000 live births
+
+The exact value for the total under-five mortality rate for Mexico in 2024 is **13.0522428741257** deaths",15878,577,59469,3,,1.0,1.0,0.0,0.0,0,0.056289000000000006
+CME_MRY0T4,MLI,Mali,2023,POSITIVE,direct,,,,,2023.0,2023.0,False,"Based on the data returned from the UNICEF Child Mortality dataflow, I can see multiple values for CME_MRY0T4 (Under-five mortality rate) for Mali in 2023, broken down by sex and wealth quintile. 
+
+Looking at the series data, the overall total value (for both sexes combined and total wealth quintile) corresponds to series ""0:0:2:0"" which has the value **76.208505926193**.
+
+This represents the under-five mortality rate for Mali in 2023, expressed as deaths per 1,000 live births.
+
+The exact value ",16500,580,58323,3,,1.0,1.0,0.0,0.0,0,0.0582
+CME_MRY0T4,MLI,Mali,2024,POSITIVE,baseline_latest,,,,,72.9812656876394,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value for indicator CME_MRY0T4 (Under-five mortality rate) for Mali is:
+
+**72.9812656876394** deaths per 1,000 live births in **2024**
+
+This represents the total under-five mortality rate for Mali (both sexes, all wealth quintiles combined). The data shows this is the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births, with a confidence interval ",12461,482,57023,2,,1.0,0.0,0.0,0.0,0,0.044613
+CME_MRY0T4,NER,Niger,2023,POSITIVE,direct,,,,,0.0,2023.0,False,"Based on the data returned from the UNICEF GLOBAL_DATAFLOW, I can see the exact values for the Under-five mortality rate (CME_MRY0T4) for Niger (NER) in 2023, broken down by sex:
+
+- **Total (both sexes)**: 113.467525618226 deaths per 1,000 live births
+- Female: 109.221813162388 deaths per 1,000 live births  
+- Male: 117.446414438651 deaths per 1,000 live births
+
+The exact value for the total Under-five mortality rate for Niger in 2023 is **113.467525618226** deaths per 1,000 live births.",13997,667,13184,4,,1.0,1.0,0.0,0.0,0,0.051996
+CME_MRY0T4,NGA,Nigeria,2024,POSITIVE,baseline_latest,,,,,115.649433639974,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value for indicator CME_MRY0T4 (Under-five mortality rate) for Nigeria is:
+
+**115.649433639974** deaths per 1,000 live births for the year **2024**
+
+This represents the total under-five mortality rate for Nigeria (both sexes, all wealth quintiles combined). The data shows the probability of dying between birth and exactly 5 years of age, expressed per 1,000 live births.",12445,455,52829,2,,1.0,0.0,0.0,0.0,0,0.04416
+CME_MRY0T4,TUR,Turkiye,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Based on the data returned from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), I can see multiple values for the CME_MRY0T4 indicator (Under-five mortality rate) for Turkiye in 2024, broken down by sex and wealth quintile.
+
+The overall total value (for all sexes and total population, not broken down by wealth quintile) is **8.86134463270057** deaths per 1,000 live births.
+
+This represents the under-five mortality rate for Turkiye in 2024, which is the probability of dying between birth an",15740,563,60797,3,,1.0,1.0,0.0,0.0,0,0.055665
+CME_MRY0T4,USA,United States,2023,POSITIVE,baseline_latest,,,,,6.47246274379297,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value for indicator CME_MRY0T4 (Under-five mortality rate) for the United States is:
+
+**6.47246274379297** deaths per 1,000 live births for the year **2024**
+
+This represents the total under-five mortality rate (both sexes combined) for the United States. The data also shows sex-disaggregated values:
+- Female: 5.90830206887392 deaths per 1,000 live births
+- Male: 7.01156259345784 deaths pe",12008,513,54454,2,,1.0,0.0,0.0,0.0,0,0.043719
+CME_MRY0T4,USA,United States,2024,POSITIVE,direct,,,,,2024.0,2024.0,False,"Perfect! I found the data for CME_MRY0T4 (Under-five mortality rate) for the United States in 2024. The data shows three values broken down by sex:
+
+- Total (both sexes): **5.90830206887392** deaths per 1,000 live births
+- Male: **7.01156259345784** deaths per 1,000 live births  
+- Female: **6.47246274379297** deaths per 1,000 live births
+
+Since you asked for the indicator value without specifying sex, the total value for CME_MRY0T4 for the United States in 2024 is **5.90830206887392** deaths pe",13231,501,56154,2,,1.0,1.0,0.0,0.0,0,0.047208
+CME_MRY1T4,BGD,Bangladesh,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries of the UNICEF Data Warehouse, **Data not available** for UNICEF indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Bangladesh (BGD) in 2025.
+
+The latest available data for this indicator is from 2024, where the most recent values are:
+- Female: 5.74526577101275 deaths per 1,000 children aged 1
+- Male: 6.66004798835246 deaths per 1,000 children aged 1  
+- Total: 6.21068311816786 deaths per 1,000 children aged 1
+
+The data comes from the UNICEF Global Dataflow (UNICE",52196,1362,77373,7,,0.0,0.0,0.0,0.0,0,0.177018
+CME_MRY1T4,FRA,France,2028,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data returned, I can see that the UNICEF Child Mortality dataflow contains data for France (FRA) and indicator CME_MRY1T4 (Child mortality rate aged 1-4 years), but the available data only goes up to 2024. The years available are 2020, 2021, 2022, 2023, and 2024.
+
+Data not available for UNICEF indicator CME_MRY1T4 for France (FRA) in 2028. The latest available data in the UNICEF Child Mortality dataflow only extends to 2024.",20342,753,17303,5,,0.0,0.0,0.0,0.0,0,0.072321
+CME_MRY1T4,MLI,Mali,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF SDMX dataflow, I can see that data for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Mali (MLI) is available through 2024, but **data for 2026 is not available**.
+
+The query returned data for years 2020-2024, but no data for 2026. The latest available data shows:
+
+- 2024 Total: 26.7337085375153 deaths per 1,000 children aged 1
+- 2024 Female: 26.5998143988627 deaths per 1,000 children aged 1  
+- 2024 Male: 26.8643379701537 deaths per 1,",27459,925,64396,4,,0.0,0.0,0.0,0.0,0,0.096252
+CME_MRY1T4,NGA,Nigeria,2027,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data returned from the UNICEF Child Mortality dataflow, I can see that data for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Nigeria is available from 2020 to 2024, but **data for 2027 is not available**.
+
+The latest available data shows:
+- 2024: 49.5734187916524 (Total), 49.0929665768948 (Male), 49.3192172378195 (Female)
+- 2023: 50.4898466737147 (Total), 49.9590618050302 (Male), 50.2072045032463 (Female)
+- 2022: 51.102379115926 (Total), 50.5631873055103 (Male), 50",23430,883,70104,4,,0.0,0.0,0.0,0.0,0,0.083535
+CME_MRY1T4,THA,Thailand,2029,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data returned from the UNICEF Child Mortality dataflow, I can see that data for Thailand (THA) and indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) is available from 2020 to 2024, but **data for 2029 is not available**.
+
+The latest available data shows:
+- 2024: 1.14664651127422 (Total), 1.34323151054344 (Male), 1.24373418446272 (Female)
+- 2023: 1.18848894990231 (Total), 1.39536165266013 (Male), 1.28980742293466 (Female)
+
+**Data not available** for UNICEF indicator CME_MRY1",23442,772,61259,4,,0.0,0.0,0.0,0.0,0,0.081906
+CME_MRY1T4,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), I can provide you with the latest available values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Andorra (AND):
+
+**Latest available data for 2024:**
+
+- **Total (both sexes)**: 0.0882814364288609 deaths per 1,000 children aged 1
+- **Female**: 0.0585165662665421 deaths per 1,000 children aged 1  
+- **Male**: 0.116289300248484 deaths per 1,000 children aged 1
+
+**Year**: 2024
+
+The data source ",13264,529,58695,2,,0.0,0.0,0.0,0.0,1,0.047727
+CME_MRY1T4,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (Child Mortality, Global Dataflow, Maternal/Child/Newborn Health, and Demography), **Data not available** for UNICEF indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Liechtenstein (LIE).
+
+The queries attempted the following official UNICEF dataflows:
+- UNICEF/CME/1.0 (Child Mortality)
+- UNICEF/GLOBAL_DATAFLOW/1.0 (Cross-sector indicators)  
+- UNICEF/MNCH/1.0 (Maternal, child and newborn health)
+- UNICEF/DM/1.0 (Demography)
+
+All q",39105,1139,73300,6,,0.0,0.0,0.0,0.0,0,0.1344
+CME_MRY1T4,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Monaco (MCO) is:
+
+**0.453003231271176** deaths per 1,000 children aged 1-4 years for the year **2024** (total for both sexes).
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN IGME) and represents the most recent estimate available in the UNICEF database.",14683,507,58215,3,,0.0,0.0,0.0,0.0,1,0.051654
+CME_MRY1T4,PLW,Palau,2023,HALLUCINATION_T2,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, the latest available value for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Palau (PLW) is:
+
+**2.63506586236034** deaths per 1,000 children aged 1 for the **total population** in **2024**.
+
+The data also shows values broken down by sex:
+- Female: 3.16637752760041 deaths per 1,000 children aged 1 in 2024
+- Male: 2.91144672773741 deaths per 1,000 children aged 1 in 2024
+
+The exact number for the total populatio",13261,507,60176,2,,0.0,0.0,0.0,0.0,1,0.047388
+CME_MRY1T4,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can provide you with the latest available values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for San Marino (SMR):
+
+**Latest available data for 2024:**
+
+- **Total (both sexes)**: 0.045924553442489 deaths per 1,000 children aged 1
+- **Female**: 0.0370519809558267 deaths per 1,000 children aged 1  
+- **Male**: 0.0538005132843522 deaths per 1,000 children aged 1
+
+**Year**: 2024
+
+The exact number for the total",14850,679,16364,4,,0.0,0.0,0.0,0.0,1,0.054735
+CME_MRY1T4,AUS,Australia,2024,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Australia is:
+
+**0.518588206099957** deaths per 1,000 children aged 1-4 years in **2024**
+
+This represents the total value (both sexes combined). The data also shows sex-disaggregated values:
+- Female: 0.467605142747907
+- Male: 0.566778796888934
+
+The data source is UN_IGME (United Nations Inter-agency Group for Child M",12082,516,56051,2,,1.0,0.0,0.0,0.0,0,0.043986
+CME_MRY1T4,BGD,Bangladesh,2024,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can provide you with the latest available values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Bangladesh:
+
+**Latest available data for 2024:**
+
+- **Total (both sexes)**: 6.21068311816786 deaths per 1,000 children aged 1
+- **Female**: 5.74526577101275 deaths per 1,000 children aged 1  
+- **Male**: 6.66004798835246 deaths per 1,000 children aged 1
+
+**Year**: 2024
+
+The data shows that for Bangladesh in 202",13238,535,59279,2,,1.0,0.0,0.0,0.0,0,0.047739000000000004
+CME_MRY1T4,BRA,Brazil,2024,POSITIVE,direct,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can see that there are three values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Brazil in 2024, broken down by sex:
+
+- **Total (both sexes)**: 1.98083062999888 deaths per 1,000 children aged 1
+- **Female**: 1.7849736775194 deaths per 1,000 children aged 1  
+- **Male**: 2.16299537627529 deaths per 1,000 children aged 1
+
+Since you asked for ""the value"" without specifying sex, the total value for both sex",15904,606,58673,3,,1.0,1.0,0.0,0.0,0,0.056802000000000005
+CME_MRY1T4,CHN,China,2023,POSITIVE,direct,,,,,1.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), I can see the values for CME_MRY1T4 (Child mortality rate aged 1-4 years) for China in 2023:
+
+- **Total (both sexes)**: 1.7311698850504 deaths per 1,000 children aged 1
+- **Female**: 1.63792151858594 deaths per 1,000 children aged 1  
+- **Male**: 1.81778399680266 deaths per 1,000 children aged 1
+
+The exact value for the total population (both sexes combined) of UNICEF indicator CME_MRY1T4 for China in 2023 is ",13279,530,57756,2,,1.0,1.0,0.0,0.0,0,0.047787
+CME_MRY1T4,COD,DR Congo,2023,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Perfect! I found the latest available data for UNICEF indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for DR Congo (COD).
+
+**Latest available value:**
+- **Exact number:** 35.2429208954219 (Total/both sexes)
+- **Year:** 2024
+- **Unit:** Deaths per 1,000 children aged 1
+
+The data also shows breakdowns by sex:
+- Female: 33.1364694874254
+- Male: 37.3679342273094
+
+This data comes from the UN Inter-agency Group for Child Mortality Estimation (UN_IGME) and represents the child mortality rate",13267,500,60505,2,,1.0,0.0,0.0,0.0,0,0.047301
+CME_MRY1T4,ETH,Ethiopia,2023,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Ethiopia is:
+
+**10.3713394632658** deaths per 1,000 children aged 1, for the year **2024**.
+
+This represents the total value (both sexes combined). The data also shows sex-disaggregated values:
+- Female: 9.68655621883513
+- Male: 11.0047250871695
+
+The confidence interval for the total value is 7.22737202983836 to 14.99",12081,505,54834,2,,1.0,0.0,0.0,0.0,0,0.043818
+CME_MRY1T4,ETH,Ethiopia,2024,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Ethiopia (ETH) is:
+
+**10.3713394632658** deaths per 1,000 children aged 1, for the year **2024**.
+
+This represents the total value (both sexes combined). The data also shows separate values by sex:
+- Female: 9.68655621883513
+- Male: 11.0047250871695
+
+The data source is UN_IGME (UN Inter-agency Group for Child Mortality",12056,479,57090,2,,1.0,0.0,0.0,0.0,0,0.043353
+CME_MRY1T4,FRA,France,2023,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can provide you with the latest available values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for France:
+
+**Latest available data for France (2024):**
+
+- **Total (both sexes)**: 0.915391760027306 deaths per 1,000 children aged 1
+- **Female**: 0.838231729621552 deaths per 1,000 children aged 1  
+- **Male**: 0.988817982407963 deaths per 1,000 children aged 1
+
+**Year**: 2024
+
+The data shows that in 2024, Fran",13253,551,57792,2,,1.0,0.0,0.0,0.0,0,0.048024000000000004
+CME_MRY1T4,FRA,France,2024,POSITIVE,direct,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), I can provide you with the exact values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for France in 2024:
+
+- **Total (both sexes)**: 0.915391760027306 deaths per 1,000 children aged 1-4 years
+- **Female**: 0.838231729621552 deaths per 1,000 children aged 1-4 years  
+- **Male**: 0.988817982407963 deaths per 1,000 children aged 1-4 years
+
+The overall value for France in 2024 is **0.9153917600273",12104,542,55168,2,,1.0,1.0,0.0,0.0,0,0.044442
+CME_MRY1T4,IND,India,2024,POSITIVE,direct,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can see that there are three values for the CME_MRY1T4 indicator (Child mortality rate aged 1-4 years) for India in 2024, broken down by sex:
+
+- **Total (both sexes)**: 3.30730265595403 deaths per 1,000 children aged 1
+- **Female**: 3.67941091176888 deaths per 1,000 children aged 1  
+- **Male**: 2.94737217017893 deaths per 1,000 children aged 1
+
+The overall value for India in 2024 is **3.30730265595403** deaths per 1,000 chi",15049,649,14217,4,,1.0,1.0,0.0,0.0,0,0.054882
+CME_MRY1T4,KEN,Kenya,2023,POSITIVE,direct,,,,,1.0,2023.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can see the values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Kenya in 2023:
+
+- **Total (both sexes)**: 5.10337486056484 deaths per 1,000 children aged 1
+- **Female**: 4.60347181994086 deaths per 1,000 children aged 1  
+- **Male**: 5.57907767763704 deaths per 1,000 children aged 1
+
+The exact value for the total child mortality rate (aged 1-4 years) for Kenya in 2023 is **5.10337486056484** deaths per ",15933,588,59170,3,,1.0,1.0,0.0,0.0,0,0.056619
+CME_MRY1T4,MEX,Mexico,2024,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Mexico is:
+
+**0.979747233274098** deaths per 1,000 children aged 1, for the year **2024**.
+
+This represents the total value (both sexes combined). The data also shows separate values by sex:
+- Female: 0.915282904738579
+- Male: 1.04046056320506
+
+All values are from 2024 and sourced from UN IGME (United Nations Inter-age",12076,491,55286,2,,1.0,0.0,0.0,0.0,0,0.04359300000000001
+CME_MRY1T4,MLI,Mali,2023,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF CME dataflow, the latest available value of indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Mali (MLI) is:
+
+**26.7337085375153** deaths per 1,000 children aged 1, for the year **2024**.
+
+This is the total value (across all sexes) from the most recent observation available in the dataset.",11797,455,12690,3,,1.0,0.0,0.0,0.0,0,0.042216
+CME_MRY1T4,NER,Niger,2023,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Niger (NER) is:
+
+**48.2653993186634** deaths per 1,000 children aged 1, for the year **2024**.
+
+This is the total value (across all sexes) for Niger. The data also shows sex-disaggregated values:
+- Female: 47.5359604751757
+- Male: 49.0525927964255
+
+The exact number you requested is **48.2653993186634** for the year **",13252,482,58403,2,,1.0,0.0,0.0,0.0,0,0.046986
+CME_MRY1T4,NER,Niger,2024,POSITIVE,direct,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), I can see the values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Niger (NER) in 2024:
+
+- **Total (both sexes)**: 48.2653993186634 deaths per 1,000 children aged 1
+- **Female**: 49.0525927964255 deaths per 1,000 children aged 1  
+- **Male**: 47.5359604751757 deaths per 1,000 children aged 1
+
+The exact value for the total population (both sexes combined) is **48.2653993186634**.",15928,576,56189,3,,1.0,1.0,0.0,0.0,0,0.056424
+CME_MRY1T4,NGA,Nigeria,2023,POSITIVE,direct,,,,,1.0,2023.0,False,"Based on the data returned from the UNICEF Child Mortality dataflow, I can see the values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Nigeria in 2023. The data shows three series broken down by sex:
+
+- **Total (both sexes)**: 50.2072045032463 deaths per 1,000 children aged 1
+- **Female**: 50.4898466737147 deaths per 1,000 children aged 1  
+- **Male**: 49.9590618050302 deaths per 1,000 children aged 1
+
+The exact value for the total population (both sexes combined) of UNICEF",14884,664,16007,4,,1.0,1.0,0.0,0.0,0,0.05461200000000001
+CME_MRY1T4,NGA,Nigeria,2024,POSITIVE,baseline_latest,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow (UNICEF/CME/1.0), the latest available value of indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Nigeria (NGA) is:
+
+**49.3192172378195** deaths per 1,000 children aged 1, for the year **2024**.
+
+This represents the total value (both sexes combined). The data also shows separate values for females (49.5734187916524) and males (49.0929665768948) for the same year.",12072,464,58259,2,,1.0,0.0,0.0,0.0,0,0.043176
+CME_MRY1T4,PAK,Pakistan,2024,POSITIVE,direct,,,,,1.0,2024.0,False,"Based on the data returned from the UNICEF CME dataflow, I can see the exact values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Pakistan in 2024:
+
+- **Total (both sexes)**: 8.13735887104633 deaths per 1,000 children aged 1
+- **Female**: 8.35347248890117 deaths per 1,000 children aged 1  
+- **Male**: 7.92095436530099 deaths per 1,000 children aged 1
+
+The exact number for the total value (both sexes combined) of UNICEF indicator CME_MRY1T4 for Pakistan in 2024 is **8.1373588",11868,566,14470,3,,1.0,1.0,0.0,0.0,0,0.04409400000000001
+CME_MRY1T4,THA,Thailand,2024,POSITIVE,direct,,,,,1.0,2024.0,False,"Based on the data retrieved from the UNICEF Child Mortality dataflow, I can see the values for indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for Thailand in 2024:
+
+- **Female**: 1.14664651127422 deaths per 1,000 children aged 1
+- **Male**: 1.34323151054344 deaths per 1,000 children aged 1  
+- **Total**: 1.24373418446272 deaths per 1,000 children aged 1
+
+Since you asked for ""the value"" without specifying sex, the total value for Thailand in 2024 is **1.24373418446272** deaths per 1,0",15927,577,59665,3,,1.0,1.0,0.0,0.0,0,0.056436
+CME_MRY1T4,USA,United States,2024,POSITIVE,direct,,,,,1.0,2024.0,False,"Perfect! I found the data for CME_MRY1T4 (Child mortality rate aged 1-4 years) for the United States in 2024. The data shows three values broken down by sex:
+
+- Female: 0.880891791315619
+- Male: 1.10492064037399  
+- Total: 0.995750634828318
+
+Since you asked for ""the value"" without specifying sex, I'll provide the total value.
+
+The exact value of UNICEF indicator CME_MRY1T4 (Child mortality rate aged 1-4 years) for the United States (USA) in 2024 is **0.995750634828318** deaths per 1,000 children",13259,487,56282,2,,1.0,1.0,0.0,0.0,0,0.047082
+ED_CR_L1,FRA,France,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (EDUCATION_UIS_SDG, GLOBAL_DATAFLOW, and EDUCATION), **Data not available** for UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for France (FRA) in 2026.
+
+The queries attempted to retrieve data from the official UNICEF SDMX flows but returned ""No data"" errors for all relevant dataflows that contain this indicator. This suggests that either:
+1. Data for 2026 has not yet been collected or published
+2. France may no",34106,1085,64420,5,,0.0,0.0,0.0,0.0,0,0.118593
+ED_CR_L1,IND,India,2028,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (EDUCATION_UIS_SDG, GLOBAL_DATAFLOW, EDUCATION, and ROSA), **Data not available** for UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for India (IND) in 2028.
+
+The queries did not resolve from the official UNICEF flows, indicating that this specific data point for 2028 is not available in the UNICEF Data Warehouse.",40043,1051,149255,6,,0.0,0.0,0.0,0.0,0,0.13589400000000001
+ED_CR_L1,MEX,Mexico,2029,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries across multiple UNICEF dataflows, **data is not available** for indicator ED_CR_L1 (Completion rate for children of primary school age) for Mexico (MEX) in 2029. 
+
+The queries attempted across the main education dataflows (UNICEF/EDUCATION_UIS_SDG/1.0, UNICEF/EDUCATION/1.0, and UNICEF/GLOBAL_DATAFLOW/1.0) all returned ""No data for data query"" errors, indicating that this specific combination of indicator, country, and year is not present in the UNICEF Data Warehouse.",40220,1113,70778,6,,0.0,0.0,0.0,0.0,0,0.137355
+ED_CR_L1,NGA,Nigeria,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries to the UNICEF SDMX data warehouse, **Data not available** for indicator ED_CR_L1 (Completion rate for children of primary school age) for Nigeria (NGA) in 2025.
+
+I attempted to retrieve this data from multiple relevant dataflows including:
+- UNICEF/GLOBAL_DATAFLOW/1.0 (Cross-sector indicators)
+- UNICEF/EDUCATION/1.0 (Education - Access and Completion)
+- UNICEF/EDUCATION_UIS_SDG/1.0 (Education - SDG Indicators)
+
+All queries returned ""No data"" responses, indicating that the 202",34119,1081,67978,5,,0.0,0.0,0.0,0.0,0,0.11857200000000001
+ED_CR_L1,THA,Thailand,2027,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries of the UNICEF Data Warehouse through the official SDMX flows, **data is not available** for UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Thailand (THA) in 2027.
+
+I attempted to query multiple relevant dataflows including:
+- UNICEF/EDUCATION_UIS_SDG/1.0 (EDU - SDG Indicators)
+- UNICEF/GLOBAL_DATAFLOW/1.0 (Cross-sector indicators)  
+- UNICEF/EDUCATION/1.0 (EDU - Access and Completion)
+
+None of these official UNICEF flows returned data for t",31950,947,69692,5,,0.0,0.0,0.0,0.0,0,0.110055
+ED_CR_L1,AUS,Australia,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,The indicator exists. Let me try a different approach and check what data is available for Australia in the global dataflow:,52321,1252,77271,8,,0.0,0.0,0.0,0.0,1,0.17574299999999998
+ED_CR_L1,FRA,France,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,Let me try with a recent time period:,49745,1237,66903,8,,0.0,0.0,0.0,0.0,1,0.16779
+ED_CR_L1,GBR,United Kingdom,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,Let me try the modeled version of the indicator which might have data for the UK:,50188,1257,70185,8,,0.0,0.0,0.0,0.0,1,0.16941900000000001
+ED_CR_L1,JPN,Japan,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,The indicator exists. Let me try to query for any data for this indicator to see what countries have data:,50513,1241,70420,8,,0.0,0.0,0.0,0.0,1,0.170154
+ED_CR_L1,USA,United States,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,"I can see that the data exists for many countries, but the United States (USA) is not appearing in the results. Let me check if there are any other dataflows that might contain US data for this indicator. Let me try one more specific education dataflow:",53484,1285,75074,8,,0.0,0.0,0.0,0.0,1,0.17972700000000003
+ED_CR_L1,BGD,Bangladesh,2019,POSITIVE,baseline_latest,,,,,,2019.0,False,"Based on the data retrieved from the UNICEF Education dataflow, I can provide you with the latest available value for indicator ED_CR_L1 (Completion rate for children of primary school age) for Bangladesh:
+
+**Latest available value: 82.599998**
+**Year: 2019**
+
+This data comes from the MICS 2019 survey and represents the total completion rate for children of primary school age in Bangladesh, across all sexes, wealth quintiles, and residence areas (total population).
+
+The data was retrieved from t",26984,845,61642,4,,1.0,0.0,0.0,0.0,0,0.093627
+ED_CR_L1,BGD,Bangladesh,2019,POSITIVE,direct,,,,,2019.0,2019.0,False,"Perfect! I found the data for indicator ED_CR_L1 (Completion rate for children of primary school age) for Bangladesh in 2019. Looking at the data structure, I can see there are three series with different sex breakdowns:
+
+- Series 0:0:0 (Female): 89.099998
+- Series 0:0:1 (Male): 76.300003  
+- Series 0:0:2 (Total): 82.599998
+
+Based on the query for the specific indicator ED_CR_L1 for Bangladesh (BGD) in 2019, the exact values are:
+
+- **Total (both sexes): 82.599998**
+- Female: 89.099998
+- Male: 7",19526,683,63672,3,,1.0,1.0,0.0,0.0,0,0.068823
+ED_CR_L1,CHN,China,2015,POSITIVE,direct,,,,,97.099998,2015.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for China in 2015. Looking at the CSV data, I can see the exact values:
+
+- For females: **97**
+- For males: **97.099998** 
+- For total: **97.099998**
+
+Since you asked for ""the value"" without specifying sex disaggregation, the total value for China in 2015 is **97.099998**.
+
+This data comes from the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0) and is sourced from China's National Population Sample Survey 2015. The indicator measures t",18462,674,61583,3,,1.0,1.0,0.0,0.0,0,0.065496
+ED_CR_L1,COD,DR Congo,2018,POSITIVE,baseline_latest,,,,,2017.0,2018.0,False,"Perfect! I found the data for ED_CR_L1 (Completion rate for children of primary school age) for DR Congo (COD). Looking at the total value (where SEX=_T, WEALTH_QUINTILE=_T, RESIDENCE=_T), I can see the latest available data.
+
+**Latest available value of UNICEF indicator ED_CR_L1 for DR Congo (COD):**
+
+- **Exact value:** 66.674828%
+- **Year:** 2018
+
+This data represents the completion rate for children of primary school age in the Democratic Republic of the Congo, sourced from MICS 2017-18 (Mult",12577,461,54172,2,,1.0,0.0,0.0,0.0,0,0.044646
+ED_CR_L1,COD,DR Congo,2018,POSITIVE,direct,,,,,2018.0,2018.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for DR Congo (COD) in 2018. Looking at the data, I can see multiple breakdowns, but the overall total value (where SEX=_T, WEALTH_QUINTILE=_T, RESIDENCE=_T) is what you're looking for.
+
+The exact value of UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for DR Congo (COD) in 2018 is **66.674828**.
+
+This data comes from the UNICEF Education dataflow (UNICEF/EDUCATION/1.0) and is sourced from MICS 2017-18 survey ",19199,693,61499,3,,1.0,1.0,0.0,0.0,0,0.067992
+ED_CR_L1,ETH,Ethiopia,2016,POSITIVE,direct,,,,,47.4454,2016.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for Ethiopia in 2016. Looking at the data, I can see multiple breakdowns by sex, wealth quintile, and residence. The overall total value (where SEX=_T, WEALTH_QUINTILE=_T, RESIDENCE=_T) shows the completion rate for children of primary school age.
+
+The exact value of UNICEF indicator ED_CR_L1 for Ethiopia (ETH) in 2016 is **47.4454**.
+
+This represents the completion rate for children of primary school age as a percentage, sourced from DHS 2",19085,661,65085,3,,1.0,1.0,0.0,0.0,0,0.06717000000000001
+ED_CR_L1,IND,India,2016,POSITIVE,baseline_latest,,,,,91.347,2016.0,False,"Perfect! I found the data for India's ED_CR_L1 indicator. Let me extract the most recent overall value (total for all sexes, wealth quintiles, and residence areas).
+
+Based on the UNICEF Education dataflow (UNICEF/EDUCATION/1.0), the latest available value of indicator ED_CR_L1 (Completion rate for children of primary school age) for India is:
+
+**91.347%** for the year **2016**
+
+This data comes from the DHS 2015-16 survey and represents the total completion rate for primary education for children",20027,596,60334,3,,1.0,0.0,0.0,0.0,0,0.069021
+ED_CR_L1,IND,India,2016,POSITIVE,direct,,,,,2016.0,2016.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for India in 2016. The data shows three values for different sex categories:
+
+- Female: 91.347
+- Male: 91.545998  
+- Total: 91.450996
+
+Based on the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0), the value of indicator ED_CR_L1 (Completion rate for children of primary school age) for India (IND) in 2016 was:
+
+- **91.450996** (Total)
+- **91.347** (Female)
+- **91.545998** (Male)
+
+The data source is DHS 2015-16 (Demographic and Health Sur",19527,665,60717,3,,1.0,1.0,0.0,0.0,0,0.068556
+ED_CR_L1,KEN,Kenya,2014,POSITIVE,baseline_latest,,,,,2014.0,2014.0,False,"Based on my search through the UNICEF data warehouse, I found the latest available value for indicator ED_CR_L1 (Completion rate for children of primary school age) for Kenya.
+
+**The exact number is: 79**
+**Year: 2014**
+
+This represents the total completion rate for children of primary school age in Kenya, expressed as a percentage. The data comes from the DHS (Demographic and Health Survey) 2014 and is available in the UNICEF Global Dataflow.
+
+Note: The data also shows disaggregated values by s",43624,1203,65112,6,,1.0,0.0,0.0,0.0,0,0.14891700000000002
+ED_CR_L1,KEN,Kenya,2014,POSITIVE,direct,,,,,79.0,2014.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for Kenya in 2014. The data shows values broken down by sex:
+
+- Female: 81.599998%
+- Male: 76.599998%
+- Total: 79%
+
+Since you asked for ""the value"" without specifying sex, the total value for Kenya in 2014 is **79**.
+
+This data comes from the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0) and is sourced from DHS 2014 (Demographic and Health Survey).",18451,642,66160,3,,1.0,1.0,0.0,0.0,0,0.064983
+ED_CR_L1,MEX,Mexico,2018,POSITIVE,baseline_latest,,,,,97.900002,2018.0,False,"Based on the data retrieved from the UNICEF Education dataflow, the latest available value of UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Mexico is:
+
+**97.900002** (for the total population) in **2018**
+
+This represents the overall completion rate for children of primary school age in Mexico. The data also shows breakdowns by sex and residence:
+- Female: 98.300003 (2018)
+- Male: 97.5 (2018)
+- Rural areas: 97.199997 (2018)
+- Urban areas: 98.099998 (2018)
+
+Th",28693,762,62650,4,,1.0,0.0,0.0,0.0,0,0.097509
+ED_CR_L1,MLI,Mali,2015,POSITIVE,baseline_latest,,,,,40.700001,2015.0,False,"Perfect! I found the data for Mali. Let me extract the latest total value (which represents the overall completion rate without breakdown by sex, wealth quintile, or residence).
+
+Looking at the data, I can see multiple series with different breakdowns. The total value (without any demographic breakdowns) appears to be in the series ""0:0:0:0:0:0:0"" which corresponds to:
+- REF_AREA: MLI (Mali)
+- INDICATOR: ED_CR_L1 
+- SEX: _T (Total)
+- EDUCATION_LEVEL: ISCED11_1 (Primary education)
+- WEALTH_QUINTI",13956,548,55737,2,,1.0,0.0,0.0,0.0,0,0.050088
+ED_CR_L1,MLI,Mali,2015,POSITIVE,direct,,,,,2015.0,2015.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Mali (MLI) in 2015. The data shows three values broken down by sex:
+
+- Female (F): 40.700001%
+- Male (M): 49.700001%  
+- Total (_T): 45.200001%
+
+Since you asked for ""the value"" without specifying sex, I'll provide the total value:
+
+**45.200001**
+
+This is the exact value for the completion rate for children of primary school age in Mali for 2015, expressed as a percentage. The data sou",13403,483,54773,2,,1.0,1.0,0.0,0.0,0,0.047454
+ED_CR_L1,NER,Niger,2012,POSITIVE,baseline_latest,,,,,29.052469,2012.0,False,"Based on the data retrieved from the UNICEF SDMX dataflows, the latest available value of UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Niger (NER) is:
+
+**29.052469** (for the total population, both sexes combined) in **2012**
+
+This data comes from the DHS 2012 (Demographic and Health Survey) and represents the percentage completion rate for primary education. The data shows:
+- Female: 23.56843%
+- Male: 34.82%
+- Total: 29.052469%
+
+The year 2012 appears to be ",27516,780,61059,4,,1.0,0.0,0.0,0.0,0,0.094248
+ED_CR_L1,NER,Niger,2012,POSITIVE,direct,,,,,29.052469,2012.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for Niger (NER) in 2012. Looking at the data, I can see multiple breakdowns, but the overall total value (where SEX=_T, WEALTH_QUINTILE=_T, RESIDENCE=_T) shows the completion rate for children of primary school age.
+
+The exact value of UNICEF indicator ED_CR_L1 for Niger (NER) in 2012 was **29.052469**.
+
+This represents the completion rate for children of primary school age as a percentage, sourced from DHS 2012 data.",19098,661,55071,3,,1.0,1.0,0.0,0.0,0,0.067209
+ED_CR_L1,NGA,Nigeria,2018,POSITIVE,baseline_latest,,,,,70.599998,2018.0,False,"Based on my search through the UNICEF data warehouse, the latest available value of UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Nigeria (NGA) is:
+
+**70.599998** (for the total population)
+
+**Year: 2018**
+
+This data comes from the DHS 2018 (Demographic and Health Survey) and represents the percentage of children of primary school age who have completed primary education in Nigeria. The data is also broken down by sex, showing 70.699997 for females and 70.5 f",43514,1154,70503,6,,1.0,0.0,0.0,0.0,0,0.14785199999999998
+ED_CR_L1,THA,Thailand,2019,POSITIVE,baseline_latest,,,,,98.642647,2019.0,False,"Based on the data retrieved from the UNICEF Data Warehouse, the latest available value of UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Thailand (THA) is:
+
+**98.642647** for the year **2019**
+
+This represents the total completion rate (both sexes combined) and is measured as a percentage. The data comes from the MICS 2019 survey (Multiple Indicator Cluster Survey).",18976,583,61193,3,,1.0,0.0,0.0,0.0,0,0.065673
+ED_CR_L1,THA,Thailand,2019,POSITIVE,direct,,,,,2019.0,2019.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for Thailand in 2019. The data shows completion rates broken down by sex:
+
+- **Total (both sexes): 98.642647**
+- Female: 98.797523  
+- Male: 98.487228
+
+The exact value of UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Thailand (THA) in 2019 is **98.642647** (for the total population).
+
+This data comes from MICS 2019 (Multiple Indicator Cluster Survey) and represents the percentage completion rate as indic",11916,496,52861,2,,1.0,1.0,0.0,0.0,0,0.043188000000000004
+ED_CR_L1,TUR,Turkiye,2013,POSITIVE,baseline_latest,,,,,2013.0,2013.0,False,"Perfect! I found the data for ED_CR_L1 (Completion rate for children of primary school age) for Turkiye. Based on the UNICEF Global Dataflow, the latest available value is from 2013.
+
+**Latest available value of UNICEF indicator ED_CR_L1 for Turkiye (TUR):**
+
+- **Total (both sexes):** 98.4263%
+- **Year:** 2013
+
+The data shows completion rates by sex as well:
+- Female: 97.853722%
+- Male: 99.025284%
+
+This data comes from the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0) and is sourced from D",18396,652,61995,3,,1.0,0.0,0.0,0.0,0,0.064968
+ED_CR_L1,TUR,Turkiye,2013,POSITIVE,direct,,,,,2013.0,2013.0,False,"Perfect! I found the data for UNICEF indicator ED_CR_L1 for Turkiye (TUR) in 2013. The data shows values broken down by sex:
+
+- Female: 97.853722%
+- Male: 99.025284%
+- Total: 98.4263%
+
+Since you asked for ""the value"" without specifying sex, I'll provide the total value:
+
+**98.4263**
+
+This is the exact value for UNICEF indicator ED_CR_L1 (Completion rate for children of primary school age) for Turkiye in 2013, expressed as a percentage.",18498,657,59792,3,,1.0,1.0,0.0,0.0,0,0.065349
+MNCH_BIRTH18,BGD,Bangladesh,2012,HALLUCINATION_T1,direct,,,,,,,True,"Great! I found the data. Looking at the results, I can see data for Bangladesh for the years 2011, 2013, and 2014, but there is no data specifically for 2012. The closest data points are:
+
+- 2011: 40%
+- 2013: 24.4%
+
+However, since you specifically asked for the value in 2012, and there is no data available for that exact year in the UNICEF database, the answer is:
+
+**Data not available** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth b",42217,1272,78307,6,,0.0,0.0,0.0,0.0,0,0.145731
+MNCH_BIRTH18,IND,India,2026,HALLUCINATION_T1,direct,,,,,,,True,"Perfect! I found the data for indicator MNCH_BIRTH18 for India. Looking at the data, I can see there are observations for three years: 2006, 2016, and 2021. However, there is no data available for 2026.
+
+The available data shows:
+- 2006: 21.7%
+- 2016: 9.3% 
+- 2021: 8.3%
+
+Data not available for UNICEF indicator MNCH_BIRTH18 for India (IND) in 2026. The most recent available data for this indicator is from 2021, with a value of 8.3%.",20052,627,56780,3,,0.0,0.0,0.0,0.0,0,0.069561
+MNCH_BIRTH18,PAK,Pakistan,2010,HALLUCINATION_T1,direct,,,,,,,True,"Perfect! I found the data. Looking at the results, I can see that for Pakistan (PAK), the indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) has data points for 2007 and 2013, but not specifically for 2010.
+
+The available data shows:
+- 2007: 10.2%
+- 2013: 8.2%
+
+However, there is no exact value for 2010 in the UNICEF data warehouse for this indicator for Pakistan.
+
+**Data not available** for UNICEF indicator MNCH_BIRTH18 for Pakistan (P",43464,1256,77187,6,,0.0,0.0,0.0,0.0,0,0.149232
+MNCH_BIRTH18,PAK,Pakistan,2012,HALLUCINATION_T1,direct,,,,,,,True,"Based on the UNICEF data from the official SDMX flows, I found data for the indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Pakistan. However, the data is available for 2013, not specifically for 2012.
+
+The exact value for Pakistan in 2013 is **8.2%**.
+
+This data comes from the Demographic and Health Survey 2012-2013, which explains why it's reported for 2013 even though the survey period spanned 2012-2013. The data source indic",55034,1382,77770,7,,0.0,0.0,0.0,0.0,0,0.185832
+MNCH_BIRTH18,USA,United States,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (MNCH, GLOBAL_DATAFLOW, and GENDER), **Data not available** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for the United States (USA) in 2025.
+
+The queries attempted the following official SDMX flows:
+- UNICEF/MNCH/1.0 
+- UNICEF/GLOBAL_DATAFLOW/1.0
+- UNICEF/GENDER/1.0
+
+All queries returned ""No data"" responses, indicating that this specific indicator for the United Sta",34196,1065,70105,5,,0.0,0.0,0.0,0.0,0,0.118563
+MNCH_BIRTH18,BRA,Brazil,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,The indicator exists in the MNCH dataflow. Let me try a broader query without the lastNObservations parameter to see if there's any data available for Brazil.,51139,1274,72075,8,,0.0,0.0,0.0,0.0,1,0.17252699999999999
+MNCH_BIRTH18,CHN,China,2000,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (MNCH, GLOBAL_DATAFLOW, GENDER, PT, and EAPRO), **Data not available** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for China (CHN).
+
+The indicator exists in the UNICEF system and is available in multiple dataflows, but none of the official SDMX flows contain data for China for this specific indicator. This could mean that either:
+1. China does not report this indica",43079,1181,74372,6,,0.0,0.0,0.0,0.0,0,0.146952
+MNCH_BIRTH18,DEU,Germany,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,The indicator exists in the dataflow. Let me try the Child Protection dataflow since early childbearing could be categorized there.,50729,1319,77321,8,,0.0,0.0,0.0,0.0,1,0.171972
+MNCH_BIRTH18,GBR,United Kingdom,2000,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (MNCH, Global Dataflow, Gender, and ECARO TransMonEE), **data is not available** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for the United Kingdom (GBR).
+
+The queries attempted the following official SDMX flows:
+- UNICEF/MNCH/1.0 
+- UNICEF/GLOBAL_DATAFLOW/1.0
+- UNICEF/GENDER/1.0  
+- ECARO/TRANSMONEE/1.0
+
+All queries returned ""No data"" responses, indicating that thi",34007,1013,70382,5,,0.0,0.0,0.0,0.0,0,0.117216
+MNCH_BIRTH18,USA,United States,2000,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (MNCH, GLOBAL_DATAFLOW, and PT), **Data not available** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for the United States (USA).
+
+The queries attempted were:
+- UNICEF/MNCH/1.0 dataflow
+- UNICEF/GLOBAL_DATAFLOW/1.0 dataflow  
+- UNICEF/PT/1.0 dataflow
+
+All queries returned ""No data for data query"" errors, indicating that while the indicator exists in the UNICEF system",55572,1408,83637,7,,0.0,0.0,0.0,0.0,0,0.187836
+MNCH_BIRTH18,BGD,Bangladesh,2011,POSITIVE,direct,,,,,40.0,2011.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_BIRTH18 indicator for Bangladesh in 2011, broken down by different demographic categories. 
+
+The **overall total value** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Bangladesh (BGD) in 2011 is **40**.
+
+This represents the national average across all demographic groups. The data also shows breakdowns by wealth quintile",13059,480,56015,2,,1.0,1.0,0.0,0.0,0,0.046377
+MNCH_BIRTH18,BGD,Bangladesh,2018,POSITIVE,baseline_latest,,,,,22.3,2025.0,False,"Perfect! Now I can see the data clearly. Looking at the results, I can see that the query returned multiple observations, but since I used `lastNObservations=1`, it should give me the most recent one. However, I can see from the data that there's a 2025 observation with the value 22.3. Let me verify this is indeed the latest by checking the most recent year specifically.
+
+Based on the data returned from the UNICEF MNCH dataflow, the latest available value of UNICEF indicator MNCH_BIRTH18 (Early ",40196,940,68591,4,,1.0,0.0,0.0,0.0,0,0.134688
+MNCH_BIRTH18,BGD,Bangladesh,2019,POSITIVE,baseline_latest,,,,,22.3,2025.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, the latest available value of UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Bangladesh (BGD) is:
+
+**22.3%** for the year **2025**
+
+This data comes from the Bangladesh Bureau of Statistics (BBS) Multiple Indicator Cluster Survey 2025 Preliminary Report. The value represents the national total (all wealth quintiles, all residence types) for women aged 20-24 years ",40179,828,65010,4,,1.0,0.0,0.0,0.0,0,0.132957
+MNCH_BIRTH18,BGD,Bangladesh,2022,POSITIVE,direct,,,,,25.2,2022.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Bangladesh in 2022, broken down by different demographic categories.
+
+The **overall total value** for Bangladesh in 2022 is **25.2%**.
+
+This represents the percentage of women aged 20-24 years who gave birth before age 18, based on the Demographic and Health Survey 2022. The data also shows variations by",13120,520,62719,2,,1.0,1.0,0.0,0.0,0,0.04716
+MNCH_BIRTH18,COD,DR Congo,2010,POSITIVE,direct,,,,,25.1,2010.0,False,"Perfect! I found the data for UNICEF indicator MNCH_BIRTH18 for DR Congo (COD) in 2010. Looking at the results, I can see multiple values for different breakdowns (by wealth quintile, residence, etc.), but the overall national total is what you're looking for.
+
+The exact value for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for DR Congo (COD) in 2010 is **25.1**.
+
+This represents the national total (indicated by the ""_T"" ",14235,480,53702,2,,1.0,1.0,0.0,0.0,0,0.049905
+MNCH_BIRTH18,COD,DR Congo,2018,POSITIVE,baseline_latest,,,,,23.1,2024.0,False,"Perfect! I found the latest available value for UNICEF indicator MNCH_BIRTH18 for DR Congo (COD).
+
+**The latest available value is 23.1% for the year 2024.**
+
+This data comes from the Demographic and Health Surveys (DHS) 2023-2024 and represents the percentage of women aged 20-24 years who gave birth before age 18 in the Democratic Republic of the Congo.",24330,640,61236,3,,1.0,0.0,0.0,0.0,0,0.08259
+MNCH_BIRTH18,ETH,Ethiopia,2016,POSITIVE,baseline_latest,,,,,22.2,2016.0,False,"Perfect! Now I can see the data clearly. Looking at the CSV data, I can identify the national total values (where all disaggregation dimensions are ""_T"" for Total). 
+
+From the data, I can see:
+- 2016: 21.1% (national total - all dimensions are ""_T"")
+- 2019: 22.2% (national total - all dimensions are ""_T"")
+
+The latest available value of UNICEF indicator MNCH_BIRTH18 for Ethiopia (ETH) is **22.2%** from the year **2019**.
+
+This represents the percentage of women aged 20-24 years who gave birth bef",62809,1106,72778,6,,1.0,0.0,0.0,0.0,0,0.205017
+MNCH_BIRTH18,ETH,Ethiopia,2019,POSITIVE,baseline_latest,,,,,2019.0,2019.0,False,"Perfect! I can see the latest available data for UNICEF indicator MNCH_BIRTH18 for Ethiopia. Looking at the data, the most recent year available is 2019, and I can see the overall national value (where all demographic breakdowns are ""_T"" for Total).
+
+Based on the data from the UNICEF MNCH dataflow, the latest available value of UNICEF indicator MNCH_BIRTH18 for Ethiopia (ETH) is:
+
+**22.2%** in **2019**
+
+This represents the percentage of women aged 20-24 years who gave birth before age 18 in Ethi",24868,678,61010,3,,1.0,0.0,0.0,0.0,0,0.084774
+MNCH_BIRTH18,IND,India,2021,POSITIVE,direct,,,,,5.5,2021.0,False,"Perfect! I found the data for UNICEF indicator MNCH_BIRTH18 for India in 2021. Looking at the results, I can see multiple breakdowns by different characteristics (wealth quintile, residence, etc.), but the overall national total is what you're looking for.
+
+The exact value of UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for India in 2021 is **5.5**.
+
+This represents the national total (indicated by the ""_T"" values for all ",14225,472,55849,2,,1.0,1.0,0.0,0.0,0,0.049755
+MNCH_BIRTH18,KEN,Kenya,2022,POSITIVE,baseline_latest,,,,,15.3,2022.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for different demographic breakdowns. Let me look for the most recent overall national value by querying for the total population without demographic breakdowns.
+
+Looking at the data, I can see that the latest available value for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Kenya is:
+
+**15.3%** for the year **2022**
+
+This value represe",14593,495,55608,2,,1.0,0.0,0.0,0.0,0,0.051204
+MNCH_BIRTH18,MEX,Mexico,2015,POSITIVE,direct,,,,,27.0,2015.0,False,"Perfect! I found the data for UNICEF indicator MNCH_BIRTH18 for Mexico in 2015. Looking at the results, I can see multiple breakdowns by different characteristics (wealth quintile, residence, etc.), but the overall total value is what you're looking for.
+
+From the data structure, I can see that the series with key ""0:0:0:0:0:0:0:0:0"" represents the total value (all dimensions set to ""Total"" or ""_T""), and the observation value for 2015 is **27**.
+
+The exact value of UNICEF indicator MNCH_BIRTH18 ",14225,494,57056,2,,1.0,1.0,0.0,0.0,0,0.050085
+MNCH_BIRTH18,MLI,Mali,2013,POSITIVE,direct,,,,,50.9,2013.0,False,"Perfect! I found the data for UNICEF indicator MNCH_BIRTH18 for Mali in 2013. Looking at the results, I can see multiple breakdowns by different characteristics (wealth quintile, residence, etc.), but the main national total value is what you're asking for.
+
+From the data returned, the value for MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Mali (MLI) in 2013 is:
+
+**50.9**
+
+This represents the national total (indicated by the first seri",14234,482,55144,2,,1.0,1.0,0.0,0.0,0,0.049932000000000004
+MNCH_BIRTH18,MLI,Mali,2015,POSITIVE,baseline_latest,,,,,33.2,2024.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, the latest available value of indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Mali (MLI) is:
+
+**33.2%** for the year **2024**
+
+This data comes from the Demographic and Health Surveys (DHS) 2023-2024 and represents the total population (all wealth quintiles, residence areas, and education levels combined).",14609,428,53075,2,,1.0,0.0,0.0,0.0,0,0.050247
+MNCH_BIRTH18,MLI,Mali,2024,POSITIVE,direct,,,,,33.2,2024.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_BIRTH18 indicator for Mali (MLI) in 2024, broken down by different demographic categories. 
+
+The **overall national value** for MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Mali in 2024 is **33.2**.
+
+This represents the total national figure across all demographic groups, as indicated by the row where all demographic dimensions are marked ",13140,482,57464,2,,1.0,1.0,0.0,0.0,0,0.046650000000000004
+MNCH_BIRTH18,NGA,Nigeria,2021,POSITIVE,direct,,,,,21.1,2021.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow for Nigeria in 2021, I can see multiple values for the MNCH_BIRTH18 indicator broken down by different demographic characteristics. 
+
+The **overall total value** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Nigeria in 2021 is **21.1**.
+
+This represents the total percentage across all demographic groups, as indicated by the row where all demographic dimension",13480,488,53316,2,,1.0,1.0,0.0,0.0,0,0.047760000000000004
+MNCH_BIRTH18,NGA,Nigeria,2024,POSITIVE,baseline_latest,,,,,21.0,2024.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see the latest available value for indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Nigeria.
+
+Looking at the data with total population breakdowns (where all demographic categories are ""_T"" for Total), the most recent data point is:
+
+**Latest value: 21% for the year 2024**
+
+This data comes from the Nigeria Demographic and Health Survey 2023-24: Key Indicators Report",14550,489,57508,2,,1.0,0.0,0.0,0.0,0,0.050985
+MNCH_BIRTH18,PAK,Pakistan,2013,POSITIVE,direct,,,,,8.2,2013.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_BIRTH18 indicator for Pakistan in 2013, broken down by different demographic categories. 
+
+The **overall total value** for UNICEF indicator MNCH_BIRTH18 (Early childbearing - percentage of women aged 20-24 years who gave birth before age 18) for Pakistan in 2013 is **8.2**.
+
+This represents the total percentage across all demographic groups, as indicated by the first row in the data where all catego",13073,482,58198,2,,1.0,1.0,0.0,0.0,0,0.046449000000000004
+MNCH_BIRTH18,THA,Thailand,2019,POSITIVE,baseline_latest,,,,,6.8,2022.0,False,"Perfect! Now I can see the data clearly. Looking at the CSV output, I can identify the latest available value for the overall total (where all dimensions are ""_T"" for Total):
+
+From the data, the latest available value for UNICEF indicator MNCH_BIRTH18 for Thailand is:
+
+**Value: 6.8**
+**Year: 2022**
+
+This represents the percentage of women (aged 20-24 years) who gave birth before age 18 in Thailand, based on the Multiple Indicator Cluster Survey 2022. The exact value is 6.8% for the year 2022.",54673,928,66380,5,,1.0,0.0,0.0,0.0,0,0.17793899999999999
+MNCH_BIRTH18,THA,Thailand,2022,POSITIVE,baseline_latest,,,,,6.8,2022.0,False,"Perfect! Now I can see the data clearly. Looking at the CSV output, I can identify the latest available value for the overall total (where all dimensions are ""_T"" for Total):
+
+From the data, the latest available value for UNICEF indicator MNCH_BIRTH18 for Thailand is:
+
+**Value: 6.8**
+**Year: 2022**
+
+This represents the percentage of women (aged 20-24 years) who gave birth before age 18 in Thailand, based on the Multiple Indicator Cluster Survey 2022. The exact value is 6.8% for the year 2022.",54673,928,69823,5,,1.0,0.0,0.0,0.0,0,0.17793899999999999
+MNCH_BIRTH18,TUR,Turkiye,2014,POSITIVE,direct,,,,,5.7,2014.0,False,"Perfect! I found the exact value for UNICEF indicator MNCH_BIRTH18 for Turkey (TUR) in 2014.
+
+The exact value is **5.7**.
+
+This represents the percentage of women aged 20-24 years who gave birth before age 18 in Turkey in 2014, according to the Demographic and Health Survey 2013-2014 data from UNICEF's Maternal, Child and Newborn Health dataflow.",12046,448,52963,2,,1.0,1.0,0.0,0.0,0,0.04285800000000001
+MNCH_CSEC,KEN,Kenya,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF GLOBAL_DATAFLOW, I can see the available data for indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Kenya. The data shows observations for 2003, 2009, 2014, and 2022, but there is no data available for 2025.
+
+**Data not available** for UNICEF indicator MNCH_CSEC for Kenya (KEN) in 2025.
+
+The most recent available data for this indicator is from 2022, which shows a value of 16.5% for the C-section rate in Kenya.",26152,858,64283,4,,0.0,0.0,0.0,0.0,0,0.09132599999999999
+MNCH_CSEC,NGA,Nigeria,2010,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF Global Dataflow, I can see the available data for the C-section rate indicator (MNCH_CSEC) for Nigeria. However, there is no data available for the year 2010 specifically.
+
+The available data points for Nigeria are:
+- 2003: 1.7%
+- 2008: 1.8%
+- 2011: 4.7%
+- 2013: 2.0%
+- 2017: 2.8%
+- 2018: 2.7%
+
+**Data not available** for UNICEF indicator MNCH_CSEC for Nigeria (NGA) in 2010. The closest available data points are 2008 (1.8%) and 2011 (4.7%).",33292,1063,66819,5,,0.0,0.0,0.0,0.0,0,0.11582100000000001
+MNCH_CSEC,NGA,Nigeria,2014,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF GLOBAL_DATAFLOW, I can see the available data for Nigeria's C-section rate (MNCH_CSEC indicator), but there is no data specifically for 2014. The available data points are:
+
+- 2011: 4.7%
+- 2013: 2%
+- 2017: 2.8%
+- 2018: 2.7%
+
+**Data not available** for UNICEF indicator MNCH_CSEC for Nigeria (NGA) in 2014. The UNICEF data warehouse contains data for this indicator for Nigeria in 2011, 2013, 2017, and 2018, but not for 2014.",26190,904,65501,4,,0.0,0.0,0.0,0.0,0,0.09213
+MNCH_CSEC,NGA,Nigeria,2019,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF Global Dataflow, I can see the available data for the MNCH_CSEC indicator (C-section rate - percentage of deliveries by cesarean section) for Nigeria. However, there is no data available specifically for 2019.
+
+The available data points for Nigeria are:
+- 2017: 2.8%
+- 2018: 2.7% 
+- 2021: 3.7%
+
+**Data not available** for UNICEF indicator MNCH_CSEC for Nigeria (NGA) in 2019. The UNICEF database contains data for this indicator for Nigeria in 2017 (2.8%),",26109,926,66687,4,,0.0,0.0,0.0,0.0,0,0.09221700000000001
+MNCH_CSEC,THA,Thailand,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data returned from the UNICEF MNCH dataflow, I can see that the data available for Thailand (THA) and indicator MNCH_CSEC (C-section rate) is from 2022, not 2026. The query for 2026 specifically returned no data because that year is not available in the dataset.
+
+Looking at the CSV data, all the observations for Thailand's C-section rate are from the TIME_PERIOD 2022, sourced from the Multiple Indicator Cluster Survey 2022.
+
+**Data not available** for UNICEF indicator MNCH_CSEC for ",44235,983,67712,5,,0.0,0.0,0.0,0.0,0,0.14745
+MNCH_CSEC,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (MNCH, GLOBAL_DATAFLOW, and ECARO/TRANSMONEE), **data is not available** for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Andorra (AND) in the UNICEF Data Warehouse.
+
+The queries attempted the following dataflows:
+- UNICEF/MNCH/1.0 (Maternal, child and newborn health)
+- UNICEF/GLOBAL_DATAFLOW/1.0 (Cross-sector indicators) 
+- ECARO/TRANSMONEE/1.0 (ECARO for TransMonEE)
+
+All queries returned ",25821,884,69535,4,,0.0,0.0,0.0,0.0,0,0.090723
+MNCH_CSEC,JPN,Japan,2000,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (UNICEF/MNCH/1.0, UNICEF/GLOBAL_DATAFLOW/1.0, and EAPRO/DF_EAPRO_CROSS_SECTOR/1.0), **data is not available** for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Japan (JPN).
+
+The queries consistently returned ""No data"" errors (status 404) across all attempted dataflows, indicating that Japan does not have data for this specific indicator in the UNICEF Data Warehouse system, despite the indica",55726,1377,75141,7,,0.0,0.0,0.0,0.0,0,0.187833
+MNCH_CSEC,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (MNCH, GLOBAL_DATAFLOW, and ECARO/TRANSMONEE), **data is not available** for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Liechtenstein (LIE).
+
+The queries consistently returned ""No data"" errors from the official SDMX flows, indicating that UNICEF does not have data for this specific indicator for Liechtenstein in their data warehouse.",42143,1178,71619,6,,0.0,0.0,0.0,0.0,0,0.144099
+MNCH_CSEC,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries of the UNICEF Data Warehouse through the SDMX MCP tools, **data is not available** for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Monaco (MCO).
+
+I attempted to retrieve this data from multiple relevant UNICEF dataflows including:
+- UNICEF/MNCH/1.0 (Maternal, child and newborn health)
+- UNICEF/GLOBAL_DATAFLOW/1.0 (Cross-sector indicators)
+
+All queries returned ""No data for data query"" errors, indicating that while Monaco ",32785,1010,64102,5,,0.0,0.0,0.0,0.0,0,0.113505
+MNCH_CSEC,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (UNICEF/MNCH/1.0, UNICEF/GLOBAL_DATAFLOW/1.0, and ECARO/TRANSMONEE/1.0), **data is not available** for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for San Marino (SMR).
+
+While San Marino is recognized as a valid country code in the UNICEF data warehouse, there appears to be no data available for this specific maternal health indicator for this country in any of the queried dataflows.",42125,1220,73514,6,,0.0,0.0,0.0,0.0,0,0.14467500000000003
+MNCH_CSEC,BGD,Bangladesh,2014,POSITIVE,direct,,,,,2014.0,2014.0,False,"Perfect! I found the data for MNCH_CSEC (C-section rate) for Bangladesh in 2014. Looking at the data, I can see multiple breakdowns by different characteristics. The overall total value (without any demographic breakdowns) is what you're looking for.
+
+From the data structure, I can see that the series ""0:0:0:0:0:2:0:0:0"" corresponds to:
+- REF_AREA: BGD (Bangladesh)
+- INDICATOR: MNCH_CSEC 
+- SEX: _T (Total)
+- AGE: _T (Total)
+- AGE_AT_BIRTH: _T (Total)
+- WEALTH_QUINTILE: _T (Total - national avera",14275,597,57282,2,,1.0,1.0,0.0,0.0,0,0.05178
+MNCH_CSEC,BGD,Bangladesh,2022,POSITIVE,direct,,,,,2022.0,2022.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_CSEC indicator (C-section rate) for Bangladesh in 2022, broken down by different demographic categories. 
+
+The **overall total value** for UNICEF indicator MNCH_CSEC for Bangladesh (BGD) in 2022 is **44.5**.
+
+This represents the C-section rate as a percentage of deliveries by cesarean section for the total population, based on the Demographic and Health Survey 2022 data.",13095,455,56626,2,,1.0,1.0,0.0,0.0,0,0.04611
+MNCH_CSEC,BRA,Brazil,2014,POSITIVE,direct,,,,,57.2,2014.0,False,"Perfect! I found the data for UNICEF indicator MNCH_CSEC for Brazil in 2014. Looking at the CSV data returned, I can see the exact values:
+
+For Brazil (BRA) in 2014, the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) had the following values:
+
+- **Total population: 57.2**
+- For the 15-19 years age group: 41.7
+
+The exact number for the overall total population is **57.2**.",12154,457,55339,2,,1.0,1.0,0.0,0.0,0,0.043317
+MNCH_CSEC,BRA,Brazil,2019,POSITIVE,baseline_latest,,,,,56.4,2019.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, the latest available value of UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Brazil is:
+
+**56.4%** in **2019**
+
+This data comes from the Brazil Live Birth Information System (SINASC) from the Ministry of Health of Brazil, and represents the total C-section rate across all demographics (total sex, age, wealth quintile, residence, and mother's education level).",12464,410,53839,2,,1.0,0.0,0.0,0.0,0,0.043542000000000004
+MNCH_CSEC,COD,DR Congo,2018,POSITIVE,baseline_latest,,,,,7.9,2024.0,False,"Based on the UNICEF data from the MNCH (Maternal, child and newborn health) dataflow, the latest available value of indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for DR Congo (COD) is:
+
+**7.9%** in **2024**
+
+This data comes from the Demographic and Health Surveys (DHS) 2023-2024 and represents the total population (all demographic breakdowns combined).",24352,664,61564,3,,1.0,0.0,0.0,0.0,0,0.08301599999999999
+MNCH_CSEC,ETH,Ethiopia,2019,POSITIVE,baseline_latest,,,,,2019.0,2019.0,False,"Perfect! I can see the data clearly now. Looking at the results, I can identify the latest available value for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Ethiopia.
+
+Based on the data from the UNICEF MNCH dataflow, the latest available value of UNICEF indicator MNCH_CSEC for Ethiopia (ETH) is:
+
+**6.5** (year **2019**)
+
+This represents the C-section rate as a percentage of deliveries by cesarean section for the total population in Ethiopia, s",25241,643,59434,3,,1.0,0.0,0.0,0.0,0,0.085368
+MNCH_CSEC,KEN,Kenya,2014,POSITIVE,direct,,,,,2014.0,2014.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_CSEC indicator for Kenya in 2014, broken down by different demographic categories. 
+
+The **overall national value** for UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Kenya in 2014 is **8.7**.
+
+This represents the total national rate across all demographic groups, as indicated by the row where all demographic dimensions are set to ""Total"" (_T).",12971,462,60872,2,,1.0,1.0,0.0,0.0,0,0.045843
+MNCH_CSEC,KEN,Kenya,2022,POSITIVE,direct,,,,,2022.0,2022.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_CSEC indicator for Kenya in 2022, broken down by different demographic categories. The overall national value (where all demographic dimensions are set to ""Total"") is:
+
+**16.5**
+
+This represents the C-section rate as a percentage of deliveries by cesarean section for Kenya in 2022, according to the Demographic and Health Survey 2022 data source.
+
+The data also shows breakdowns by wealth quintile, re",12916,479,58899,2,,1.0,1.0,0.0,0.0,0,0.045933
+MNCH_CSEC,MEX,Mexico,2014,POSITIVE,direct,,,,,2014.0,2014.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, the exact value of UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Mexico (MEX) in 2014 was **46.3**.
+
+This data comes from the ""Encuesta Nacional de la Dinámica Demográfica 2014"" (National Survey of Demographic Dynamics 2014) and represents the percentage of deliveries by cesarean section in Mexico for that year.",12021,456,56242,2,,1.0,1.0,0.0,0.0,0,0.042903
+MNCH_CSEC,MLI,Mali,2015,POSITIVE,baseline_latest,,,,,10.8,2024.0,False,"Perfect! Now I can see the data clearly in CSV format. Looking at the data, I can identify the latest available value for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Mali.
+
+From the CSV data, I can see multiple entries for different breakdowns (by wealth quintile, residence, etc.), but looking at the most recent year (2024) and the overall total values, the latest available value is:
+
+**The latest available value of UNICEF indicator MNCH_CSE",27468,748,62927,3,,1.0,0.0,0.0,0.0,0,0.09362400000000001
+MNCH_CSEC,MLI,Mali,2018,POSITIVE,baseline_latest,,,,,10.8,2024.0,False,"Perfect! Now I can see the data clearly in CSV format. Looking at the data, I can identify the latest available value for the UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Mali.
+
+From the CSV data, I can see multiple entries for different breakdowns (by wealth quintile, residence, etc.), but looking at the most recent year (2024) and the total population values, the latest available value is:
+
+**The latest available value of UNICEF indicator MNCH_",27468,738,61741,3,,1.0,0.0,0.0,0.0,0,0.093474
+MNCH_CSEC,MLI,Mali,2024,POSITIVE,direct,,,,,5.1,2024.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow for Mali in 2024, I can see multiple values for the MNCH_CSEC indicator (C-section rate - percentage of deliveries by cesarean section) broken down by different demographic categories.
+
+The **overall national value** for UNICEF indicator MNCH_CSEC for Mali (MLI) in 2024 is **5.1**.
+
+This represents the C-section rate as a percentage of deliveries by cesarean section for the total population (all demographic categories combined) in Mali fo",13141,491,55204,2,,1.0,1.0,0.0,0.0,0,0.046787999999999996
+MNCH_CSEC,NER,Niger,2021,POSITIVE,baseline_latest,,,,,1.3,2021.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple observations for Niger (NER) with the indicator MNCH_CSEC (C-section rate). Looking at the most recent data available:
+
+**The latest available value of UNICEF indicator MNCH_CSEC for Niger is 1.3% in 2021.**
+
+This represents the overall C-section rate (percentage of deliveries by cesarean section) for the total population in Niger. The data comes from the ""Enquête Nationale sur la Fécondité et la Mortalité des Enfants ",14418,493,58024,2,,1.0,0.0,0.0,0.0,0,0.050649
+MNCH_CSEC,NGA,Nigeria,2017,POSITIVE,direct,,,,,2017.0,2017.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_CSEC indicator for Nigeria in 2017, broken down by different demographic categories. 
+
+The **overall national value** for UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Nigeria in 2017 is **2.8**.
+
+This represents the total national rate across all demographic groups, as indicated by the row where all demographic dimensions are set to ""Total"" (_T).",13018,462,52590,2,,1.0,1.0,0.0,0.0,0,0.045984
+MNCH_CSEC,NGA,Nigeria,2018,POSITIVE,baseline_latest,,,,,5.6,2024.0,False,"Perfect! I can see the data clearly now. Looking at the results, I can see that there are multiple data points, and the most recent one is from 2024. Let me examine the data more carefully to identify the latest value.
+
+From the data returned, I can see the following values for Nigeria (NGA) for indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section):
+
+- 2024: 5.6% (from Demographic and Health Survey 2024)
+- 2021: 3.7% (from Multiple Indicator Cluster Survey 2021)
+- 2",24808,880,60659,3,,1.0,0.0,0.0,0.0,0,0.08762400000000001
+MNCH_CSEC,NGA,Nigeria,2021,POSITIVE,baseline_latest,,,,,5.6,2024.0,False,"Perfect! I can see the data clearly now. Looking at the results, I can see that there are multiple data points, and the most recent one is from 2024. Let me examine the data more carefully to identify the latest value.
+
+From the data returned, I can see the following values for Nigeria (NGA) for indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section):
+
+- 2024: 5.6% (from Demographic and Health Survey 2024)
+- 2021: 3.7% (from Multiple Indicator Cluster Survey 2021)
+- 2",24808,880,63473,3,,1.0,0.0,0.0,0.0,0,0.08762400000000001
+MNCH_CSEC,PAK,Pakistan,2019,POSITIVE,direct,,,,,2019.0,2019.0,False,"I can see the data returned multiple values for different breakdowns (by wealth quintile, residence, etc.). Let me look for the total/national average value. Looking at the data structure, I can see there are multiple series with different combinations of dimensions. The series with all ""_T"" (Total) values would give us the national average.
+
+Looking at the data, I can see the series ""0:0:0:0:0:2:0:0:0"" has the observation value ""23.1"" and looking at the dimension values, this corresponds to:
+- ",14292,630,54975,2,,1.0,1.0,0.0,0.0,0,0.052326000000000004
+MNCH_CSEC,THA,Thailand,2016,POSITIVE,baseline_latest,,,,,40.9,2022.0,False,"Based on the data from the UNICEF MNCH dataflow, the latest available value of UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Thailand is:
+
+**40.9%** in **2022**
+
+This is the most recent national total value from the Multiple Indicator Cluster Survey 2022. The data shows the C-section rate for all women (total), all ages, all wealth quintiles, and all residence types combined.",14583,411,56826,2,,1.0,0.0,0.0,0.0,0,0.049914
+MNCH_CSEC,THA,Thailand,2022,POSITIVE,baseline_latest,,,,,40.9,2022.0,False,"Based on the data from the UNICEF MNCH dataflow, the latest available value of UNICEF indicator MNCH_CSEC (C-section rate - percentage of deliveries by cesarean section) for Thailand is:
+
+**40.9%** in **2022**
+
+This is the most recent national total value from the Multiple Indicator Cluster Survey 2022. The data shows the C-section rate for all women (total), all ages, all wealth quintiles, and all residence types combined.",14583,411,54089,2,,1.0,0.0,0.0,0.0,0,0.049914
+MNCH_CSEC,TUR,Turkiye,2018,POSITIVE,direct,,,,,51.5,2018.0,False,"Based on the data retrieved from the UNICEF MNCH dataflow, I can see multiple values for the MNCH_CSEC indicator for Turkey in 2018, broken down by different demographic categories. 
+
+Looking at the overall national value (where all demographic dimensions are set to ""Total"" - _T), the exact value for UNICEF indicator MNCH_CSEC for Turkey (TUR) in 2018 was **51.5**.
+
+This represents the C-section rate as a percentage of deliveries by cesarean section for the total population, sourced from the Tur",13351,482,57124,2,,1.0,1.0,0.0,0.0,0,0.047283
+NT_ANT_HAZ_NE2,KEN,Kenya,2018,HALLUCINATION_T1,direct,,,,,,,True,"Based on my search through the UNICEF Data Warehouse, I can see that data for the indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Kenya is available for the years 2011, 2014, 2016, and 2022, but **there is no data available for 2018**.
+
+The available data points for Kenya show:
+- 2014: 26.2%
+- 2016: 28.6% 
+- 2022: 17.6%
+
+**Data not available** for UNICEF indicator NT_ANT_HAZ_NE2 for Kenya (KEN) in 2018. The UNICEF Data Warehouse does not contain this specific data point for that ye",64602,1509,88641,7,,0.0,0.0,0.0,0.0,0,0.216441
+NT_ANT_HAZ_NE2,KEN,Kenya,2020,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data I retrieved from the UNICEF NUTRITION dataflow, I can see that there is no data available for Kenya for the indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) specifically for the year 2020. 
+
+The available data for Kenya shows:
+- 2016: 28.6% (from Kenya 2015-16 Integrated Household Budget Survey)
+- 2022: 17.6% (from Kenya Demographic and Health Survey 2022)
+
+**Data not available** for UNICEF indicator NT_ANT_HAZ_NE2 for Kenya (KEN) in 2020. The UNICEF NUTRITION dataflow",51771,1377,77475,6,,0.0,0.0,0.0,0.0,0,0.175968
+NT_ANT_HAZ_NE2,MLI,Mali,2012,HALLUCINATION_T1,direct,,,,,,,True,"Perfect! I found the data. Looking at the results, I can see data for Mali (MLI) for the indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) around 2012. However, there is no exact data point for 2012. The closest data points are:
+
+- 2011: 27.9% (Total)
+- 2014: 28.1% (Total)
+
+Since you specifically asked for the value in 2012, and there is no data available for that exact year in the UNICEF data warehouse, I need to report:
+
+**Data not available** for UNICEF indicator NT_ANT_HAZ_NE2 for Ma",28569,965,64639,4,,0.0,0.0,0.0,0.0,0,0.10018200000000001
+NT_ANT_HAZ_NE2,PAK,Pakistan,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results, I can see that the UNICEF data warehouse contains historical data for the stunting indicator (NT_ANT_HAZ_NE2) for Pakistan, but the most recent data available is from 2018. The data shows:
+
+- 2018: 37.1% for females, 38.2% for males, and the total would be approximately 37.6%
+
+However, there is **no data available for 2025** for this indicator for Pakistan in the UNICEF data warehouse. The queries I ran specifically for 2025 returned ""No data"" errors across multiple d",36741,1120,68960,5,,0.0,0.0,0.0,0.0,0,0.127023
+NT_ANT_HAZ_NE2,USA,United States,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on my search through the UNICEF data warehouse, I can see that data for indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for the United States is available, but only up to 2022. The most recent value available is 3.8% for 2022.
+
+**Data not available** for the United States (USA) for indicator NT_ANT_HAZ_NE2 in 2026. The UNICEF data warehouse only contains data for this indicator up to 2022, where the value was 3.8%.",34841,1110,91757,5,,0.0,0.0,0.0,0.0,0,0.121173
+NT_ANT_HAZ_NE2,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (NUTRITION, GLOBAL_DATAFLOW, and ECARO/TRANSMONEE), **Data not available** for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for Andorra (AND).
+
+While Andorra (AND) is a valid country code in the UNICEF data system, there appears to be no data available for this specific nutrition indicator for Andorra in any of the official SDMX flows I checked.",57568,1326,85859,7,,0.0,0.0,0.0,0.0,0,0.192594
+NT_ANT_HAZ_NE2,FRA,France,2000,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (UNICEF/NUTRITION/1.0, UNICEF/GLOBAL_DATAFLOW/1.0, and ECARO/TRANSMONEE/1.0), **data is not available** for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for France (FRA).
+
+The queries consistently returned ""No data"" errors from the official SDMX flows, indicating that France does not have data reported for this particular nutrition indicator in the UNICEF Data Warehouse. This is not uncommon for developed countries like Fra",51790,1361,77095,7,,0.0,0.0,0.0,0.0,0,0.175785
+NT_ANT_HAZ_NE2,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (NUTRITION, GLOBAL_DATAFLOW, and ECARO/TRANSMONEE), **data is not available** for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for Liechtenstein (LIE).
+
+While Liechtenstein is recognized as a valid country code in the UNICEF data system, there appears to be no data collected or reported for this specific nutrition indicator for this country in any of the available UNICEF dataflows.",42306,1202,73045,6,,0.0,0.0,0.0,0.0,0,0.144948
+NT_ANT_HAZ_NE2,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries of the UNICEF data warehouse, **data is not available** for indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for Monaco (MCO).
+
+I searched in both the main UNICEF NUTRITION dataflow and the GLOBAL_DATAFLOW (Cross-sector indicators), but neither contains data for this indicator for Monaco. While Monaco is listed as a valid reference area in the system, there are no observations recorded for this specific stunting indicator for Monaco in the available UNICEF datasets",41397,1115,69219,6,,0.0,0.0,0.0,0.0,0,0.140916
+NT_ANT_HAZ_NE2,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,,,False,Let me try the NUTRITION dataflow with a broader time window as well.,50198,1371,72361,8,,0.0,0.0,0.0,0.0,1,0.171159
+NT_ANT_HAZ_NE2,BGD,Bangladesh,2019,POSITIVE,direct,,,,,28.0,2019.0,False,"Perfect! I found the data for Bangladesh (BGD) in 2019. Looking at the results, I can see multiple entries for different age groups and sexes. For the overall total population of children under 5 years old, I can see the value.
+
+The exact value of UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Bangladesh (BGD) in 2019 is **28.0**.
+
+This value represents the percentage of children under 5 years old who are stunted (height-for-age below -2 standard deviations), and it comes f",14435,520,57939,2,,1.0,1.0,0.0,0.0,0,0.051105000000000005
+NT_ANT_HAZ_NE2,BGD,Bangladesh,2022,POSITIVE,baseline_latest,,,,,2022.0,2022.0,False,"Perfect! I found the data for Bangladesh. The latest available value for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Bangladesh is from 2022.
+
+Looking at the data, for the total population (all sexes, under 5 years old), the exact value is:
+
+**23.6** (for the year **2022**)
+
+This represents the percentage of under-fives falling below minus 2 standard deviations from the median height-for-age of the reference population (stunting rate) in Bangladesh. The data comes from t",14549,467,55392,2,,1.0,0.0,0.0,0.0,0,0.050651999999999996
+NT_ANT_HAZ_NE2,COD,DR Congo,2017,POSITIVE,direct,,,,,41.8,2017.0,False,"Perfect! I found the data for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for DR Congo (COD) in 2017. Looking at the first row of the data which shows the total value for all children under 5 years old:
+
+The exact value for UNICEF indicator NT_ANT_HAZ_NE2 for DR Congo (COD) in 2017 is **41.8**.
+
+This represents the percentage of under-fives falling below minus 2 standard deviations from the median height-for-age (stunting rate), based on the UNICEF/WHO/World Bank Joint Malnu",14496,535,57995,2,,1.0,1.0,0.0,0.0,0,0.051513
+NT_ANT_HAZ_NE2,COD,DR Congo,2023,POSITIVE,direct,,,,,44.7,2023.0,False,"Perfect! I found the data for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for DR Congo (COD) in 2023.
+
+The exact value for the total population (both sexes combined) is **44.7**.
+
+This represents 44.7% of under-5 children in DR Congo who were stunted (height-for-age below -2 standard deviations) in 2023, according to the Enquête Démographique et de Santé EDS-RDC III 2023–24 survey data from the UNICEF/WHO/World Bank Joint Malnutrition Estimates.",12678,512,56872,2,,1.0,1.0,0.0,0.0,0,0.045714
+NT_ANT_HAZ_NE2,ETH,Ethiopia,2019,POSITIVE,baseline_latest,,,,,36.8,2019.0,False,"Perfect! I found the latest available value for the UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Ethiopia.
+
+**The latest available value of UNICEF indicator NT_ANT_HAZ_NE2 for Ethiopia (ETH) is 36.8% for the year 2019.**
+
+This represents the percentage of children under 5 years old in Ethiopia who fall below minus 2 standard deviations from the median height-for-age of the reference population (moderate and severe stunting). The data comes from the Ethiopia Mini Demograph",26117,703,62007,3,,1.0,0.0,0.0,0.0,0,0.088896
+NT_ANT_HAZ_NE2,GBR,United Kingdom,2019,POSITIVE,baseline_latest,,,,,5.0,2019.0,False,"Perfect! I can see the data clearly now. Based on the UNICEF NUTRITION dataflow, the latest available value for indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for the United Kingdom (GBR) is:
+
+**Exact value: 2.0**
+**Year: 2019**
+
+This represents the percentage of under-fives falling below minus 2 standard deviations from the median height-for-age of the reference population (stunting rate) for the total population (both sexes, under 5 years old) in the United Kingdom. The data comes",23980,687,62802,3,,1.0,0.0,0.0,0.0,0,0.082245
+NT_ANT_HAZ_NE2,MEX,Mexico,2016,POSITIVE,direct,,,,,10.0,2016.0,False,"Perfect! I found the exact value for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Mexico in 2016.
+
+The exact value of UNICEF indicator NT_ANT_HAZ_NE2 for Mexico (MEX) in 2016 was **10.0**.
+
+This represents the percentage of children under 5 years old with height-for-age below -2 standard deviations (stunting) in Mexico in 2016, according to the UNICEF Global Dataflow from the UNICEF/WHO/World Bank Joint Malnutrition Estimates.",34218,909,61954,4,,1.0,1.0,0.0,0.0,0,0.116289
+NT_ANT_HAZ_NE2,MEX,Mexico,2019,POSITIVE,baseline_latest,,,,,12.5,2022.0,False,"Perfect! I found the latest available value for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Mexico.
+
+**The latest available value of UNICEF indicator NT_ANT_HAZ_NE2 for Mexico (MEX) is 12.5% for the year 2022.**
+
+This represents the percentage of children under 5 years old who fall below minus 2 standard deviations from the median height-for-age (stunting), with a confidence interval of 10.3% to 15.1%. The data comes from the Encuesta Nacional de Salud y Nutrición Contin",34005,861,69511,4,,1.0,0.0,0.0,0.0,0,0.11493
+NT_ANT_HAZ_NE2,MEX,Mexico,2021,POSITIVE,direct,,,,,12.8,2021.0,False,"Perfect! I found the exact value for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for Mexico in 2021.
+
+The exact value of UNICEF indicator NT_ANT_HAZ_NE2 for Mexico (MEX) in 2021 is **12.8**.
+
+This represents the percentage of under-5 children in Mexico who were stunted (height-for-age below -2 standard deviations) in 2021, based on data from the Encuesta Nacional de Salud y Nutrición Continua, Mexico 2021, as reported in the UNICEF/WHO/World Bank Joint Malnutrition Estimat",34220,929,65168,4,,1.0,1.0,0.0,0.0,0,0.116595
+NT_ANT_HAZ_NE2,MEX,Mexico,2022,POSITIVE,baseline_latest,,,,,12.5,2022.0,False,"Perfect! I found the latest available value for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for Mexico.
+
+**The exact number is 12.5 and the year is 2022.**
+
+This represents the percentage of children under 5 years old in Mexico who are stunted (height-for-age below -2 standard deviations), based on data from the ""Encuesta Nacional de Salud y Nutrición Continua, Mexico 2022"" survey. The data comes from the UNICEF/WHO/World Bank Joint Malnutrition Estimates Expanded Database",34049,846,69741,4,,1.0,0.0,0.0,0.0,0,0.114837
+NT_ANT_HAZ_NE2,MLI,Mali,2017,POSITIVE,direct,,,,,24.6,2017.0,False,"Perfect! I found the exact value for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for Mali (MLI) in 2017.
+
+The exact value is **24.6** (for the total population, both sexes, under 5 years old).
+
+This data comes from the UNICEF Global Dataflow and represents the percentage of under-fives falling below minus 2 standard deviations from the median height-for-age of the reference population, based on the ""Enquête Nationale Nutritionnelle Anthropométrique et de Mortalité rétrospe",34157,958,64911,4,,1.0,1.0,0.0,0.0,0,0.116841
+NT_ANT_HAZ_NE2,MLI,Mali,2020,POSITIVE,baseline_latest,,,,,25.1,2024.0,False,"Perfect! I found the latest available value for the UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Mali.
+
+**The latest available value of UNICEF indicator NT_ANT_HAZ_NE2 for Mali (MLI) is 25.1% for the year 2024.**
+
+This data represents the percentage of under-5 children in Mali who are stunted (height-for-age below -2 standard deviations), and it comes from the Septième Enquête Démographique et de Santé au Mali 2023–2024 (Seventh Demographic and Health Survey of Mali 2023-",33945,878,65861,4,,1.0,0.0,0.0,0.0,0,0.11500500000000001
+NT_ANT_HAZ_NE2,MLI,Mali,2022,POSITIVE,baseline_latest,,,,,25.1,2024.0,False,"Perfect! I found the latest available value for the UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Mali.
+
+**The latest available value of UNICEF indicator NT_ANT_HAZ_NE2 for Mali (MLI) is 25.1% for the year 2024.**
+
+This data represents the percentage of under-5 children in Mali who are stunted (height-for-age below -2 standard deviations), and it comes from the Septième Enquête Démographique et de Santé au Mali 2023–2024 (Seventh Demographic and Health Survey of Mali 2023-",33945,878,65086,4,,1.0,0.0,0.0,0.0,0,0.11500500000000001
+NT_ANT_HAZ_NE2,NER,Niger,2020,POSITIVE,direct,,,,,45.3,2020.0,False,"Perfect! I found the data for Niger (NER) in 2020. Looking at the CSV data, I can see the value for the total population (all ages, both sexes) for the indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting).
+
+The exact value for UNICEF indicator NT_ANT_HAZ_NE2 for Niger (NER) in 2020 is **45.3**.
+
+This represents the percentage of under-5 children in Niger who were stunted (height-for-age <-2 standard deviations) in 2020, based on the ""Enquête nationale de nutrition avec la méthodologie SMART",14385,525,57537,2,,1.0,1.0,0.0,0.0,0,0.05103
+NT_ANT_HAZ_NE2,NGA,Nigeria,2021,POSITIVE,direct,,,,,33.8,2021.0,False,"Based on the data retrieved from the UNICEF NUTRITION dataflow, the value of indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for Nigeria (NGA) in 2021 was:
+
+**33.8** (for the total population of under-5 years old)
+
+This represents the percentage of under-fives falling below minus 2 standard deviations from the median height-for-age of the reference population. The data also shows breakdowns by sex:
+- Female: 32.5
+- Male: 35.0
+- Total: 33.8
+
+The exact number for the total population i",12650,505,56399,2,,1.0,1.0,0.0,0.0,0,0.045524999999999996
+NT_ANT_HAZ_NE2,THA,Thailand,2019,POSITIVE,baseline_latest,,,,,12.4,2022.0,False,"Perfect! I found the latest available data for the UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Thailand.
+
+Based on the UNICEF Global Dataflow, the latest available value for indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Thailand (THA) is:
+
+**12.4%** for the year **2022**
+
+This represents the percentage of children under 5 years old (total, both sexes) who fall below minus 2 standard deviations from the median height-for-age of the reference population, in",52324,1060,66907,5,,1.0,0.0,0.0,0.0,0,0.172872
+NT_ANT_HAZ_NE2,THA,Thailand,2022,POSITIVE,direct,,,,,12.4,2022.0,False,"Perfect! I found the exact value for the UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Thailand in 2022.
+
+The exact value of UNICEF indicator NT_ANT_HAZ_NE2 for Thailand (THA) in 2022 is **12.4**.
+
+This represents the percentage of under-5 children in Thailand who fall below minus 2 standard deviations from the median height-for-age (stunting rate), based on data from the Thailand Multiple Indicator Cluster Survey 2022.",34102,895,68498,4,,1.0,1.0,0.0,0.0,0,0.11573100000000001
+NT_ANT_HAZ_NE2,TUR,Turkiye,2018,POSITIVE,direct,,,,,6.0,2018.0,False,"Perfect! I found the exact value for UNICEF indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD stunting) for Turkey in 2018.
+
+Based on the data from the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0), the exact value of indicator NT_ANT_HAZ_NE2 for Turkey (TUR) in 2018 is:
+
+**6.0**
+
+This represents 6.0% of children under 5 years old in Turkey who were stunted (height-for-age <-2 standard deviations) in 2018, based on the 2018 Turkey Demographic and Health Survey data from UNICEF/WHO/World Bank",66288,1319,77408,6,,1.0,1.0,0.0,0.0,0,0.218649
+NT_ANT_HAZ_NE2,USA,United States,2018,POSITIVE,baseline_latest,,,,,2021.0,2022.0,False,"Based on the data retrieved from the UNICEF NUTRITION dataflow, I can see the latest available values for the NT_ANT_HAZ_NE2 indicator (Height-for-age <-2 SD stunting) for the United States.
+
+Looking at the most recent data, the latest available value is from **2022** for the total population (all sexes, under 5 years old):
+
+**Latest value: 3.8%**
+**Year: 2022**
+
+This represents the percentage of children under 5 years old in the United States who fall below minus 2 standard deviations from the ",14235,496,56679,2,,1.0,0.0,0.0,0.0,0,0.050145
+NT_ANT_HAZ_NE2,USA,United States,2022,POSITIVE,baseline_latest,,,,,2021.0,2022.0,False,"Based on the data retrieved from the UNICEF NUTRITION dataflow, I can see the latest available values for indicator NT_ANT_HAZ_NE2 (Height-for-age <-2 SD (stunting)) for the United States.
+
+Looking at the most recent data, the latest available value is from **2022** for the total population (all sexes, under 5 years old):
+
+**Exact value: 3.8%**
+**Year: 2022**
+
+This represents the percentage of children under 5 years old in the United States who fall below minus 2 standard deviations from the med",14235,495,54574,2,,1.0,0.0,0.0,0.0,0,0.05013
+NT_ANT_WAZ_NE2,BGD,Bangladesh,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries of the UNICEF Data Warehouse, **data is not available** for UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Bangladesh (BGD) in 2025.
+
+The query to the UNICEF/NUTRITION/1.0 dataflow did not resolve for the year 2025. The most recent data available for this indicator for Bangladesh is from 2022, which shows a value of 21.7% for the total population under 5 years old.
+
+Query details:
+- Flow: UNICEF/NUTRITION/1.0  
+- Key: BGD.NT_ANT_WAZ_NE2......
+- Quer",72410,1454,76675,7,,0.0,0.0,0.0,0.0,0,0.23904
+NT_ANT_WAZ_NE2,DEU,Germany,2011,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF Global Dataflow, I can see that there is data available for Germany for the indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD - Underweight), but only for the years 2004 and 2016. 
+
+**Data not available** for the specific year 2011 that you requested. The available data shows:
+
+- 2004: 1.1% (Total), 1.2% (Female), 0.9% (Male)
+- 2016: 0.6% (Total), 0.0% (Female), 0.8% (Male)
+
+The data comes from the German Health Interview and Examination Survey for Child",27260,958,66538,4,,0.0,0.0,0.0,0.0,0,0.09615000000000001
+NT_ANT_WAZ_NE2,IND,India,2011,HALLUCINATION_T1,direct,,,,,,,True,"Based on my search through the UNICEF SDMX data warehouse, I found data for the indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for India, but **data is not available for the year 2011**.
+
+The available data for India shows:
+- 2014: 29.4% (Total)
+- 2015: 36.3% (Total)
+
+The queries I attempted across multiple dataflows (UNICEF/NUTRITION/1.0, UNICEF/GLOBAL_DATAFLOW/1.0, and ROSA/ROSA/1.0) did not return any data for India with indicator NT_ANT_WAZ_NE2 for the year 2011.
+
+**Data not ",48423,1395,78291,6,,0.0,0.0,0.0,0.0,0,0.166194
+NT_ANT_WAZ_NE2,THA,Thailand,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on the query results from the UNICEF SDMX data warehouse, I can see that data for indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD Underweight) for Thailand is available, but only for 2022, not for 2026.
+
+The query returned data for Thailand from the UNICEF/GLOBAL_DATAFLOW/1.0 dataflow, but the most recent data available is from 2022. There is no data available for 2026.
+
+**Data not available** for UNICEF indicator NT_ANT_WAZ_NE2 for Thailand (THA) in 2026. The most recent data available fo",26527,885,62978,4,,0.0,0.0,0.0,0.0,0,0.092856
+NT_ANT_WAZ_NE2,TUR,Turkiye,2010,HALLUCINATION_T1,direct,,,,,,,False,Turkey is not in the MENARO dataflow. Let me try the EAPRO (East Asia and Pacific) dataflow since it was one of the options.,49532,1307,77733,8,,0.0,0.0,0.0,0.0,1,0.16820100000000002
+NT_ANT_WAZ_NE2,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,,,False,Let me check if there are any other dataflows that might have broader country coverage. Let me try a different approach and check what data is actually available for this specific indicator across all dataflows:,60045,1365,77098,8,,0.0,0.0,0.0,0.0,1,0.20061
+NT_ANT_WAZ_NE2,FRA,France,2000,HALLUCINATION_T2,baseline_latest,,,,,,,False,Let me try the GLOBAL_DATAFLOW again with a broader time range to see if there's any data available.,52630,1370,75999,8,,0.0,0.0,0.0,0.0,1,0.17844
+NT_ANT_WAZ_NE2,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,False,Let me check if Liechtenstein is available in any of the main UNICEF dataflows by checking the country codes in the main nutrition-related flows.,47224,1325,75372,8,,0.0,0.0,0.0,0.0,1,0.161547
+NT_ANT_WAZ_NE2,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (NUTRITION and GLOBAL_DATAFLOW), **data is not available** for the UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Monaco (MCO).
+
+While Monaco is recognized as a valid country code in the UNICEF data system, there are no observations for this specific nutrition indicator for Monaco in any of the queried dataflows. This is not uncommon for certain indicators in developed countries like Monaco, where malnutrition data m",33191,1021,70240,5,,0.0,0.0,0.0,0.0,0,0.114888
+NT_ANT_WAZ_NE2,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"I can see that the NUTRITION dataflow does contain the NT_ANT_WAZ_NE2 indicator, but let me check specifically if San Marino is available in this dataflow:",50129,1282,79066,8,,0.0,0.0,0.0,0.0,0,0.169617
+NT_ANT_WAZ_NE2,BGD,Bangladesh,2018,POSITIVE,direct,,,,,21.9,2018.0,False,"Perfect! I found the data for Bangladesh in 2018. Looking at the CSV data, I can see the value for the total population (all sexes, under 5 years old) for indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD Underweight) in Bangladesh for 2018.
+
+The exact value is **21.9**.
+
+This represents 21.9% of children under 5 years old in Bangladesh who were underweight (weight-for-age <-2 SD) in 2018, according to the Bangladesh Demographic and Health Survey 2017-18 data from the UNICEF/WHO/World Bank Joint M",14565,506,54565,2,,1.0,1.0,0.0,0.0,0,0.051285
+NT_ANT_WAZ_NE2,BGD,Bangladesh,2019,POSITIVE,direct,,,,,2018.0,2019.0,False,"Perfect! I can see the data clearly now. Looking at the CSV output, I can find the overall value for Bangladesh in 2019. Let me look for the total value (all sexes, all ages under 5):
+
+From the data, I can see that for Bangladesh (BGD), indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)), for the total population (_T,Total) of children under 5 years old (Y0T4,Under 5 years old) in 2019, there are two values:
+
+1. **22.6** (from Bangladesh Multiple Indicator Cluster Survey 2019, time pe",28605,818,65162,3,,1.0,1.0,0.0,0.0,0,0.098085
+NT_ANT_WAZ_NE2,BGD,Bangladesh,2022,POSITIVE,baseline_latest,,,,,21.7,2022.0,False,"Perfect! I found the data for Bangladesh. Let me look at the most recent overall value (for all children under 5, which is the standard reporting for this indicator).
+
+From the data returned, I can see that the latest available value for UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Bangladesh (BGD) is:
+
+**21.7%** for the year **2022**
+
+This represents the percentage of children under 5 years old who are underweight (weight-for-age below -2 standard deviations) in Ban",14605,492,53120,2,,1.0,0.0,0.0,0.0,0,0.051195
+NT_ANT_WAZ_NE2,BRA,Brazil,2019,POSITIVE,baseline_latest,,,,,3.5,2019.0,False,"Perfect! I found the latest available data for the UNICEF indicator NT_ANT_WAZ_NE2 for Brazil.
+
+Based on the UNICEF Global Dataflow, the latest available value of indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Brazil (BRA) is:
+
+**3.5%** in **2019**
+
+This represents the total percentage (both sexes combined) of children under 5 years old who are underweight (weight-for-age <-2 standard deviations) in Brazil. The data comes from the ""Estudo Nacional de Alimentação e Nutrição In",34340,863,64963,4,,1.0,0.0,0.0,0.0,0,0.115965
+NT_ANT_WAZ_NE2,ETH,Ethiopia,2019,POSITIVE,baseline_latest,,,,,21.2,2019.0,False,"Perfect! I found the latest available value for the UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Ethiopia.
+
+**The exact number is 21.2 and the year is 2019.**
+
+This data represents the percentage of children under 5 years old in Ethiopia who are underweight (weight-for-age <-2 standard deviations), with a total population coverage. The data comes from the Ethiopia Mini Demographic and Health Survey 2019, as reported in the UNICEF/WHO/World Bank Joint Malnutrition Est",26190,668,62711,3,,1.0,0.0,0.0,0.0,0,0.08859
+NT_ANT_WAZ_NE2,GBR,United Kingdom,2016,POSITIVE,direct,,,,,0.6,2016.0,False,"Excellent! I found the exact value for UNICEF indicator NT_ANT_WAZ_NE2 for United Kingdom (GBR) in 2016.
+
+The exact value is **0.6**.
+
+This represents the percentage of children under 5 years old in the United Kingdom who were underweight (weight-for-age <-2 standard deviations) in 2016, based on data from the National Child Measurement Programme, England, 2015/16 school year.",23758,817,64980,3,,1.0,1.0,0.0,0.0,0,0.083529
+NT_ANT_WAZ_NE2,GBR,United Kingdom,2018,POSITIVE,direct,,,,,0.5,2018.0,False,"Perfect! I found the data for UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for United Kingdom (GBR) in 2018. Looking at the data, I can see multiple series with different breakdowns by sex and age groups, but they all show the same value.
+
+The exact value for UNICEF indicator NT_ANT_WAZ_NE2 for United Kingdom (GBR) in 2018 is **0.5** (percent).
+
+This represents the percentage of children under 5 years old who are underweight (weight-for-age <-2 standard deviations) in th",14957,528,55744,2,,1.0,1.0,0.0,0.0,0,0.052791000000000005
+NT_ANT_WAZ_NE2,IND,India,2020,POSITIVE,baseline_latest,,,,,5.0,2020.0,False,"Based on the data retrieved from the UNICEF NUTRITION dataflow, the latest available value of UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for India (IND) is:
+
+**31.5%** for the year **2020**
+
+This represents the overall rate for children under 5 years old (total population) in India. The data comes from the National Family Health Survey (NFHS-5) conducted in 2019-21, with the time period reported as 2020.",14654,446,53480,2,,1.0,0.0,0.0,0.0,0,0.050652
+NT_ANT_WAZ_NE2,MEX,Mexico,2020,POSITIVE,baseline_latest,,,,,4.2,2022.0,False,"Perfect! I found the latest available value for the UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Mexico.
+
+**The latest available value of UNICEF indicator NT_ANT_WAZ_NE2 for Mexico (MEX) is 4.2% in 2022.**
+
+This represents the percentage of children under 5 years old who are underweight (weight-for-age <-2 standard deviations) in Mexico. The data comes from the Encuesta Nacional de Salud y Nutrición Continua, Mexico 2022, and is part of the UNICEF/WHO/World Bank Join",34132,859,63194,4,,1.0,0.0,0.0,0.0,0,0.115281
+NT_ANT_WAZ_NE2,MEX,Mexico,2022,POSITIVE,baseline_latest,,,,,4.2,2022.0,False,"Perfect! I found the latest available value for the UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Mexico.
+
+**Latest available value:**
+- **Value:** 4.2%
+- **Year:** 2022
+
+This represents the percentage of children under 5 years old in Mexico who are underweight (weight-for-age <-2 standard deviations) for the total population (both sexes combined). The data comes from the Encuesta Nacional de Salud y Nutrición Continua, Mexico 2022, and is part of the UNICEF/WHO/World",34178,867,66098,4,,1.0,0.0,0.0,0.0,0,0.115539
+NT_ANT_WAZ_NE2,MLI,Mali,2018,POSITIVE,direct,,,,,18.8,2018.0,False,"Perfect! I found the data for UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Mali (MLI) in 2018. 
+
+Looking at the data from the UNICEF Global Dataflow, there are two observations for the total population (_T) in 2018:
+
+1. **2018-07: 18.8** (from Enquête Nationale Nutritionnelle Anthropométrique et de Mortalité rétrospective suivant la méthodologie SMART, Mali 2018)
+2. **2018-09: 18.6** (from Enquête Démographique et de Santé au Mali 2018)
+
+Since you asked for the value",59173,1207,71980,5,,1.0,1.0,0.0,0.0,0,0.19562400000000002
+NT_ANT_WAZ_NE2,MLI,Mali,2021,POSITIVE,baseline_latest,,,,,15.0,2024.0,False,"Perfect! I found the latest available data for UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Mali.
+
+**The latest available value of UNICEF indicator NT_ANT_WAZ_NE2 for Mali (MLI) is 15.0% in 2024.**
+
+This data represents the percentage of children under 5 years old who are underweight (weight-for-age <-2 standard deviations) for the total population (both sexes combined). The data comes from the Septième Enquête Démographique et de Santé au Mali 2023–2024 (Seventh Dem",34103,902,66697,4,,1.0,0.0,0.0,0.0,0,0.115839
+NT_ANT_WAZ_NE2,NER,Niger,2018,POSITIVE,direct,,,,,37.5,2018.0,False,"Perfect! I found the data for Niger (NER) in 2018. Looking at the CSV data, I can see multiple age groups and sex breakdowns. The question asks for the indicator NT_ANT_WAZ_NE2 for Niger in 2018, and the most comprehensive value would be the total for all children under 5 years old.
+
+From the data, I can see the first row shows:
+- REF_AREA: NER (Niger)
+- INDICATOR: NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight))
+- SEX: _T (Total)
+- AGE: Y0T4 (Under 5 years old)
+- TIME_PERIOD: 2018
+- OBS_VAL",14453,635,54436,2,,1.0,1.0,0.0,0.0,0,0.052884
+NT_ANT_WAZ_NE2,NER,Niger,2019,POSITIVE,baseline_latest,,,,,34.6,2022.0,False,"Based on the data retrieved from the UNICEF NUTRITION dataflow, the latest available value for indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Niger (NER) is:
+
+**34.6%** for the year **2022**
+
+This represents the total percentage of children under 5 years old in Niger who are underweight (weight-for-age <-2 standard deviations below the median). The data comes from the ""Enquete Nutritionnelle et de Mortalite Retrospective au Niger"" survey and is part of the UNICEF/WHO/World Ba",14528,481,58047,2,,1.0,0.0,0.0,0.0,0,0.050799
+NT_ANT_WAZ_NE2,NER,Niger,2022,POSITIVE,direct,,,,,34.6,2022.0,False,"Perfect! I found the data for Niger (NER) in 2022. Looking at the CSV data, I can see the value for the total population (all sexes, all ages under 5) for indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)).
+
+The exact value for UNICEF indicator NT_ANT_WAZ_NE2 for Niger (NER) in 2022 is **34.6**.
+
+This represents the percentage of children under 5 years old who are underweight (weight-for-age <-2 standard deviations) in Niger for 2022, according to the UNICEF/WHO/World Bank Joint Maln",14568,520,56619,2,,1.0,1.0,0.0,0.0,0,0.051504
+NT_ANT_WAZ_NE2,NGA,Nigeria,2018,POSITIVE,direct,,,,,21.8,2018.0,False,"Perfect! I found the data for UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Nigeria in 2018. The data shows two different survey sources with different time periods in 2018:
+
+1. **Nigeria National Nutrition and Health Survey 2018 (April 2018)**: **19.7%** for total (both sexes combined)
+2. **Nigeria Demographic and Health Survey 2018 (October 2018)**: **21.8%** for total (both sexes combined)
+
+Since you asked for the exact value and there are two official values from ",51101,1271,75454,5,,1.0,1.0,0.0,0.0,0,0.172368
+NT_ANT_WAZ_NE2,NGA,Nigeria,2021,POSITIVE,baseline_latest,,,,,24.4,2021.0,False,"Perfect! I found the latest available data for the UNICEF indicator NT_ANT_WAZ_NE2 for Nigeria.
+
+Based on the data from the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0), the latest available value of indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Nigeria (NGA) is:
+
+**24.4** (for the total population, both sexes combined) in **2021**
+
+This data represents the percentage of children under 5 years old who are underweight (weight-for-age <-2 standard deviations). The data ",34189,893,68607,4,,1.0,0.0,0.0,0.0,0,0.11596200000000001
+NT_ANT_WAZ_NE2,PAK,Pakistan,2018,POSITIVE,baseline_latest,,,,,5.0,2018.0,False,"Based on the data retrieved from the UNICEF NUTRITION dataflow, the latest available value for indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Pakistan is:
+
+**23.1%** for the year **2018**
+
+This represents the overall rate for children under 5 years old (total population) in Pakistan. The data comes from the Pakistan Demographic and Health Survey 2017-18 and was processed by UNICEF/WHO/World Bank Joint Malnutrition Estimates Expanded Databases in March 2025.",14526,467,57574,2,,1.0,0.0,0.0,0.0,0,0.050582999999999996
+NT_ANT_WAZ_NE2,TUR,Turkiye,2018,POSITIVE,direct,,,,,1.5,2018.0,False,"Perfect! I found the exact value for the UNICEF indicator NT_ANT_WAZ_NE2 for Turkey (TUR) in 2018.
+
+The exact value of UNICEF indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for Turkey (TUR) in 2018 is **1.5**.
+
+This represents 1.5% of children under 5 years old who were underweight (weight-for-age <-2 standard deviations) in Turkey in 2018, based on the 2018 Turkey Demographic and Health Survey data from the UNICEF/WHO/World Bank Joint Malnutrition Estimates Expanded Databases.",38958,962,66812,4,,1.0,1.0,0.0,0.0,0,0.131304
+NT_ANT_WAZ_NE2,USA,United States,2018,POSITIVE,direct,,,,,0.4,2018.0,False,"Based on the data retrieved from the UNICEF Nutrition dataflow, I can provide you with the exact values for indicator NT_ANT_WAZ_NE2 (Weight-for-age <-2 SD (Underweight)) for the United States in 2018:
+
+The data shows multiple breakdowns by sex and age groups. Here are the exact values:
+
+- **Total (all children under 5 years old)**: 0.4%
+- Female, under 5 years old: 0.3%
+- Male, under 5 years old: 0.5%
+- Total, under 24 months old: 0.2%
+- Total, 24 to 59 months old: 0.5%
+
+The overall value for N",14323,607,57594,2,,1.0,1.0,0.0,0.0,0,0.052074
+NT_ANT_WHZ_NE2,FRA,France,2026,HALLUCINATION_T1,direct,,,,,,,True,"Based on my queries of the UNICEF data warehouse, **data is not available** for indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for France (FRA) in 2026.
+
+I searched both the UNICEF/NUTRITION/1.0 and UNICEF/GLOBAL_DATAFLOW/1.0 dataflows, which are the main repositories for this nutrition indicator, but neither contained data for France for the year 2026 or even in the broader 2020-2030 timeframe. This suggests that France may not report this particular wasting indicator to UNICEF, ",26053,923,67542,4,,0.0,0.0,0.0,0.0,0,0.092004
+NT_ANT_WHZ_NE2,IND,India,2018,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF GLOBAL_DATAFLOW, I can see that there is no data specifically for 2018. The available data points for India (IND) and indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD wasting) are for years 2015, 2017, and 2020.
+
+**Data not available** for UNICEF indicator NT_ANT_WHZ_NE2 for India (IND) in 2018.
+
+The closest available data points are:
+- 2017: 16.9% (Total)
+- 2020: 18.7% (Total)
+
+The query was made against the UNICEF GLOBAL_DATAFLOW (flowRef: UNICEF/G",35972,1147,68239,5,,0.0,0.0,0.0,0.0,0,0.125121
+NT_ANT_WHZ_NE2,MEX,Mexico,2025,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF Global Dataflow, **data is not available** for the UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD wasting) for Mexico in 2025.
+
+The most recent data available for this indicator for Mexico is from 2022, with the following values:
+- Female: 0.6%
+- Male: 1.4% 
+- Total: 1.0%
+
+The data coverage period shown is 1988-2022, indicating that 2025 data has not yet been collected or published in the UNICEF data warehouse.",28446,872,66271,4,,0.0,0.0,0.0,0.0,0,0.09841799999999999
+NT_ANT_WHZ_NE2,THA,Thailand,2014,HALLUCINATION_T1,direct,,,,,,,True,"I found data for Thailand for the indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD wasting), but unfortunately there is no data available for the year 2014. The available data points are for 2012, 2016, and 2019.
+
+Based on the query results from the UNICEF Global Dataflow, **data is not available** for UNICEF indicator NT_ANT_WHZ_NE2 for Thailand (THA) in 2014.
+
+The available data for this indicator shows:
+- 2012: 6.7% (Total)
+- 2016: 5.4% (Total) 
+- 2019: 7.7% (Total)
+
+But there is no data po",36448,1154,67652,5,,0.0,0.0,0.0,0.0,0,0.126654
+NT_ANT_WHZ_NE2,THA,Thailand,2018,HALLUCINATION_T1,direct,,,,,,,True,"Based on the data retrieved from the UNICEF Global Dataflow, I can see that there is no data available for Thailand for the indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD wasting) specifically for the year 2018.
+
+The available data shows values for:
+- 2016: 5.4% (Total)
+- 2019: 7.7% (Total) 
+- 2022: 7.2% (Total)
+
+**Data not available** for UNICEF indicator NT_ANT_WHZ_NE2 for Thailand (THA) in 2018.
+
+The query was attempted against the UNICEF Global Dataflow (UNICEF/GLOBAL_DATAFLOW/1.0) and w",36352,1176,68487,5,,0.0,0.0,0.0,0.0,0,0.126696
+NT_ANT_WHZ_NE2,AND,Andorra,2023,HALLUCINATION_T2,baseline_latest,,,,,,,False,Let me try the GLOBAL_DATAFLOW with a time period as well.,57435,1363,76610,8,,0.0,0.0,0.0,0.0,1,0.19275
+NT_ANT_WHZ_NE2,FRA,France,2000,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (UNICEF/NUTRITION/1.0, UNICEF/GLOBAL_DATAFLOW/1.0, and ECARO/TRANSMONEE/1.0), **data is not available** for UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD wasting) for France (FRA).
+
+While both France as a country and the NT_ANT_WHZ_NE2 indicator exist in the UNICEF data warehouse, there are no observations recorded for this specific combination. This is likely because France, as a developed country, may not routinely collect or rep",51774,1370,79490,7,,0.0,0.0,0.0,0.0,0,0.17587200000000003
+NT_ANT_WHZ_NE2,LIE,Liechtenstein,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my queries across multiple UNICEF dataflows (NUTRITION, GLOBAL_DATAFLOW, and ECARO/TRANSMONEE), **data is not available** for UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Liechtenstein (LIE).
+
+The indicator exists in the UNICEF data warehouse and Liechtenstein is recognized as a valid country code, but there are no observations for this specific indicator-country combination in any of the dataflows I checked. This is likely because Liechtenstein, being a very",42142,1198,75326,6,,0.0,0.0,0.0,0.0,0,0.14439600000000002
+NT_ANT_WHZ_NE2,MCO,Monaco,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"Based on my searches across multiple UNICEF dataflows (NUTRITION, GLOBAL_DATAFLOW, and ECARO/TRANSMONEE), **data is not available** for UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Monaco (MCO).
+
+While Monaco (MCO) is recognized as a valid country code in the UNICEF data system, there appears to be no data collected or available for this specific nutrition indicator for Monaco in any of the UNICEF dataflows that contain this indicator.",41382,1136,70264,6,,0.0,0.0,0.0,0.0,0,0.141186
+NT_ANT_WHZ_NE2,SMR,San Marino,2023,HALLUCINATION_T2,baseline_latest,,,,,,,True,"MENARO is for Middle East and North Africa, so San Marino wouldn't be there. Let me try a few more dataflows that might have European data. Let me check the EAPRO dataflow.",51045,1343,71996,8,,0.0,0.0,0.0,0.0,0,0.17328
+NT_ANT_WHZ_NE2,BGD,Bangladesh,2022,POSITIVE,baseline_latest,,,,,,2022.0,False,"Perfect! I found the data for Bangladesh. Based on the query results, the latest available value for UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Bangladesh is:
+
+**Exact value: 10.7**
+**Year: 2022**
+
+This represents the percentage of children under 5 years of age in Bangladesh who are wasted (falling below -2 standard deviations from the median weight-for-height), based on the Bangladesh Demographic Health Survey 2022 data from the UNICEF/WHO/World Bank Joint Malnutri",14529,474,55809,2,,1.0,0.0,0.0,0.0,0,0.050697
+NT_ANT_WHZ_NE2,BRA,Brazil,2019,POSITIVE,baseline_latest,,,,,3.4,2019.0,False,"Perfect! I found the latest available data for the UNICEF indicator NT_ANT_WHZ_NE2 for Brazil.
+
+Based on the UNICEF Global Dataflow, the latest available value of indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD - wasting) for Brazil is:
+
+**3.4%** in **2019**
+
+This represents the percentage of children under 5 years of age falling below -2 standard deviations from the median weight-for-height (total for both sexes). The data comes from the ""Estudo Nacional de Alimentação e Nutrição Infantil (E",34336,917,68912,4,,1.0,0.0,0.0,0.0,0,0.116763
+NT_ANT_WHZ_NE2,CHN,China,2017,POSITIVE,direct,,,,,1.9,2017.0,False,"Perfect! I found the exact value for the UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for China in 2017.
+
+The exact value is **1.9**.
+
+This data comes from the China Nutrition and Health Surveillance of Children and Lactating Women 2016–2017 survey, and represents the percentage of children under 5 years of age falling below -2 standard deviations from the median weight-for-height (moderate and severe wasting).",12161,468,56520,2,,1.0,1.0,0.0,0.0,0,0.043503
+NT_ANT_WHZ_NE2,GBR,United Kingdom,2017,POSITIVE,direct,,,,,0.4,2017.0,False,"Perfect! I found the data for the UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for United Kingdom (GBR) in 2017. Looking at the data, I can see multiple observations with different demographic breakdowns, but I need to identify the overall national value.
+
+Looking at the series data, the key ""0:0:2:4:0:0:0:0"" appears to represent the total (_T) for all demographic categories, and it has observations for 2017. Let me extract the exact values:
+
+From the data structure, I ca",14921,664,67318,2,,1.0,1.0,0.0,0.0,0,0.05472300000000001
+NT_ANT_WHZ_NE2,GBR,United Kingdom,2018,POSITIVE,direct,,,,,0.4,2018.0,False,"Perfect! I found the exact value for UNICEF indicator NT_ANT_WHZ_NE2 for United Kingdom (GBR) in 2018.
+
+The exact value is **0.4**.
+
+This represents the percentage of children under 5 years old in the United Kingdom who had weight-for-height below -2 standard deviations (moderate and severe wasting) in 2018, according to the UNICEF/WHO/World Bank Joint Malnutrition Estimates from the National Child Measurement Programme, England, 2017/18 school year.",23647,862,62128,3,,1.0,1.0,0.0,0.0,0,0.083871
+NT_ANT_WHZ_NE2,IND,India,2020,POSITIVE,baseline_latest,,,,,18.7,2020.0,False,"Perfect! I found the latest available value for the UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for India.
+
+**The latest available value is 18.7% for the year 2020.**
+
+This data represents the percentage of children under 5 years old in India who are wasted (falling below -2 standard deviations from the median weight-for-height of the reference population). The data comes from the National Family Health Survey (NFHS-5) conducted in 2019-21 and is from the UNICEF/WHO/Worl",26393,672,58933,3,,1.0,0.0,0.0,0.0,0,0.089259
+NT_ANT_WHZ_NE2,KEN,Kenya,2016,POSITIVE,direct,,,,,6.7,2016.0,False,"Perfect! I found the data for UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Kenya in 2016. Looking at the first row which shows the total value for all children under 5 years old:
+
+The exact value of UNICEF indicator NT_ANT_WHZ_NE2 for Kenya (KEN) in 2016 was **6.7**.
+
+This represents 6.7% of children under 5 years old in Kenya who were wasting (weight-for-height below -2 standard deviations) in 2016, according to the Kenya 2015-16 Integrated Household Budget Survey (K",14587,514,55597,2,,1.0,1.0,0.0,0.0,0,0.051471
+NT_ANT_WHZ_NE2,MEX,Mexico,2020,POSITIVE,baseline_latest,,,,,1.0,2022.0,False,"Perfect! I found the latest available data for UNICEF indicator NT_ANT_WHZ_NE2 for Mexico.
+
+Based on the data from the UNICEF GLOBAL_DATAFLOW, the latest available value of UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Mexico is:
+
+**1.0%** in **2022**
+
+This represents the percentage of children under 5 years of age (both sexes combined) falling below -2 standard deviations from the median weight-for-height of the reference population. The data comes from the Encuesta N",54829,1232,70928,6,,1.0,0.0,0.0,0.0,0,0.182967
+NT_ANT_WHZ_NE2,MEX,Mexico,2021,POSITIVE,baseline_latest,,,,,2022.0,2022.0,False,"Perfect! I found the latest available data for UNICEF indicator NT_ANT_WHZ_NE2 for Mexico.
+
+Based on the UNICEF Global Dataflow, the latest available value for indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Mexico is:
+
+**Exact value: 1.0**
+**Year: 2022**
+
+This represents 1.0% of children under 5 years of age in Mexico who fall below -2 standard deviations from the median weight-for-height (moderate and severe wasting). The data comes from the ""Encuesta Nacional de Salud y Nutr",34059,918,66247,4,,1.0,0.0,0.0,0.0,0,0.11594700000000001
+NT_ANT_WHZ_NE2,MEX,Mexico,2022,POSITIVE,baseline_latest,,,,,2022.0,2022.0,False,"Perfect! I found the latest available data for UNICEF indicator NT_ANT_WHZ_NE2 for Mexico.
+
+Based on the UNICEF Global Dataflow, the latest available value for indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Mexico is:
+
+**Exact value: 1.0**
+**Year: 2022**
+
+This represents 1.0% of children under 5 years of age in Mexico who fall below -2 standard deviations from the median weight-for-height (moderate and severe wasting). The data comes from the ""Encuesta Nacional de Salud y Nutr",34059,918,63305,4,,1.0,0.0,0.0,0.0,0,0.11594700000000001
+NT_ANT_WHZ_NE2,MLI,Mali,2018,POSITIVE,direct,,,,,2018.0,2018.0,False,"Perfect! I found the data in the GLOBAL_DATAFLOW. Looking at the structure, I can see there are three series for different sex categories:
+- Series ""0:0:0"" = Female (F)
+- Series ""0:0:1"" = Male (M) 
+- Series ""0:0:2"" = Total (_T)
+
+For the Total (_T) series ""0:0:2"", I can see two observations for 2018:
+- Observation ""0"": 9.8
+- Observation ""1"": 9.0
+
+Looking at the time periods, these correspond to:
+- 2018-07 (July 2018): 9.8
+- 2018-09 (September 2018): 9.0
+
+Since you asked for the value in 2018, and",86042,1578,84260,7,,1.0,1.0,0.0,0.0,0,0.28179600000000005
+NT_ANT_WHZ_NE2,MLI,Mali,2019,POSITIVE,direct,,,,,,,False,"Perfect! Now I can see the data clearly. Looking at the CSV data, I need to find the overall total value for both sexes and all ages. Let me look for the total value across all demographic breakdowns:",85912,1306,88375,8,,1.0,1.0,0.0,0.0,0,0.277326
+NT_ANT_WHZ_NE2,MLI,Mali,2020,POSITIVE,direct,,,,,,,False,Let me try the global dataflow which often contains the main indicators:,83046,1287,85619,8,,1.0,1.0,0.0,0.0,0,0.268443
+NT_ANT_WHZ_NE2,MLI,Mali,2022,POSITIVE,baseline_latest,,,,,2023.0,2024.0,False,"Perfect! I found the latest available data for UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Mali.
+
+Based on the data from the UNICEF Global Dataflow, the latest available value for indicator NT_ANT_WHZ_NE2 for Mali (MLI) is:
+
+**5.4** (for the year **2024**)
+
+This represents the percentage of children under 5 years old with weight-for-height below -2 standard deviations (moderate and severe wasting) for the total population (both sexes combined). The data comes from th",33901,896,66175,4,,1.0,0.0,0.0,0.0,0,0.115143
+NT_ANT_WHZ_NE2,NER,Niger,2019,POSITIVE,baseline_latest,,,,,2025.0,2022.0,False,"Perfect! I found the data for Niger. Based on the UNICEF NUTRITION dataflow, the latest available value for indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Niger is:
+
+**Exact value: 10.9%**
+**Year: 2022**
+
+This represents the percentage of children under 5 years of age in Niger who fall below -2 standard deviations from the median weight-for-height (moderate and severe wasting). The data comes from the ""Enquete Nutritionnelle et de Mortalite Retrospective au Niger"" survey and i",14480,524,58402,2,,1.0,0.0,0.0,0.0,0,0.0513
+NT_ANT_WHZ_NE2,NER,Niger,2021,POSITIVE,baseline_latest,,,,,10.9,2022.0,False,"Based on the data retrieved from the UNICEF Nutrition dataflow, the latest available value for indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Niger (NER) is:
+
+**10.9%** for the year **2022**
+
+This represents the percentage of children under 5 years of age in Niger who are wasted (falling below -2 standard deviations from the median weight-for-height of the reference population). The data comes from the ""Enquete Nutritionnelle et de Mortalite Retrospective au Niger"" survey and ",14456,486,55020,2,,1.0,0.0,0.0,0.0,0,0.050658
+NT_ANT_WHZ_NE2,NGA,Nigeria,2020,POSITIVE,direct,,,,,6.5,2020.0,False,"Perfect! I found the exact value for UNICEF indicator NT_ANT_WHZ_NE2 for Nigeria in 2020.
+
+The exact value of UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Nigeria (NGA) in 2020 is **6.5**.
+
+This represents 6.5% of children under 5 years of age falling below -2 standard deviations from the median weight-for-height of the reference population. The data comes from the Nigeria National Nutrition and Health Survey 2019 and is sourced from the UNICEF/WHO/World Bank Joint Ma",45062,1112,71271,5,,1.0,1.0,0.0,0.0,0,0.151866
+NT_ANT_WHZ_NE2,NGA,Nigeria,2021,POSITIVE,direct,,,,,11.6,2021.0,False,"Based on the data retrieved from the UNICEF Nutrition dataflow, I can provide you with the exact values for indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Nigeria in 2021:
+
+- **Total (both sexes)**: 11.6%
+- **Female**: 11.1%  
+- **Male**: 12.0%
+
+The overall value for Nigeria in 2021 was **11.6%** for children under 5 years old with wasting (weight-for-height <-2 SD).
+
+This data comes from the National Food Consumption and Micronutrient Survey Final Report and is part of the UN",12622,549,57285,2,,1.0,1.0,0.0,0.0,0,0.046101
+NT_ANT_WHZ_NE2,PAK,Pakistan,2018,POSITIVE,direct,,,,,7.1,2018.0,False,"Perfect! I found the data for UNICEF indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD (wasting)) for Pakistan in 2018. Looking at the first row which shows the total value for all children under 5 years old:
+
+The exact value of UNICEF indicator NT_ANT_WHZ_NE2 for Pakistan (PAK) in 2018 was **7.1**.
+
+This represents 7.1% of children under 5 years old in Pakistan who were wasting (weight-for-height below -2 standard deviations) in 2018, according to the Pakistan Demographic and Health Survey 201",14470,513,57520,2,,1.0,1.0,0.0,0.0,0,0.051105000000000005
+NT_ANT_WHZ_NE2,USA,United States,2018,POSITIVE,baseline_latest,,,,,2021.0,2022.0,False,"Based on the data retrieved from the UNICEF NUTRITION dataflow, I can provide you with the latest available value for indicator NT_ANT_WHZ_NE2 (Weight-for-height <-2 SD wasting) for the United States:
+
+**Latest available value: 0.1%**
+**Year: 2022**
+
+This represents the percentage of children under 5 years old (total, both sexes) in the United States who fall below -2 standard deviations from the median weight-for-height, indicating moderate and severe wasting. The data comes from the United Sta",14221,534,57574,2,,1.0,0.0,0.0,0.0,0,0.050672999999999996

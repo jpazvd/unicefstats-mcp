@@ -1,0 +1,14 @@
+# Code owners for unicefstats-mcp
+# These users will be automatically requested for review on PRs
+
+# Default owner for everything
+* @jpazvd
+
+# Core server code
+src/unicefstats_mcp/ @jpazvd
+
+# Benchmark and evaluation
+examples/ @jpazvd
+
+# CI/CD
+.github/ @jpazvd

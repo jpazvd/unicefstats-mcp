@@ -1,0 +1,22 @@
+{
+  "run_id": "claude-sonnet-4-20250514_20260323_174311",
+  "model": "claude-sonnet-4-20250514",
+  "temperature": 0.0,
+  "timestamp": "20260323_174311",
+  "n_queries": 300,
+  "n_positive": 200,
+  "n_hallucination_t1": 50,
+  "n_hallucination_t2": 50,
+  "ground_truth_source": "F:\\GitHub\\mcps\\unicefstats-mcp\\examples\\ground_truth\\sample.csv",
+  "positive_metrics": {
+    "mean_eqa_a": 0.1467,
+    "mean_eqa_b": 0.8144,
+    "mean_er_a": 0.335,
+    "mean_ya_a": 0.62,
+    "mean_va_a": 0.2459
+  },
+  "hallucination_metrics": {
+    "rate_a": 0.12,
+    "rate_b": 0.26
+  }
+}
