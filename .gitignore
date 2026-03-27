@@ -18,3 +18,14 @@ venv/
 metadata/
 examples/ground_truth/
 # internal/ is tracked in -dev repo
+
+# Workspace directories (not part of this repo)
+.claude/
+.config/
+.vscode/
+mcps/
+myados/
+others/
+skills/
+my-claude-mcps/
+bash.exe.stackdump
