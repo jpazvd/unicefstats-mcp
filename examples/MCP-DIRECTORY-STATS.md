@@ -65,7 +65,7 @@ Repo: https://github.com/modelcontextprotocol/servers (81K stars)
 
 | Server | Install | What it does | Tools | SDMX | Stars | Trust |
 |--------|---------|-------------|-------|------|-------|-------|
-| [unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) | `pip install unicefstats-mcp` | UNICEF 790+ child indicators, disaggregations, benchmarked (EQA=0.785) | 7 | Yes | — | Low |
+| [unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) | `pip install unicefstats-mcp` | UNICEF 790+ child indicators, disaggregations, benchmarked (EQA=0.990, replicated) | 7 | Yes | — | Low |
 | [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) | Clone + run | Generic SDMX server, any registry (defaults UNICEF), 0% hallucination | 23 | Yes | — | Low |
 | [unicef-datawarehouse-mcp](https://github.com/tryolabs/unicef-datawarehouse-mcp) | Clone + run | UNICEF dataflows via SDMX (by Tryolabs) | 3 | Yes | 0 | Low |
 | [mcp_unhcr](https://github.com/rvibek/mcp_unhcr) | Clone + run | UNHCR refugee populations, demographics, asylum decisions | 5 | No | 0 | Low |
