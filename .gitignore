@@ -17,4 +17,4 @@ htmlcov/
 venv/
 metadata/
 examples/ground_truth/
-internal/
+# internal/ is tracked in -dev repo
