@@ -1,4 +1,5 @@
 <!-- mcp-name: io.github.jpazvd/unicefstats-mcp -->
+[![MCP Badge](https://lobehub.com/badge/mcp/jpazvd-unicefstats-mcp?style=for-the-badge)](https://lobehub.com/mcp/jpazvd-unicefstats-mcp)
 
 # unicefstats-mcp
 
