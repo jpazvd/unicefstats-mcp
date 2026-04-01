@@ -17,6 +17,18 @@ Indicators cover child mortality, nutrition, education, child protection, WASH (
 
 Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/rest)
 
+### Identity
+
+| Property | Value |
+|---|---|
+| **MCP identity** | `io.github.jpazvd/unicefstats-mcp` |
+| **PyPI package** | [`unicefstats-mcp`](https://pypi.org/project/unicefstats-mcp/) |
+| **Canonical source** | [github.com/jpazvd/unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) |
+| **Data source** | [UNICEF Data Warehouse](https://data.unicef.org/) via [SDMX REST API](https://sdmx.data.unicef.org/ws/public/sdmxapi/rest) |
+| **Publisher** | Joao Pedro Azevedo ([`jpazvd`](https://github.com/jpazvd)) |
+
+> **Mirror warning**: This MCP may appear on third-party directories (LobeHub, Smithery, mcp.so, Glama, etc.). Those listings are not controlled by the maintainer. Always verify against the canonical source above. See [How to Verify This MCP](#how-to-verify-this-mcp) below.
+
 ## Contents
 
 - [How it relates to the unicefdata packages](#how-it-relates-to-the-unicefdata-packages)
@@ -31,13 +43,16 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 - [Deployment](#deployment)
 - [Development](#development)
 - [Contributing](#contributing)
+- [Provenance and Ownership](#provenance-and-ownership)
+- [How to Verify This MCP](#how-to-verify-this-mcp)
 - [License](#license)
 
 ### Key documents
 
 | Document | Description |
 |---|---|
-| [CHANGELOG.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CHANGELOG.md) | Version history (v0.1.0–v0.3.0) with sources cited |
+| [PROVENANCE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/PROVENANCE.md) | Data origin, ownership, distribution pipeline, verification steps |
+| [CHANGELOG.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CHANGELOG.md) | Version history (v0.1.0–v0.4.0) with sources cited |
 | [CONTRIBUTING.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CONTRIBUTING.md) | Development setup, code style, PR guidelines |
 | [CODE_OF_CONDUCT.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CODE_OF_CONDUCT.md) | Contributor Covenant v2.1 |
 | [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) | Full 300-query benchmark analysis with EQA decomposition |
@@ -71,7 +86,7 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 
 | Feature | unicefstats-mcp | FRED MCP | World Bank MCP |
 |---|---|---|---|
-| **Tools** | 6 (search → metadata → data) | 3 (browse → search → get) | 1 (get only) |
+| **Tools** | 8 (search → metadata → data → code → identity) | 3 (browse → search → get) | 1 (get only) |
 | **Indicators** | 790+ child-focused indicators | 800,000+ economic series | ~1,600 indicators |
 | **Countries** | 200+ (ISO3) | US-focused (some intl) | 200+ (ISO2) |
 | **Disaggregations** | Sex, age, wealth quintile, residence | Frequency, seasonal adjustment | None |
@@ -186,6 +201,7 @@ Add to your MCP settings:
 | `get_temporal_coverage(code)` | Available year range and country count | Yes (lightweight) |
 | `get_data(indicator, countries, ...)` | Fetch observations with optional disaggregation filters | Yes |
 | `get_api_reference(language, function)` | unicefdata package API reference (Python/R/Stata) | No |
+| `get_server_metadata()` | Server identity, version, provenance, data source | No |
 
 ### Workflow
 
@@ -522,6 +538,61 @@ See the [audit findings](https://github.com/jpazvd/unicefstats-mcp/blob/main/exa
 | **Status** | Independent research prototype — not an official UNICEF product |
 
 All releases are published exclusively from GitHub Actions using PyPI Trusted Publishing. No long-lived API tokens are used. To verify a release's provenance, check the [PyPI attestations](https://pypi.org/project/unicefstats-mcp/#files) for the release files.
+
+For a detailed account of data origin, ownership, distribution pipeline, verification steps, and interpretation caveats, see [PROVENANCE.md](PROVENANCE.md).
+
+## How to Verify This MCP
+
+Use these steps to confirm you are using the authentic `unicefstats-mcp` and that versions are consistent across the supply chain.
+
+### 1. Source repository
+
+Verify the canonical repository owner and URL:
+- Owner: [`jpazvd`](https://github.com/jpazvd) on GitHub
+- Repository: [github.com/jpazvd/unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp)
+
+### 2. PyPI package
+
+```bash
+pip show unicefstats-mcp
+```
+
+Check that `Home-page` points to `https://github.com/jpazvd/unicefstats-mcp`.
+
+### 3. Version alignment
+
+All version references should match:
+
+```bash
+# Python package version
+python -c "import unicefstats_mcp; print(unicefstats_mcp.__version__)"
+
+# PyPI published version
+pip index versions unicefstats-mcp 2>/dev/null || pip show unicefstats-mcp | grep Version
+```
+
+Compare with the `version` field in [`server.json`](server.json) and [`pyproject.toml`](pyproject.toml).
+
+### 4. Release provenance (PyPI attestations)
+
+Visit [pypi.org/project/unicefstats-mcp/#files](https://pypi.org/project/unicefstats-mcp/#files) and check that release files have attestations linking to the GitHub Actions publishing workflow.
+
+### 5. Runtime verification
+
+Call the `get_server_metadata()` tool at runtime to get machine-readable identity and provenance:
+
+```json
+{
+  "name": "io.github.jpazvd/unicefstats-mcp",
+  "version": "0.4.0",
+  "canonical_source": "https://github.com/jpazvd/unicefstats-mcp",
+  "registry_identity": "io.github.jpazvd/unicefstats-mcp"
+}
+```
+
+### 6. MCP registry (future)
+
+When MCP registries become available, verify the `io.github.jpazvd/unicefstats-mcp` namespace is owned by the `jpazvd` GitHub account.
 
 ## License
 

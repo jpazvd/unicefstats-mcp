@@ -81,7 +81,7 @@ def _retry(
 
 mcp = FastMCP(
     name="unicefstats-mcp",
-    version="0.3.2",
+    version="0.4.0",
     instructions=(
         "Query UNICEF child development statistics for 200+ countries. "
         "No API key required. 790+ child-focused indicators (mortality, nutrition, "
@@ -1006,6 +1006,45 @@ def glossary_resource() -> str:
 - Period = calendar year of the observation
 - OBS_STATUS: blank = final, P = provisional, E = estimate
 """
+
+
+# ---------------------------------------------------------------------------
+# Server metadata (machine-readable identity and provenance)
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+def get_server_metadata() -> dict[str, Any]:
+    """Return machine-readable identity, provenance, and version information for this MCP server.
+
+    Use this to verify you are connected to the authentic unicefstats-mcp server
+    and to inspect its canonical identity, data source, and publisher information.
+    No API call — returns local metadata only.
+    """
+    from unicefstats_mcp import __version__
+
+    return ok({
+        "name": "io.github.jpazvd/unicefstats-mcp",
+        "title": "UNICEF Stats MCP",
+        "version": __version__,
+        "publisher": {
+            "name": "Joao Pedro Azevedo",
+            "github": "jpazvd",
+            "affiliation": "Independent researcher (not an official UNICEF product)",
+        },
+        "canonical_source": "https://github.com/jpazvd/unicefstats-mcp",
+        "pypi_package": "https://pypi.org/project/unicefstats-mcp/",
+        "registry_identity": "io.github.jpazvd/unicefstats-mcp",
+        "data_source": {
+            "name": "UNICEF Data Warehouse",
+            "protocol": "SDMX REST v2.1",
+            "endpoint": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+            "access": "public",
+            "authentication": "none",
+        },
+        "license": "MIT",
+        "provenance_doc": "https://github.com/jpazvd/unicefstats-mcp/blob/main/PROVENANCE.md",
+    })
 
 
 # ---------------------------------------------------------------------------

@@ -2,6 +2,24 @@
 
 All notable changes to unicefstats-mcp are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.4.0] — 2026-04-01
+
+### Added
+- **PROVENANCE.md** — comprehensive provenance and trust documentation covering data origin, ownership, distribution pipeline, verification steps, and interpretation caveats aligned with UN Fundamental Principles of Official Statistics
+- **`get_server_metadata()` tool** — machine-readable identity, version, publisher, data source, and provenance information at runtime (8th tool, no API call)
+- **"How to Verify This MCP" section** in README — 6-step verification protocol (source repo, PyPI, version alignment, attestations, runtime, registry)
+- **Identity section** in README — canonical MCP ID, official sources, mirror warning for third-party directories
+- **Version consistency check script** (`scripts/check_version_consistency.py`) — validates version alignment across pyproject.toml, server.json, `__init__.py`, and server.py
+
+### Changed
+- **server.json** upgraded with full registry metadata — author, license, tools/resources/prompts manifest, data source details, provenance block with verification URLs, Docker transport entry
+- **README key documents table** now includes PROVENANCE.md
+- **README tools table** updated to 8 tools
+- Version bump: 0.3.3 → 0.4.0 across all files (including fix for FastMCP constructor which was stuck at 0.3.2)
+
+### Fixed
+- **Version inconsistency**: FastMCP constructor `version` was "0.3.2" while all other locations were "0.3.3" — now all synchronized at 0.4.0
+
 ## [0.3.0] — 2026-03-26
 
 ### Benchmark Results (v0.3.0 + unicefdata v2.4.0)

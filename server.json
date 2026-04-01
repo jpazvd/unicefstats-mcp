@@ -2,8 +2,13 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jpazvd/unicefstats-mcp",
   "title": "UNICEF Stats MCP",
-  "description": "UNICEF child development statistics: 790+ indicators, 200+ countries. No API key.",
-  "version": "0.3.3",
+  "description": "UNICEF child development statistics: 790+ indicators across 200+ countries with disaggregations by sex, age, wealth quintile, and residence. Data sourced from UNICEF SDMX REST API. No API key required.",
+  "version": "0.4.0",
+  "author": {
+    "name": "Joao Pedro Azevedo",
+    "github": "jpazvd"
+  },
+  "license": "MIT",
   "repository": {
     "url": "https://github.com/jpazvd/unicefstats-mcp",
     "source": "github"
@@ -12,11 +17,60 @@
     {
       "registryType": "pypi",
       "identifier": "unicefstats-mcp",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "transport": {
         "type": "stdio"
       },
       "runtimeHint": "uvx"
+    },
+    {
+      "registryType": "docker",
+      "identifier": "unicefstats-mcp",
+      "version": "0.4.0",
+      "transport": {
+        "type": "sse",
+        "port": 8000
+      }
     }
-  ]
+  ],
+  "tools": [
+    "search_indicators",
+    "list_categories",
+    "list_countries",
+    "get_indicator_info",
+    "get_temporal_coverage",
+    "get_data",
+    "get_api_reference",
+    "get_server_metadata"
+  ],
+  "resources": [
+    "unicef://llm-instructions",
+    "unicef://categories",
+    "unicef://countries",
+    "unicef://glossary"
+  ],
+  "prompts": [
+    "compare_indicators",
+    "write_unicefdata_code",
+    "trend_analysis",
+    "country_profile",
+    "sdg_progress"
+  ],
+  "data_source": {
+    "name": "UNICEF Data Warehouse",
+    "protocol": "SDMX REST",
+    "endpoint": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+    "access": "public",
+    "authentication": "none"
+  },
+  "provenance": {
+    "publisher": "jpazvd (individual researcher)",
+    "institutional_affiliation": "Independent — not an official UNICEF product",
+    "publishing_method": "GitHub Actions via PyPI Trusted Publishing (OIDC)",
+    "verification": {
+      "source_repo": "https://github.com/jpazvd/unicefstats-mcp",
+      "pypi_package": "https://pypi.org/project/unicefstats-mcp/",
+      "attestations": "https://pypi.org/project/unicefstats-mcp/#files"
+    }
+  }
 }
