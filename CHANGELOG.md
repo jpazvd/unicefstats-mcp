@@ -2,6 +2,14 @@
 
 All notable changes to unicefstats-mcp are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Removed
+- **`server.json`**: dropped the `packages[]` Docker entry that was added in v0.4.0. The entry advertised `transport.type=sse, port=8000` for an image that was never actually published — PROVENANCE.md §3 confirms Docker is build-from-source only. Removed it so that registry consumers don't infer a published Docker artifact exists.
+
+### Fixed
+- **`scripts/check_version_consistency.py`**: cleaned up mismatch reporting. (a) Dropped the string-lex canonical selection — `max(found_values)` is a string max, not a semver max, so once any component reached two digits the MISMATCH labels would lie about which file was wrong (`max("0.10.0", "0.9.0") == "0.9.0"` lexically). (b) Dropped the redundant per-location loop — `main()`'s top loop already prints every location's version, so rebuilding the same lines into the errors list mixed informational output with `MISSING:` errors. The OK path is unchanged.
+
 ## [0.4.0] — 2026-04-01
 
 ### Added
