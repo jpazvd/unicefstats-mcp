@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
-"""Validate version and identity consistency across all project files.
+"""Validate version, identity, and doc-vs-code consistency across project files.
 
 Exits with code 1 if any check fails.
 
-Checks:
+Checks (deterministic, always run):
   1. Version present in all canonical locations
   2. All versions are identical
   3. Version follows semantic versioning (MAJOR.MINOR.PATCH with optional pre-release)
-  4. If --check-tag is passed, validates that the git tag matches the package version
-  5. If --check-pypi is passed, validates that the version is not already published
   6. Identity consistency: author name, GitHub handle, MCP namespace, and repo URL
      are consistent across pyproject.toml, server.json, and server.py
+  7. Tool-count drift: README claim + server.json `tools` list ≡ count of
+     `@mcp.tool()` decorators in server.py
+  8. Manifest packages[] sanity: known registryType, identifier present,
+     version matches canonical
+
+Optional checks (gated by flags):
+  4. If --check-tag is passed, validates that the git tag matches the package version
+  5. If --check-pypi is passed, validates that the version is not already published
 
 Canonical locations:
   - pyproject.toml        [project] version
-  - server.json           version + packages[].version
+  - server.json           version + packages[].version + tools[]
   - src/unicefstats_mcp/__init__.py   __version__
-  - src/unicefstats_mcp/server.py     FastMCP(version=...)
+  - src/unicefstats_mcp/server.py     FastMCP(version=...) + @mcp.tool() decorators
+  - README.md             tool-count claim in the comparison table
 """
 
 from __future__ import annotations
@@ -237,6 +244,98 @@ def check_pypi(version: str) -> list[str]:
     return []
 
 
+def check_tool_count() -> list[str]:
+    """Validate that tool counts claimed in README and listed in server.json
+    match the actual @mcp.tool()-decorated function count in server.py.
+
+    This catches a specific class of doc-vs-code drift: the README or
+    server.json gets stale when a tool is added or removed without updating
+    the documentation.
+    """
+    errors: list[str] = []
+
+    server_py = ROOT / "src" / "unicefstats_mcp" / "server.py"
+    if not server_py.exists():
+        errors.append("server.py: not found — cannot count @mcp.tool() decorators")
+        return errors
+
+    actual = len(re.findall(r"@mcp\.tool\(\s*\)", server_py.read_text()))
+    if actual == 0:
+        errors.append("server.py: no @mcp.tool() decorators found")
+        return errors
+
+    # server.json `tools` field
+    server_json = ROOT / "server.json"
+    if server_json.exists():
+        data = json.loads(server_json.read_text())
+        listed = data.get("tools", [])
+        if isinstance(listed, list) and len(listed) != actual:
+            errors.append(
+                f"server.json tools[] has {len(listed)} entries; "
+                f"server.py has {actual} @mcp.tool() decorators"
+            )
+
+    # README claim — only fire on the unicefstats-mcp self-row, identified by
+    # the `search → metadata` workflow signature in the same line. Other
+    # comparison rows (FRED MCP, World Bank MCP, etc.) are skipped.
+    readme = ROOT / "README.md"
+    if readme.exists():
+        content = readme.read_text()
+        for line_no, line in enumerate(content.splitlines(), 1):
+            m = re.match(r"\s*\|\s*\*\*Tools\*\*\s*\|\s*(\d+)\s*\(([^|]*)", line)
+            if not m:
+                continue
+            claimed = int(m.group(1))
+            description = m.group(2).lower()
+            # Heuristic: the unicefstats-mcp row mentions `search` and either
+            # `metadata` or `data` (the project's own workflow keywords).
+            if "search" in description and ("metadata" in description or "data" in description):
+                if claimed != actual:
+                    errors.append(
+                        f"README.md:{line_no} claims {claimed} tools "
+                        f"(unicefstats-mcp row); server.py has {actual}"
+                    )
+
+    return errors
+
+
+def check_manifest_packages(version: str | None) -> list[str]:
+    """Sanity-check server.json packages[] entries (deterministic).
+
+    For each package: known registryType, identifier present, version matches
+    the canonical version. Catches manifest-vs-reality drift like the dropped
+    Docker entry from PR #2 (advertised an image that was never published).
+    Network-level verification (PyPI duplicate, Docker registry) is gated
+    behind --check-pypi via the existing check_pypi() function.
+    """
+    errors: list[str] = []
+    server_json = ROOT / "server.json"
+    if not server_json.exists():
+        return errors
+
+    data = json.loads(server_json.read_text())
+    packages = data.get("packages", [])
+    if not packages:
+        errors.append("server.json: packages[] is empty")
+        return errors
+
+    KNOWN_REGISTRIES = {"pypi", "docker", "npm", "ghcr"}
+    for i, pkg in enumerate(packages):
+        prefix = f"server.json packages[{i}]"
+        rt = pkg.get("registryType")
+        if rt not in KNOWN_REGISTRIES:
+            errors.append(f"{prefix}: unknown registryType {rt!r}")
+        if not pkg.get("identifier"):
+            errors.append(f"{prefix}: missing identifier")
+        v = pkg.get("version")
+        if version and v and v != version:
+            errors.append(
+                f"{prefix}: version {v!r} does not match canonical {version!r}"
+            )
+
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate version consistency and format")
     parser.add_argument("--check-tag", metavar="TAG", help="Validate git tag matches version")
@@ -281,6 +380,13 @@ def main() -> int:
     # 6. Identity consistency (always runs)
     identity_errors = check_identity()
     all_errors.extend(identity_errors)
+
+    # 7. Tool-count drift (always runs; deterministic)
+    all_errors.extend(check_tool_count())
+
+    # 8. Manifest packages[] sanity (always runs; deterministic — the
+    #    PyPI / network-level check stays gated by --check-pypi above)
+    all_errors.extend(check_manifest_packages(canonical))
 
     print()
     if all_errors:
