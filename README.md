@@ -3,13 +3,11 @@
 
 # unicefstats-mcp
 
-> **Disclaimer** — This is an independent research project. It is **not an official UNICEF product** and does not represent the views or policies of UNICEF. The software is provided "as is", without warranty of any kind, express or implied. Use at your own risk.
+> **Not an official UNICEF product.** This is an independent research project. It does not represent the views or policies of UNICEF. The software is provided "as is", without warranty of any kind.
 >
-> **Experimental / Research Prototype** — this project is under active development and has not been validated for production use. Tool signatures and response formats may change without notice.
+> **Experimental / Research Prototype.** Under active development. Tool signatures and response formats may change without notice. Not validated for production use.
 >
-> **Human verification is essential.** While MCP tools significantly improve LLM accuracy on UNICEF statistics (EQA 0.990 vs 0.147 baseline, replicated across 40 countries), results are not error-free. Our benchmark shows that even with tool access, the LLM may fabricate data when the underlying API returns no results (T2 hallucination ~10% after correcting for ground truth misclassification). Any statistic retrieved through this MCP should be verified against the [UNICEF Data Warehouse](https://data.unicef.org/) before use in policy documents, publications, or official communications.
->
-> Contributions and feedback welcome — see [Contributing](#contributing) below.
+> **Human verification is essential.** This MCP improves LLM accuracy on UNICEF statistics but does not eliminate errors. Even with tool access, the LLM may fabricate data when the API returns no results (~10% of cases in benchmark testing). **Any statistic retrieved through this MCP should be verified against the [UNICEF Data Warehouse](https://data.unicef.org/) before use in policy documents, publications, or official communications.** See [Limitations and Hallucination Risks](#limitations-and-hallucination-risks) for details.
 
 MCP server for UNICEF child development statistics. Query 790+ child-focused indicators across 200+ countries with disaggregations by sex, age, wealth quintile, and residence. No API key required.
 
@@ -25,9 +23,10 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 | **PyPI package** | [`unicefstats-mcp`](https://pypi.org/project/unicefstats-mcp/) |
 | **Canonical source** | [github.com/jpazvd/unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) |
 | **Data source** | [UNICEF Data Warehouse](https://data.unicef.org/) via [SDMX REST API](https://sdmx.data.unicef.org/ws/public/sdmxapi/rest) |
-| **Publisher** | Joao Pedro Azevedo ([`jpazvd`](https://github.com/jpazvd)) |
+| **Publisher** | Joao Pedro Azevedo ([`jpazvd`](https://github.com/jpazvd)) — individual researcher |
+| **Institutional status** | Independent project — not reviewed, endorsed, or maintained by UNICEF |
 
-> **Mirror warning**: This MCP may appear on third-party directories (LobeHub, Smithery, mcp.so, Glama, etc.). Those listings are not controlled by the maintainer. Always verify against the canonical source above. See [How to Verify This MCP](#how-to-verify-this-mcp) below.
+> **Third-party directories**: This MCP may appear on aggregator sites (LobeHub, Smithery, mcp.so, Glama, etc.). Those listings are **not controlled by the maintainer** and may be outdated or modified. Always verify against the canonical source above. See [How to Verify This MCP](#how-to-verify-this-mcp).
 
 ## Contents
 
@@ -43,6 +42,7 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 - [Deployment](#deployment)
 - [Development](#development)
 - [Contributing](#contributing)
+- [Limitations and Hallucination Risks](#limitations-and-hallucination-risks)
 - [Provenance and Ownership](#provenance-and-ownership)
 - [How to Verify This MCP](#how-to-verify-this-mcp)
 - [License](#license)
@@ -523,77 +523,62 @@ mypy src/unicefstats_mcp/
 See the [audit findings](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) for known issues. High-impact areas:
 
 - **MNCH dataflow bug**: `MNCH_CSEC` and `MNCH_BIRTH18` return 0 EQA due to a dataflow resolution issue in the `unicefdata` package
-- **Anti-hallucination**: Adopt sdmx-mcp's `assistant_guidance` pattern to reduce T2 hallucination
-- **Test coverage**: `list_countries`, `get_api_reference`, and MCP prompts are untested
-- **MCP Resources**: Add indicator registry and country list as MCP Resources (reduces tool calls)
+- **T2 hallucination reduction**: Further reduce fabrication when API returns no results (currently ~10%; see [Limitations](#limitations-and-hallucination-risks))
+
+## Limitations and Hallucination Risks
+
+This section describes known limitations that affect the reliability of data retrieved through this MCP. Understanding these is essential for responsible use.
+
+### Data limitations
+
+- **Coverage is uneven.** Not all indicators are available for all countries or years. Survey-based indicators (nutrition, education, protection) have gaps of 3-5 years between data points. These gaps are normal and do not indicate errors.
+- **Values are estimates.** Mortality indicators (CME_*) are modeled estimates from the UN Inter-agency Group for Child Mortality Estimation (IGME). They carry uncertainty intervals not shown in compact output format.
+- **Disaggregation varies.** Not all indicators support all dimensions (sex, age, wealth quintile, residence). The `get_indicator_info()` tool lists possible dimensions, not guaranteed ones.
+- **Row limits apply.** `get_data()` returns at most 500 rows per call. Large queries require filtering or multiple calls.
+
+### Hallucination risks
+
+Benchmark testing (300 queries, 10 indicators, 40 countries, replicated) identified two hallucination patterns:
+
+| Type | Description | Rate | Mitigation |
+|---|---|---|---|
+| **T1 (gap-year)** | LLM cites a year when data exists but for a different year | ~7% | The MCP returns the actual year; the LLM occasionally ignores it |
+| **T2 (fabrication)** | LLM invents a value when the API confirms no data exists | ~10% | The MCP returns `status: "no_data"` with an anti-fabrication directive; the LLM sometimes overrides it |
+
+**T2 is the more serious risk.** It is driven by a "confidence effect": when the LLM has strong prior knowledge about a country (e.g., child mortality for well-known nations), it may override a tool error and fabricate a plausible-looking value. This is a fundamental LLM behavior, not specific to this MCP.
+
+**What the MCP does to mitigate this:**
+- Returns `status: "no_data"` with `data_completeness: "empty"` and an explicit anti-fabrication instruction when the API confirms data does not exist
+- Detects missing countries in `get_data()` responses and issues a structured warning naming each missing country
+- Includes `warnings[]` in every response for partial or sparse results
+- The `unicef://llm-instructions` resource instructs AI assistants to never substitute training data for tool results
+
+**What the MCP cannot prevent:**
+- The LLM ignoring the anti-fabrication directive
+- The LLM rounding, paraphrasing, or approximating exact values
+- The LLM confusing similar indicators (e.g., stunting vs wasting)
+
+**Recommendation**: Treat all values as provisional until verified against the [UNICEF Data Warehouse](https://data.unicef.org/). For policy use, cross-check against the original SDMX API URL provided in the `citation` field of every `get_data()` response.
+
+Full benchmark methodology and results: [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)
 
 ## Provenance and Ownership
 
-| Property | Value |
-|---|---|
-| **Publisher / maintainer** | Joao Pedro Azevedo ([`jpazvd`](https://github.com/jpazvd)) |
-| **Canonical source** | [github.com/jpazvd/unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) |
-| **Canonical package** | [pypi.org/project/unicefstats-mcp](https://pypi.org/project/unicefstats-mcp/) |
-| **Registry identity** | `io.github.jpazvd/unicefstats-mcp` |
-| **Publishing** | GitHub Actions via [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (OIDC) |
-| **Status** | Independent research prototype — not an official UNICEF product |
+All data served by this MCP originates from the [UNICEF Data Warehouse](https://data.unicef.org/), accessed live via the public SDMX REST API. No observation data is stored or cached — every `get_data()` call results in a live SDMX request. The indicator and country registries are cached in memory at first access for performance; these are catalogue metadata, not statistical values. The MCP reformats output for LLM consumption but does not alter values.
 
-All releases are published exclusively from GitHub Actions using PyPI Trusted Publishing. No long-lived API tokens are used. To verify a release's provenance, check the [PyPI attestations](https://pypi.org/project/unicefstats-mcp/#files) for the release files.
+All releases are published from GitHub Actions using [PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (OIDC). No long-lived API tokens exist. Release provenance is verifiable via [PyPI attestations](https://pypi.org/project/unicefstats-mcp/#files).
 
-For a detailed account of data origin, ownership, distribution pipeline, verification steps, and interpretation caveats, see [PROVENANCE.md](PROVENANCE.md).
+For full details on data origin, ownership, distribution pipeline, and interpretation caveats, see [PROVENANCE.md](PROVENANCE.md).
 
 ## How to Verify This MCP
 
-Use these steps to confirm you are using the authentic `unicefstats-mcp` and that versions are consistent across the supply chain.
-
-### 1. Source repository
-
-Verify the canonical repository owner and URL:
-- Owner: [`jpazvd`](https://github.com/jpazvd) on GitHub
-- Repository: [github.com/jpazvd/unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp)
-
-### 2. PyPI package
-
-```bash
-pip show unicefstats-mcp
-```
-
-Check that `Home-page` points to `https://github.com/jpazvd/unicefstats-mcp`.
-
-### 3. Version alignment
-
-All version references should match:
-
-```bash
-# Python package version
-python -c "import unicefstats_mcp; print(unicefstats_mcp.__version__)"
-
-# PyPI published version
-pip index versions unicefstats-mcp 2>/dev/null || pip show unicefstats-mcp | grep Version
-```
-
-Compare with the `version` field in [`server.json`](server.json) and [`pyproject.toml`](pyproject.toml).
-
-### 4. Release provenance (PyPI attestations)
-
-Visit [pypi.org/project/unicefstats-mcp/#files](https://pypi.org/project/unicefstats-mcp/#files) and check that release files have attestations linking to the GitHub Actions publishing workflow.
-
-### 5. Runtime verification
-
-Call the `get_server_metadata()` tool at runtime to get machine-readable identity and provenance:
-
-```json
-{
-  "name": "io.github.jpazvd/unicefstats-mcp",
-  "version": "0.4.0",
-  "canonical_source": "https://github.com/jpazvd/unicefstats-mcp",
-  "registry_identity": "io.github.jpazvd/unicefstats-mcp"
-}
-```
-
-### 6. MCP registry (future)
-
-When MCP registries become available, verify the `io.github.jpazvd/unicefstats-mcp` namespace is owned by the `jpazvd` GitHub account.
+| Check | How |
+|---|---|
+| **Source** | Repository is [`jpazvd/unicefstats-mcp`](https://github.com/jpazvd/unicefstats-mcp) on GitHub |
+| **Package** | `pip show unicefstats-mcp` — verify `Home-page` points to the canonical repo |
+| **Version** | `python -c "import unicefstats_mcp; print(unicefstats_mcp.__version__)"` — compare with `server.json` and PyPI |
+| **Provenance** | [PyPI attestations](https://pypi.org/project/unicefstats-mcp/#files) link each release to a GitHub Actions workflow |
+| **Runtime** | Call `get_server_metadata()` — returns canonical name, version, publisher, and data source |
 
 ## License
 
