@@ -53,6 +53,7 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 |---|---|
 | [PROVENANCE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/PROVENANCE.md) | Data origin, ownership, distribution pipeline, verification steps |
 | [CHANGELOG.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CHANGELOG.md) | Version history (v0.1.0–v0.4.0) with sources cited |
+| [RELEASE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/RELEASE.md) | Release process checklist and version management |
 | [CONTRIBUTING.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CONTRIBUTING.md) | Development setup, code style, PR guidelines |
 | [CODE_OF_CONDUCT.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CODE_OF_CONDUCT.md) | Contributor Covenant v2.1 |
 | [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) | Full 300-query benchmark analysis with EQA decomposition |

@@ -17,7 +17,9 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 - **`get_server_metadata()` tool** — machine-readable identity, version, publisher, data source, and provenance information at runtime (8th tool, no API call)
 - **"How to Verify This MCP" section** in README — 6-step verification protocol (source repo, PyPI, version alignment, attestations, runtime, registry)
 - **Identity section** in README — canonical MCP ID, official sources, mirror warning for third-party directories
-- **Version consistency check script** (`scripts/check_version_consistency.py`) — validates version alignment across pyproject.toml, server.json, `__init__.py`, and server.py
+- **Version consistency check script** (`scripts/check_version_consistency.py`) — validates version alignment across pyproject.toml, server.json, `__init__.py`, and server.py; optional checks for semver format, git tag alignment, CHANGELOG entry, and PyPI duplicate detection
+- **RELEASE.md** — release process checklist for maintainers
+- **Gated publish workflow** (`publish.yml`) — 4-stage pipeline: validate (version consistency + tag + changelog + PyPI duplicate check) → build → publish (Trusted Publishing) → verify (install from PyPI)
 
 ### Changed
 - **server.json** upgraded with full registry metadata — author, license, tools/resources/prompts manifest, data source details, provenance block with verification URLs, Docker transport entry

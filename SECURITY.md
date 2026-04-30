@@ -12,7 +12,7 @@
 If you discover a security vulnerability in unicefstats-mcp, please report it responsibly:
 
 1. **Do not** open a public GitHub issue for security vulnerabilities
-2. Email the maintainer at the address listed in [pyproject.toml](pyproject.toml)
+2. Contact the maintainer ([`jpazvd`](https://github.com/jpazvd)) via a [private vulnerability report](https://github.com/jpazvd/unicefstats-mcp/security/advisories/new) on GitHub
 3. Include a description of the vulnerability, steps to reproduce, and potential impact
 4. Allow up to 7 days for an initial response
 

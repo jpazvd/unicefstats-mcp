@@ -9,7 +9,7 @@ description = "MCP server for UNICEF child development statistics — 790+ child
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
-authors = [{ name = "Jose Azevedo" }]
+authors = [{ name = "Joao Pedro Azevedo" }]
 keywords = ["mcp", "unicef", "child-development", "indicators", "statistics", "data", "ai", "sdmx"]
 classifiers = [
     "Development Status :: 3 - Alpha",

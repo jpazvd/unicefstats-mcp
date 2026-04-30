@@ -1,22 +1,123 @@
 name: Publish to PyPI
 
+# Triggered ONLY by version tags (e.g., v0.4.0).
+# Validates version consistency, semver format, changelog entry,
+# and tag alignment BEFORE building and publishing.
+
 on:
   push:
     tags: ["v*"]
 
 jobs:
-  publish:
+  # ------------------------------------------------------------------
+  # Gate: validate version integrity before building
+  # ------------------------------------------------------------------
+  validate:
     runs-on: ubuntu-22.04
-    permissions:
-      id-token: write  # trusted publishing
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Build
+
+      - name: Extract version from tag
+        id: extract
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Tag: $TAG → Version: $VERSION"
+
+      - name: Validate version consistency + tag + changelog
+        run: |
+          python scripts/check_version_consistency.py \
+            --check-tag "${{ steps.extract.outputs.tag }}" \
+            --check-changelog
+
+      - name: Check version not already on PyPI
+        run: |
+          python scripts/check_version_consistency.py --check-pypi
+
+  # ------------------------------------------------------------------
+  # Build: produce sdist + wheel
+  # ------------------------------------------------------------------
+  build:
+    needs: validate
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build package
         run: |
           pip install build
           python -m build
+
+      - name: Verify build artifacts
+        run: |
+          ls -la dist/
+          # Ensure exactly one sdist and one wheel
+          SDIST_COUNT=$(ls dist/*.tar.gz 2>/dev/null | wc -l)
+          WHEEL_COUNT=$(ls dist/*.whl 2>/dev/null | wc -l)
+          if [ "$SDIST_COUNT" -ne 1 ] || [ "$WHEEL_COUNT" -ne 1 ]; then
+            echo "ERROR: Expected 1 sdist and 1 wheel, got $SDIST_COUNT sdist(s) and $WHEEL_COUNT wheel(s)"
+            exit 1
+          fi
+          echo "Build artifacts OK"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  # ------------------------------------------------------------------
+  # Publish: push to PyPI via Trusted Publishing (OIDC)
+  # ------------------------------------------------------------------
+  publish:
+    needs: [validate, build]
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write  # Required for PyPI Trusted Publishing
+    environment:
+      name: pypi
+      url: https://pypi.org/project/unicefstats-mcp/${{ needs.validate.outputs.version }}/
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  # ------------------------------------------------------------------
+  # Post-publish: verify the release is accessible
+  # ------------------------------------------------------------------
+  verify:
+    needs: [validate, publish]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Wait for PyPI index to update
+        run: sleep 30
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify installation from PyPI
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          pip install "unicefstats-mcp==$VERSION"
+          INSTALLED=$(python -c "import unicefstats_mcp; print(unicefstats_mcp.__version__)")
+          if [ "$INSTALLED" != "$VERSION" ]; then
+            echo "ERROR: Installed version $INSTALLED does not match expected $VERSION"
+            exit 1
+          fi
+          echo "OK: unicefstats-mcp==$VERSION installed and verified from PyPI"
