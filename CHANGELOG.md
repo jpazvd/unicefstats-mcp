@@ -4,6 +4,17 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-04-30
+
+### Added
+- **`unicef://system-prompt` resource** — recommended system prompt that AI assistants load at session start. Establishes the operating loop (search → coverage → frontier-check → data → answer) and embeds the temporal-frontier rule that addresses the T2 hallucination failure mode (model fabricating values for years beyond the data frontier — measured at 36% T2 Clean ER on the v4 benchmark with R1+R2 pooled). Pattern adopted from World Bank's [data360-mcp `data360://system-prompt`](https://github.com/worldbank/data360-mcp).
+- **`unicef://context` resource** — runtime context returning `current_date` and `current_year` so the model can sanity-check temporal queries before calling tools. Without this, the model has no reliable way to evaluate "is the user's requested year > current year?" Pattern adopted from data360-mcp's `data360://context`.
+- **Anti-extrapolation directive in `unicef://llm-instructions`** — concrete behavioral rule with forbidden-phrase list ("approximately", "projected", "based on the trend", "extrapolating") so the model cannot satisfy "do not estimate" while still composing a hedged numeric forecast. Names the user-visible required text ("No data is available for [year]") rather than relying on abstract "do not fabricate" guidance.
+
+### Changed
+- Version bump: `__init__.py`, `pyproject.toml`, `server.json` (both occurrences), and FastMCP constructor in `server.py` synchronized to 0.5.0.
+- `server.json` resources manifest extended from 4 → 6 entries (adds `unicef://system-prompt` and `unicef://context`).
+
 ### Removed
 - **`server.json`**: dropped the `packages[]` Docker entry that was added in v0.4.0. The entry advertised `transport.type=sse, port=8000` for an image that was never actually published — PROVENANCE.md §3 confirms Docker is build-from-source only. Removed it so that registry consumers don't infer a published Docker artifact exists.
 

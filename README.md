@@ -3,11 +3,7 @@
 
 # unicefstats-mcp
 
-> **Not an official UNICEF product.** This is an independent research project. It does not represent the views or policies of UNICEF. The software is provided "as is", without warranty of any kind.
->
-> **Experimental / Research Prototype.** Under active development. Tool signatures and response formats may change without notice. Not validated for production use.
->
-> **Human verification is essential.** This MCP improves LLM accuracy on UNICEF statistics but does not eliminate errors. Even with tool access, the LLM may fabricate data when the API returns no results (~10% of cases in benchmark testing). **Any statistic retrieved through this MCP should be verified against the [UNICEF Data Warehouse](https://data.unicef.org/) before use in policy documents, publications, or official communications.** See [Limitations and Hallucination Risks](#limitations-and-hallucination-risks) for details.
+> Experimental — not an official UNICEF product. Verify retrieved values against the [UNICEF Data Warehouse](https://data.unicef.org/) before citing in publications. See [Limitations](#limitations-and-hallucination-risks).
 
 MCP server for UNICEF child development statistics. Query 790+ child-focused indicators across 200+ countries with disaggregations by sex, age, wealth quintile, and residence. No API key required.
 
@@ -23,10 +19,10 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 | **PyPI package** | [`unicefstats-mcp`](https://pypi.org/project/unicefstats-mcp/) |
 | **Canonical source** | [github.com/jpazvd/unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) |
 | **Data source** | [UNICEF Data Warehouse](https://data.unicef.org/) via [SDMX REST API](https://sdmx.data.unicef.org/ws/public/sdmxapi/rest) |
-| **Publisher** | Joao Pedro Azevedo ([`jpazvd`](https://github.com/jpazvd)) — individual researcher |
-| **Institutional status** | Independent project — not reviewed, endorsed, or maintained by UNICEF |
+| **Maintainer** | Joao Pedro Azevedo ([`jpazvd`](https://github.com/jpazvd)) |
+| **Status** | Experimental — not endorsed by UNICEF |
 
-> **Third-party directories**: This MCP may appear on aggregator sites (LobeHub, Smithery, mcp.so, Glama, etc.). Those listings are **not controlled by the maintainer** and may be outdated or modified. Always verify against the canonical source above. See [How to Verify This MCP](#how-to-verify-this-mcp).
+> Third-party aggregator listings (LobeHub, Smithery, mcp.so, Glama) are not controlled by the maintainer. Verify against the canonical source above.
 
 ## Contents
 
@@ -213,6 +209,21 @@ Add to your MCP settings:
 4. get_data("CME_MRY0T4", ["BRA", "IND"])   → fetch data
 5. get_api_reference("python", "unicefData") → get code template to continue in a script
 ```
+
+## Resources
+
+The server exposes six MCP resources clients can load for guidance and reference data:
+
+| URI | Purpose |
+|---|---|
+| `unicef://system-prompt` | Recommended system prompt — operating loop + temporal-frontier check + anti-extrapolation directive (load at session start) |
+| `unicef://llm-instructions` | Full DO/DON'T rules, common mistakes, and anti-fabrication guidance |
+| `unicef://context` | Runtime context — `current_date` / `current_year` for temporal-query sanity checks |
+| `unicef://categories` | All indicator categories with counts |
+| `unicef://countries` | ISO3 codes and country names |
+| `unicef://glossary` | Disaggregation codes and indicator-prefix legend |
+
+The `system-prompt` and `context` resources address the T2 hallucination failure mode (model fabricating values for years beyond the data frontier). Pattern adopted from the World Bank [data360-mcp](https://github.com/worldbank/data360-mcp) server. See CHANGELOG entry for v0.5.0.
 
 ## Demo
 
@@ -489,7 +500,7 @@ mypy src/unicefstats_mcp/
 
 ## Contributing
 
-Contributions are welcome! This project is in alpha and there is plenty of room for improvement.
+Contributions are welcome.
 
 ### Ways to contribute
 
@@ -527,40 +538,25 @@ See the [audit findings](https://github.com/jpazvd/unicefstats-mcp/blob/main/exa
 
 ## Limitations and Hallucination Risks
 
-This section describes known limitations that affect the reliability of data retrieved through this MCP. Understanding these is essential for responsible use.
-
 ### Data limitations
 
-- **Coverage is uneven.** Not all indicators are available for all countries or years. Survey-based indicators (nutrition, education, protection) have gaps of 3-5 years between data points. These gaps are normal and do not indicate errors.
-- **Values are estimates.** Mortality indicators (CME_*) are modeled estimates from the UN Inter-agency Group for Child Mortality Estimation (IGME). They carry uncertainty intervals not shown in compact output format.
-- **Disaggregation varies.** Not all indicators support all dimensions (sex, age, wealth quintile, residence). The `get_indicator_info()` tool lists possible dimensions, not guaranteed ones.
-- **Row limits apply.** `get_data()` returns at most 500 rows per call. Large queries require filtering or multiple calls.
+- Coverage is uneven across indicators, countries, and years. Survey-based indicators (nutrition, education, protection) have 3-5 year gaps between data points by design.
+- Mortality indicators (CME_*) are modeled estimates from the UN Inter-agency Group (IGME), with uncertainty intervals not surfaced in compact output.
+- Not all indicators support all disaggregation dimensions; `get_indicator_info()` lists what's available per indicator.
+- `get_data()` caps at 500 rows per call.
 
 ### Hallucination risks
 
-Benchmark testing (300 queries, 10 indicators, 40 countries, replicated) identified two hallucination patterns:
+Benchmark testing (600 queries pooled across two replication samples, 10 indicators, 45 countries) identified two patterns:
 
 | Type | Description | Rate | Mitigation |
 |---|---|---|---|
-| **T1 (gap-year)** | LLM cites a year when data exists but for a different year | ~7% | The MCP returns the actual year; the LLM occasionally ignores it |
-| **T2 (fabrication)** | LLM invents a value when the API confirms no data exists | ~10% | The MCP returns `status: "no_data"` with an anti-fabrication directive; the LLM sometimes overrides it |
+| **T1 (gap-year)** | LLM cites a year when data exists but for a different year | ~7% | Server returns the actual year; LLM occasionally ignores it |
+| **T2 (forward-of-frontier)** | LLM fabricates a value for a year beyond the data frontier | ~36% | v0.5.0 ships an anti-extrapolation system prompt (`unicef://system-prompt`) and runtime context (`unicef://context`). Load these at session start. |
 
-**T2 is the more serious risk.** It is driven by a "confidence effect": when the LLM has strong prior knowledge about a country (e.g., child mortality for well-known nations), it may override a tool error and fabricate a plausible-looking value. This is a fundamental LLM behavior, not specific to this MCP.
+T2 is the dominant risk — driven by a "confidence effect" where the LLM, having retrieved adjacent-year data, extrapolates forward. The v0.5.0 system prompt names the failure mechanism and lists forbidden phrases ("approximately", "projected", "based on the trend") so the directive cannot be satisfied by hedged forecasts. Skill / system-prompt enforcement is structural; tool-description guidance is advisory.
 
-**What the MCP does to mitigate this:**
-- Returns `status: "no_data"` with `data_completeness: "empty"` and an explicit anti-fabrication instruction when the API confirms data does not exist
-- Detects missing countries in `get_data()` responses and issues a structured warning naming each missing country
-- Includes `warnings[]` in every response for partial or sparse results
-- The `unicef://llm-instructions` resource instructs AI assistants to never substitute training data for tool results
-
-**What the MCP cannot prevent:**
-- The LLM ignoring the anti-fabrication directive
-- The LLM rounding, paraphrasing, or approximating exact values
-- The LLM confusing similar indicators (e.g., stunting vs wasting)
-
-**Recommendation**: Treat all values as provisional until verified against the [UNICEF Data Warehouse](https://data.unicef.org/). For policy use, cross-check against the original SDMX API URL provided in the `citation` field of every `get_data()` response.
-
-Full benchmark methodology and results: [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)
+Full benchmark methodology: [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)
 
 ## Provenance and Ownership
 

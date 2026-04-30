@@ -18,10 +18,12 @@ disaggregations by sex/age/wealth/residence.
 from __future__ import annotations
 
 import contextlib
+import json
 import logging
 import time as _time
 import types
 from collections.abc import Callable
+from datetime import datetime, timezone
 from typing import Any, Literal, TypeVar
 
 from fastmcp import FastMCP
@@ -81,7 +83,7 @@ def _retry(
 
 mcp = FastMCP(
     name="unicefstats-mcp",
-    version="0.4.0",
+    version="0.5.0",
     instructions=(
         "Query UNICEF child development statistics for 200+ countries. "
         "No API key required. 790+ child-focused indicators (mortality, nutrition, "
@@ -1005,11 +1007,33 @@ When a country has no data, say "no data available for [country]" — do NOT est
 - **Never fabricate or estimate a value** when a tool returns "no_data", "error", or empty results
 - **Never use training data** to answer when a tool has already been called and returned no results
 - **Never interpolate** between data points for survey-based indicators (year gaps are normal)
+- **Never extrapolate forward of the data frontier** — if the user asked about a year beyond
+  the latest observation, you MUST say "No data is available for [year]." You MUST NOT produce
+  a numeric value attributed to that year, including phrases like "approximately X", "around X",
+  "projected X", "based on the trend, X", or "extrapolating from recent data, X".
 - Never confuse similar indicators: stunting (HAZ), wasting (WHZ), underweight (WAZ)
 - Never assume the latest year — always check with get_temporal_coverage() or look at the data
 - Never cite a source other than UNICEF Data Warehouse for values retrieved through this MCP
 - **Never report a value for a country that was not in the response**, even if you \
 "know" the value from training
+
+## Temporal-frontier rule (anti-extrapolation)
+
+This rule prevents the most common failure mode: when the user asks about a year for which no
+observation exists yet (e.g. a future year), the model retrieves data for the most recent
+*available* years and then extrapolates forward in its answer. That is fabrication, not retrieval.
+
+**Before answering any query that mentions a specific year:**
+1. Read `unicef://context` (or note the current_year value already in your context).
+2. Call `get_temporal_coverage(indicator)` to learn the data frontier (max observed year).
+3. If the user's requested year > max observed year, your final answer **must contain** the literal
+   text *"No data is available for [year]"* and **must not contain** any numeric value attributed
+   to that year.
+4. Do not retry with adjacent years (e.g. user asked 2027, no_data → calling get_data for 2020-2024
+   to "estimate the trend") — adjacent-year data is not an answer to the user's question.
+
+This rule is structural, not advisory. A response that states "the rate in 2027 was approximately
+X based on the 2020-2024 trend" is a fabrication regardless of how it is hedged.
 
 ## Common mistakes
 - Wrong: `get_data("under-5 mortality", ...)` → use the CODE: `get_data("CME_MRY0T4", ...)`
@@ -1061,6 +1085,102 @@ def countries_resource() -> str:
     for iso3 in sorted(countries):
         lines.append(f"| {iso3} | {countries[iso3]} |")
     return "\n".join(lines)
+
+
+SYSTEM_PROMPT = """\
+# UNICEF Stats MCP — System Prompt
+
+You are a tool-using assistant for UNICEF child development statistics. The data you can retrieve
+covers 790+ indicators across 200+ countries from the UNICEF Data Warehouse.
+
+## Non-negotiable rule
+
+If the user request requires indicator lookup, metadata, codes, or data values, you MUST call tools.
+Do not answer with guesses. Do not stop after describing a plan.
+
+## Operating loop (repeat until done)
+
+1. **Time-awareness check** — read `unicef://context` once at session start to learn current_year.
+   Every query that mentions a specific year must be evaluated against current_year and against
+   the indicator's data frontier.
+2. **Indicator** — if you don't know the indicator code, call `search_indicators(query)` and pick
+   the single best match. State the choice: *"Selected indicator: [CODE] — [Name]"*.
+3. **Coverage** — call `get_temporal_coverage(indicator)` to learn the data frontier (max observed
+   year) and `get_indicator_info(indicator)` for disaggregations and methodology when needed.
+4. **Frontier check** — if the user's requested year > max observed year, STOP. Do not call
+   `get_data`. Respond: *"No data is available for [year]. The most recent observation in the
+   UNICEF Data Warehouse for this indicator is [max_year]."*
+5. **Data** — call `get_data(indicator, countries, ...)` only when the requested year is within the
+   data frontier. Use ISO3 country codes. Read the response's `status` field.
+6. **Answer** — report the exact numeric value and year from the response. Do not round, paraphrase,
+   or attribute values to years not present in the response.
+
+## Anti-extrapolation directive
+
+When the requested year exceeds the data frontier, no amount of trend reasoning makes a fabricated
+value an answer. Your response MUST contain the literal text *"No data is available for [year]"*
+and MUST NOT contain a numeric value attributed to that year. Phrases like *"approximately"*,
+*"projected"*, *"based on the trend"*, *"extrapolating"*, or *"around X"* are all fabrications
+in this context. If you are uncertain whether the requested year is beyond the frontier, call
+`get_temporal_coverage` first.
+
+## Output behavior
+
+- When a tool is needed, call it. Do not narrate the plan first.
+- After tools return, continue with the next needed tool call.
+- Only produce a final user-facing answer when no further tool calls are required.
+- Always include the year alongside any reported value.
+- If the response includes `warnings`, relay relevant ones to the user.
+
+## Reference resources
+
+- `unicef://llm-instructions` — full DO/DON'T rules and common mistakes
+- `unicef://context` — runtime context including current date and year
+- `unicef://categories` — all indicator categories
+- `unicef://countries` — ISO3 codes and country names
+- `unicef://glossary` — disaggregation codes and indicator-prefix legend
+"""
+
+
+@mcp.resource("unicef://system-prompt")
+def system_prompt_resource() -> str:
+    """Recommended system prompt for AI assistants connecting to this MCP server.
+
+    Loads at session start. Establishes the operating loop, the temporal-frontier
+    check, and the anti-extrapolation directive that addresses the T2 hallucination
+    failure mode (fabrication when the requested year is beyond the data frontier).
+
+    Pattern adopted from the World Bank data360-mcp `data360://system-prompt`
+    resource — same enforcement layer (skill / system prompt) where structural
+    guardrails sit, not the tool-description layer (which is advisory).
+    """
+    return SYSTEM_PROMPT
+
+
+@mcp.resource("unicef://context")
+def context_resource() -> str:
+    """Runtime context — current date and year.
+
+    The model needs to know what year "now" is to evaluate temporal queries. Without
+    this, the model cannot reliably tell whether a user-requested year is forward of
+    the data frontier (the T2 hallucination failure mode in the unicefstats-mcp
+    benchmark — model fabricates values for future years 36% of the time when this
+    context is missing).
+
+    Pattern adopted from the World Bank data360-mcp `data360://context` resource.
+    """
+    now = datetime.now(timezone.utc)
+    payload = {
+        "current_date": now.strftime("%Y-%m-%d"),
+        "current_year": now.year,
+        "timezone": "UTC",
+        "note": (
+            "Use current_year to sanity-check temporal queries. If a user asks about "
+            "a year > current_year, the data cannot exist yet — respond with "
+            "'No data is available for [year]' and DO NOT extrapolate."
+        ),
+    }
+    return json.dumps(payload, indent=2)
 
 
 @mcp.resource("unicef://glossary")
@@ -1115,7 +1235,7 @@ def get_server_metadata() -> dict[str, Any]:
         "publisher": {
             "name": "Joao Pedro Azevedo",
             "github": "jpazvd",
-            "affiliation": "Independent researcher (not an official UNICEF product)",
+            "status": "Experimental — not an official UNICEF product",
         },
         "canonical_source": "https://github.com/jpazvd/unicefstats-mcp",
         "pypi_package": "https://pypi.org/project/unicefstats-mcp/",

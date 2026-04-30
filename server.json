@@ -3,7 +3,7 @@
   "name": "io.github.jpazvd/unicefstats-mcp",
   "title": "UNICEF Stats MCP",
   "description": "UNICEF child development statistics: 790+ indicators across 200+ countries with disaggregations by sex, age, wealth quintile, and residence. Data sourced from UNICEF SDMX REST API. No API key required.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": {
     "name": "Joao Pedro Azevedo",
     "github": "jpazvd"
@@ -17,7 +17,7 @@
     {
       "registryType": "pypi",
       "identifier": "unicefstats-mcp",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "transport": {
         "type": "stdio"
       },
@@ -36,6 +36,8 @@
   ],
   "resources": [
     "unicef://llm-instructions",
+    "unicef://system-prompt",
+    "unicef://context",
     "unicef://categories",
     "unicef://countries",
     "unicef://glossary"
@@ -55,8 +57,8 @@
     "authentication": "none"
   },
   "provenance": {
-    "publisher": "jpazvd (individual researcher)",
-    "institutional_affiliation": "Independent — not an official UNICEF product",
+    "publisher": "jpazvd",
+    "institutional_affiliation": "Experimental — not an official UNICEF product",
     "publishing_method": "GitHub Actions via PyPI Trusted Publishing (OIDC)",
     "verification": {
       "source_repo": "https://github.com/jpazvd/unicefstats-mcp",
