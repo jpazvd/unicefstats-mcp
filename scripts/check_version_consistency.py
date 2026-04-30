@@ -289,12 +289,15 @@ def check_tool_count() -> list[str]:
             description = m.group(2).lower()
             # Heuristic: the unicefstats-mcp row mentions `search` and either
             # `metadata` or `data` (the project's own workflow keywords).
-            if "search" in description and ("metadata" in description or "data" in description):
-                if claimed != actual:
-                    errors.append(
-                        f"README.md:{line_no} claims {claimed} tools "
-                        f"(unicefstats-mcp row); server.py has {actual}"
-                    )
+            is_unicefstats_row = (
+                "search" in description
+                and ("metadata" in description or "data" in description)
+            )
+            if is_unicefstats_row and claimed != actual:
+                errors.append(
+                    f"README.md:{line_no} claims {claimed} tools "
+                    f"(unicefstats-mcp row); server.py has {actual}"
+                )
 
     return errors
 
