@@ -28,9 +28,8 @@ class TestSearchIndicators:
     @patch("unicefstats_mcp.server._get_indicators", return_value=MOCK_INDICATORS)
     def test_no_results(self, _mock):
         result = search_indicators(query="nonexistentxyz", limit=10)
-        assert result["total_matches"] == 0
-        assert result["showing"] == 0
-        assert "No matches" in result["tip"]
+        assert result["status"] == "no_data"
+        assert "No indicators match" in result["error"]
 
     @patch("unicefstats_mcp.server._get_indicators", return_value=MOCK_INDICATORS)
     def test_limit_applied(self, _mock):

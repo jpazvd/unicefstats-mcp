@@ -103,8 +103,9 @@ class TestGetData:
         assert result["rows_returned"] == 3
         assert result["total_rows_available"] == 10
         assert result["rows_truncated"] is True
-        assert "tip" in result
-        assert "Showing 3 of 10" in result["tip"]
+        assert result["data_completeness"] == "truncated"
+        assert "warnings" in result
+        assert any("3 of 10" in w for w in result["warnings"])
 
     @patch("unicefstats_mcp.server._get_ud")
     def test_disaggregation_summary(self, mock_ud, disagg_df):

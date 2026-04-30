@@ -176,9 +176,31 @@ def compute_trend(df: pd.DataFrame, window: int = 5) -> dict[str, Any] | None:
     return trends
 
 
-def ok(data: dict[str, Any]) -> dict[str, Any]:
-    """Wrap a successful response with explicit status field."""
-    return {"status": "ok", **data}
+def ok(
+    data: dict[str, Any],
+    *,
+    warnings: list[str] | None = None,
+    data_completeness: str = "complete",
+) -> dict[str, Any]:
+    """Wrap a successful response with status, source, and optional warnings.
+
+    Args:
+        data: The response payload.
+        warnings: Optional list of human-readable caveats about the data.
+        data_completeness: One of "complete", "partial", "truncated".
+            - "complete": all requested data was returned
+            - "partial": some countries/years had no data, or dimensions are missing
+            - "truncated": row limit was hit, more data exists
+    """
+    result: dict[str, Any] = {
+        "status": "ok",
+        "source": "UNICEF Data Warehouse via SDMX API",
+        "data_completeness": data_completeness,
+        **data,
+    }
+    if warnings:
+        result["warnings"] = warnings
+    return result
 
 
 def error(message: str, tip: str | None = None, no_data: bool = False) -> dict[str, Any]:
@@ -193,7 +215,8 @@ def error(message: str, tip: str | None = None, no_data: bool = False) -> dict[s
     if tip:
         result["tip"] = tip
     if no_data:
-        result["data_status"] = "confirmed_absent"
+        result["status"] = "no_data"
+        result["data_completeness"] = "empty"
         result["instruction"] = (
             "This result is authoritative: the UNICEF Data Warehouse was queried "
             "and confirmed this data does not exist. Do NOT provide an estimate "

@@ -248,6 +248,14 @@ def search_indicators(query: str, limit: int = 20) -> dict[str, Any]:
     for r in results:
         del r["relevance"]
 
+    if not results:
+        return error(
+            f"No indicators match '{query}'.",
+            tip="Try broader terms like 'health', 'education', 'nutrition', "
+            "or use list_categories() to browse topics.",
+            no_data=True,
+        )
+
     return ok(
         {
             "query": query,
@@ -257,8 +265,6 @@ def search_indicators(query: str, limit: int = 20) -> dict[str, Any]:
             "tip": (
                 f"Use get_indicator_info('{results[0]['code']}') for full details "
                 "including available disaggregations."
-                if results
-                else "No matches. Try broader terms like 'health', 'education', 'nutrition'."
             ),
         }
     )
@@ -386,7 +392,14 @@ def get_indicator_info(code: str) -> dict[str, Any]:
     if context:
         result.update(context)
 
-    return ok(result)
+    return ok(
+        result,
+        warnings=[
+            "Disaggregation filters listed above are the POSSIBLE dimensions. "
+            "Not all countries or years have data for every disaggregation. "
+            "Actual availability varies — check the data response for what was returned.",
+        ],
+    )
 
 
 @mcp.tool()
@@ -438,6 +451,20 @@ def get_temporal_coverage(code: str) -> dict[str, Any]:
     countries_col = country_col(df)
     n_countries = df[countries_col].nunique() if countries_col in df.columns else 0
 
+    # Detect if this looks like a survey-based indicator (sparse years)
+    warnings: list[str] = [
+        "Not all countries have data for all years. Coverage varies by country.",
+    ]
+    if start_yr and end_yr:
+        year_span = end_yr - start_yr + 1
+        unique_years = len(set(years.unique())) if len(years) > 0 else 0
+        if year_span > 5 and unique_years < year_span * 0.5:
+            warnings.append(
+                "This indicator appears to be survey-based (DHS/MICS) — "
+                "data is collected every 3-5 years, not annually. "
+                "Year gaps are normal and do NOT mean the data is missing."
+            )
+
     return ok(
         {
             "code": code,
@@ -445,8 +472,8 @@ def get_temporal_coverage(code: str) -> dict[str, Any]:
             "end_year": end_yr,
             "latest_year": end_yr,
             "countries_with_data": n_countries,
-            "note": "Not all countries have data for all years. Coverage varies by country.",
-        }
+        },
+        warnings=warnings,
     )
 
 
@@ -554,6 +581,50 @@ def get_data(
     total_rows = len(records)
     records, truncated = apply_limit(records, limit)
 
+    # --- Detect warnings and data completeness ---
+    warnings: list[str] = []
+    completeness = "complete"
+
+    # Check for missing countries (requested but not in results)
+    countries_col = country_col(df)
+    if countries_col in df.columns:
+        returned_countries = set(df[countries_col].str.upper().unique())
+        requested_upper = {c.upper() for c in countries}
+        missing_countries = requested_upper - returned_countries
+        if missing_countries:
+            missing_str = ", ".join(sorted(missing_countries))
+            warnings.append(
+                f"No data returned for: {missing_str}. "
+                "These countries may lack data for this indicator, year range, "
+                "or disaggregation. Do NOT estimate values for missing countries."
+            )
+            completeness = "partial"
+
+    if truncated:
+        completeness = "truncated"
+        filter_tip = ""
+        if disagg_summary:
+            dims = ", ".join(disagg_summary.keys())
+            filter_tip = f" Data contains disaggregations by {dims} — filter to reduce rows."
+        warnings.append(
+            f"Results truncated: showing {len(records)} of {total_rows} rows.{filter_tip}"
+            f" Increase limit (max 500) or narrow filters to see all data."
+        )
+
+    # Check for sparse year coverage (gaps in time series)
+    if "period" in df.columns and start_year is not None and end_year is not None:
+        expected_years = set(range(start_year, end_year + 1))
+        actual_years = set(df["period"].dropna().astype(int).unique())
+        missing_years = expected_years - actual_years
+        if len(missing_years) > len(expected_years) * 0.5 and len(missing_years) > 2:
+            warnings.append(
+                "Sparse year coverage — this indicator may be survey-based "
+                "(DHS/MICS, collected every 3-5 years). Year gaps are expected "
+                "and do NOT indicate missing data. Do NOT interpolate."
+            )
+            if completeness == "complete":
+                completeness = "partial"
+
     result: dict[str, Any] = {
         "indicator": indicator,
         "countries_requested": countries,
@@ -577,7 +648,7 @@ def get_data(
 
     # Source citation — verifiable SDMX API URL
     country_str = "+".join(c.upper() for c in countries)
-    result["source"] = {
+    result["citation"] = {
         "provider": "UNICEF Data Warehouse",
         "api_url": (
             f"https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/"
@@ -585,22 +656,13 @@ def get_data(
             f"?format=csv&startPeriod={start_year or ''}&endPeriod={end_year or ''}"
         ),
         "web_url": "https://data.unicef.org/",
+        "note": "Verify values at the URLs above before citing in publications.",
     }
 
-    if truncated:
-        filter_tip = ""
-        if disagg_summary:
-            dims = ", ".join(disagg_summary.keys())
-            filter_tip = f" Data contains disaggregations by {dims} — filter to reduce rows."
-        result["tip"] = (
-            f"Showing {len(records)} of {total_rows} rows."
-            f"{filter_tip}"
-            f" Or increase limit (max 500)."
-        )
-    else:
+    if not truncated:
         result["tip"] = None
 
-    return ok(result)
+    return ok(result, warnings=warnings or None, data_completeness=completeness)
 
 
 # ---------------------------------------------------------------------------
@@ -913,26 +975,49 @@ LLM_INSTRUCTIONS = """\
 4. **get_data(indicator, countries, ...)** → fetch observations
 5. **get_api_reference(language)** → get code template for reproducible scripts
 
+## Epistemic safety — CRITICAL
+
+Every response from this MCP includes structured metadata you MUST respect:
+
+- **status**: "ok", "no_data", or "error"
+  - "no_data" means the UNICEF database was queried and confirmed absent — do NOT substitute
+  - "error" means the query failed — do NOT guess what the result would have been
+- **data_completeness**: "complete", "partial", "truncated", or "empty"
+  - "partial" means some countries or years had no data — report ONLY what was returned
+  - "truncated" means more rows exist — tell the user and suggest narrowing filters
+  - "empty" means nothing was found — do NOT provide values from training data
+- **warnings[]**: read every warning and relay relevant ones to the user
+
+When data_completeness is "partial" or "truncated", explicitly state what is missing.
+When a country has no data, say "no data available for [country]" — do NOT estimate.
+
 ## DO
 - Always start with search_indicators if you don't know the indicator code
 - Use the EXACT indicator code returned by search (e.g., "CME_MRY0T4", not "under-5 mortality")
 - Use ISO3 country codes (BRA, IND, NGA) — use list_countries() if unsure
 - Report the EXACT numeric value from the tool response — do not round or paraphrase
 - Include the year when reporting a value (e.g., "14.4 per 1,000 live births in 2023")
-- When tool returns data_status: "confirmed_absent", tell the user the data does not exist
+- Check the "warnings" field and relay relevant caveats to the user
+- Distinguish between "no data returned" (indicator exists but no observations) and \
+"indicator not found" (code is wrong)
 
 ## DO NOT
-- Never fabricate or estimate a value when a tool returns "no data" or an error
-- Never use training data to answer when a tool has already been called and returned no results
+- **Never fabricate or estimate a value** when a tool returns "no_data", "error", or empty results
+- **Never use training data** to answer when a tool has already been called and returned no results
+- **Never interpolate** between data points for survey-based indicators (year gaps are normal)
 - Never confuse similar indicators: stunting (HAZ), wasting (WHZ), underweight (WAZ)
 - Never assume the latest year — always check with get_temporal_coverage() or look at the data
 - Never cite a source other than UNICEF Data Warehouse for values retrieved through this MCP
+- **Never report a value for a country that was not in the response**, even if you \
+"know" the value from training
 
 ## Common mistakes
 - Wrong: `get_data("under-5 mortality", ...)` → use the CODE: `get_data("CME_MRY0T4", ...)`
 - Wrong: `get_data("CME_MRY0T4", ["Brazil"])` → use ISO3: `get_data("CME_MRY0T4", ["BRA"])`
 - Wrong: reporting "approximately 15" when tool returned 14.42 → report "14.42"
 - Wrong: "data is not available" then providing an estimate from memory → just say "not available"
+- Wrong: data returned for BRA and IND but not NGA → reporting a value for NGA anyway
+- Wrong: data shows years 2014, 2018, 2022 → reporting values for 2015-2017 by interpolation
 
 ## Indicator families (commonly confused)
 - CME_MRY0T4 = Under-5 mortality (birth to age 5)
