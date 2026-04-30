@@ -86,10 +86,11 @@ def main() -> int:
         print("ERROR: No version strings found.")
         return 1
     elif len(found_values) > 1:
-        print(f"ERROR: Inconsistent versions found: {found_values}")
+        # No "canonical" anchor: string max mis-ranks "0.10.0" < "0.9.0".
+        print(f"ERROR: Inconsistent versions found: {sorted(found_values)}")
         for location, version in versions.items():
-            if version and version != max(found_values):
-                errors.append(f"  MISMATCH: {location} = {version}")
+            if version:
+                errors.append(f"  {location} = {version}")
         for e in errors:
             print(e)
         return 1
