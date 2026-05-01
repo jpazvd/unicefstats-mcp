@@ -6,58 +6,7 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
-## [0.5.1] — 2026-05-01
-
-First PyPI release since v0.3.3 — closes the publish gap that affected
-v0.4.0 and v0.5.0 (both tagged but never reached PyPI). Functionally
-contains all v0.5.0 content plus the CI/sync hardening landed in
-PRs #22, #23, #24, #25, #27, #28.
-
-### Added
-
-- All v0.5.0 features (skipped to PyPI): `unicef://system-prompt`,
-  `unicef://context`, anti-extrapolation directive in
-  `unicef://llm-instructions`, smoke tests for the new resources.
-- 11 deterministic CI consistency checks
-  (`scripts/check_version_consistency.py`): version sync, identity,
-  tool count, manifest, resource count, publisher vocabulary,
-  no-internal-links in public docs.
-- `markdownlint-cli2@0.22.1` job in `tests.yml` with project-tuned
-  `.markdownlint.json` config.
-- Tag-propagation step in `sync-to-public.yml`: `v*` tag pushes on
-  the dev repo now also push the tag to the public repo, so public's
-  `publish.yml` fires on the propagated tag and PyPI accepts (the
-  Trusted Publisher entry is configured for the public repo).
-- 25 new entries in the public landscape inventory
-  (`examples/LANDSCAPE.md`, `examples/LITERATURE_REVIEW.md`,
-  `examples/MCP-DIRECTORY-STATS.md`) — 45 confirmed servers total.
-
-### Changed
-
-- `get_server_metadata().publisher` field rename: `affiliation` →
-  `status`. Applied to `server.py`, `server.json`
-  (`provenance.status`), and `PROVENANCE.md` §2 ("Ownership and
-  Status"). **Breaking** for any downstream consumer that read
-  `metadata.publisher.affiliation` or
-  `server.json.provenance.institutional_affiliation`.
-- `sync-to-public.yml` trigger: `branches: [main]` → `tags: ["v*"]`.
-  Push-to-main no longer fires public sync; only tagged releases do.
-- README repositioned from "individual research project" to
-  "experimental — not an official UNICEF product".
-
-### Fixed
-
-- v0.4.0/v0.5.0 publish failures (`invalid-publisher` from PyPI's OIDC):
-  the publish workflow on the dev repo can never satisfy PyPI's
-  Trusted Publisher claims (configured for the public repo). The new
-  tag-propagation step ensures public's `publish.yml` fires on tag,
-  which does match. See Issue #26.
-- v0.5.0 sync failure: literal canary string in `RELEASE.md` from a
-  documentation commit caused the sync gate to fire correctly. PR #25
-  rephrased to reference "the project's documented canary string"
-  rather than embedding the literal in a synced doc.
-
-## [0.5.0] — 2026-04-30 *(never reached PyPI — superseded by v0.5.1)*
+## [0.5.0] — 2026-04-30
 
 ### Added
 
