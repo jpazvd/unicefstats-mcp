@@ -2,6 +2,8 @@
 
 All notable changes to unicefstats-mcp are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+**Package:** [pypi.org/project/unicefstats-mcp](https://pypi.org/project/unicefstats-mcp/) · **Source:** [github.com/jpazvd/unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp)
+
 ## [Unreleased]
 
 ## [0.5.0] — 2026-04-30

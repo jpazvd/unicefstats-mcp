@@ -64,7 +64,9 @@ This document describes how to publish a new version of `unicefstats-mcp` to PyP
 
 ### 3. Automated pipeline (hands-off)
 
-Pushing the tag triggers the `publish.yml` workflow, which:
+Pushing a `v*` tag fans out to **two** workflows in parallel — both trigger off the same tag, so a single `git push origin vX.Y.Z` ships the release atomically to PyPI and the public mirror.
+
+**Workflow A — `publish.yml` (PyPI release):**
 
 1. **Validates** version consistency, semver format, tag alignment, changelog entry
 2. **Checks** that the version does not already exist on PyPI
@@ -72,7 +74,17 @@ Pushing the tag triggers the `publish.yml` workflow, which:
 4. **Publishes** to PyPI via Trusted Publishing (OIDC, no tokens)
 5. **Verifies** the published package installs correctly from PyPI
 
-Monitor the workflow at: `https://github.com/jpazvd/unicefstats-mcp/actions/workflows/publish.yml`
+Monitor at: [github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/publish.yml](https://github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/publish.yml)
+
+**Workflow B — `sync-to-public.yml` (public mirror):**
+
+1. **Whitelists** public-safe paths from this dev repo (`src/`, `tests/`, `examples/`, `scripts/`, root files like `README.md`, `CHANGELOG.md`, `pyproject.toml`, `server.json`)
+2. **Verifies** no `internal/` content or the project's documented canary string leaked into staging (the sync workflow itself enforces this — see `.github/workflows/sync-to-public.yml`)
+3. **Pushes** the staging directory to [`jpazvd/unicefstats-mcp:main`](https://github.com/jpazvd/unicefstats-mcp) via the `PUBLIC_DEPLOY_KEY` SSH key
+
+Monitor at: [github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/sync-to-public.yml](https://github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/sync-to-public.yml)
+
+> **Cadence note**: Only tagged releases sync to public. Doc fixes between tags stay on the dev repo unless you run `sync-to-public.yml` manually via Actions UI (`workflow_dispatch`). This prevents in-flight refactors and intermediate states from leaking publicly.
 
 ### 4. Post-release verification
 

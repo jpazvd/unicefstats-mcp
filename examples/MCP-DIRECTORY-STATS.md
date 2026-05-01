@@ -1,6 +1,6 @@
 # MCP Server Directory
 
-Comprehensive list of pre-built MCP servers researched March 2026.
+Comprehensive list of pre-built MCP servers researched March 2026, refreshed April 2026 (45 official-statistics servers confirmed).
 Trust levels: **Official** (vendor-maintained), **High** (1K+ stars, reputable org), **Medium** (100+ stars), **Low** (small/unaudited).
 
 ---
@@ -61,7 +61,7 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 
 ## 5. OFFICIAL STATISTICS & INTERNATIONAL DATA
 
-### 5a. UN Agencies
+### 5a. UN Agencies and Global Aggregators
 
 | Server | Install | What it does | Tools | SDMX | Stars | Trust |
 |--------|---------|-------------|-------|------|-------|-------|
@@ -69,6 +69,10 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 | [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) | Clone + run | Generic SDMX server, any registry (defaults UNICEF), 0% hallucination | 23 | Yes | — | Low |
 | [unicef-datawarehouse-mcp](https://github.com/tryolabs/unicef-datawarehouse-mcp) | Clone + run | UNICEF dataflows via SDMX (by Tryolabs) | 3 | Yes | 0 | Low |
 | [mcp_unhcr](https://github.com/rvibek/mcp_unhcr) | Clone + run | UNHCR refugee populations, demographics, asylum decisions | 5 | No | 0 | Low |
+| [unhcr-mcp-server](https://github.com/shahzadarain/unhcr-mcp-server) | Clone + run | UNHCR refugee data (alternative implementation) | — | No | — | Low |
+| [UNCHR_MCP_Server](https://github.com/mhadeli/UNCHR_MCP_Server) | Clone + run | UNHCR refugee data (third implementation) | — | No | — | Low |
+| [agent-toolkit (Data Commons)](https://github.com/datacommonsorg/agent-toolkit) | Clone + run | Google Data Commons graph: UN agencies, government surveys, census, climate | — | No | — | **Official** |
+| [faostat-mcp](https://github.com/berba-q/faostat-mcp) | Clone + run | **Official-style FAO** community MCP, FAOSTAT 245 countries, 1961–present, 3-tier caching (v1.2.2, April 2026) | 21 | No | — | Low |
 | [medical-mcp](https://github.com/JamesANZ/medical-mcp) | `npm install medical-mcp` | WHO GHO, FDA, PubMed, RxNorm — 18 medical/health tools | 18 | No | 78 | Medium |
 
 ### 5b. International Organizations
@@ -76,22 +80,37 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 | Server | Install | What it does | Tools | SDMX | Stars | Trust |
 |--------|---------|-------------|-------|------|-------|-------|
 | [fred-mcp-server](https://github.com/stefanoamorelli/fred-mcp-server) | `npm install fred-mcp-server` | 800,000+ FRED time series (GDP, CPI, rates) | 3 | No | 72 | Medium |
+| [data360-mcp](https://github.com/worldbank/data360-mcp) | Clone + `uv sync` | **Official** World Bank Data360 (active maintenance, last push 2026-04-29) — first bank-official server with anti-hallucination reasoning templates built in | — | No | — | **Official** |
 | [world_bank_mcp_server](https://github.com/anshumax/world_bank_mcp_server) | via Smithery | World Bank Open Data: population, poverty, GDP (200+ countries) | 1 | No | 45 | Low |
-| [world-bank-data-mcp](https://github.com/llnOrmll/world-bank-data-mcp) | Clone + `uv sync` | World Bank Data360: WDI, HNP, GDF, IDS (1,000+ indicators) | 5 | No | 0 | Low |
+| [world-bank-data-mcp](https://github.com/llnormll/world-bank-data-mcp) | Clone + `uv sync` | World Bank Data360: WDI, HNP, GDF, IDS (1,000+ indicators) | 5 | No | 0 | Low |
+| [worldbank-mcp-server](https://github.com/Mich120232024/worldbank-mcp-server) | Clone + run | World Bank Open Data (community alt) | — | No | — | Low |
+| [macronorm-mcp](https://github.com/donkachii/macronorm-mcp) | Clone + run | Unified IMF + World Bank + FRED interface (March 2026) | — | No | — | Low |
 | [imf-data-mcp](https://github.com/c-cf/imf-data-mcp) | `pip install imf-data-mcp` | IMF datasets: IFS, BOP, WEO, CDIS, CPIS, MFS, FSI via SDMX | 10 | Yes | 7 | Low |
 | [OECD-MCP](https://github.com/isakskogstad/OECD-MCP) | `npm install oecd-mcp` | 5,000+ OECD datasets, 17 categories, 38 countries via SDMX | 9 | Yes | 1 | Low |
 | [eurostat-mcp](https://github.com/ano-kuhanathan/eurostat-mcp) | Clone + run | Eurostat EU statistics via SDMX 3.0 + Comext SDMX 2.1 | 7 | Yes | 2 | Low |
+| [ecb-mcp](https://github.com/scka-de/ecb-mcp) | Clone + run | European Central Bank statistics (community) | — | Yes | — | Low |
+| [European-Parliament-MCP-Server](https://github.com/Hack23/European-Parliament-MCP-Server) | Clone + run | European Parliament data | — | No | — | Low |
 
 ### 5c. National Statistics Offices
 
 | Server | Install | What it does | Tools | SDMX | Stars | Trust |
 |--------|---------|-------------|-------|------|-------|-------|
 | [us-census-bureau-data-api-mcp](https://github.com/uscensusbureau/us-census-bureau-data-api-mcp) | Clone + run | **Official** US Census Bureau data, demographics, FIPS codes | 5 | No | 57 | **High** |
+| [open-census-mcp-server](https://github.com/brockwebb/open-census-mcp-server) | Clone + run | US Census community alternative | — | No | — | Low |
 | [us-gov-open-data-mcp](https://github.com/lzinga/us-gov-open-data-mcp) | `npm install us-gov-open-data-mcp` | 40+ US Gov APIs (Treasury, FRED, BLS, BEA, FDA, EPA, SEC) | 300+ | No | 91 | Medium |
+| [datagov-mcp-server](https://github.com/melaodoidao/datagov-mcp-server) | Clone + run | Data.gov general access | — | No | — | Low |
+| [esankhyiki-mcp](https://github.com/nso-india/esankhyiki-mcp) | Clone + run | **Official** India MoSPI (Feb 2026 beta) — first developing-country NSO official server, covers PLFS, CPI, GDP, 5 other datasets | — | No | — | **Official** |
+| [datagouv-mcp](https://github.com/datagouv/datagouv-mcp) | Clone + run | **Official** France data.gouv.fr (Feb 2026, "world first" for a national open data platform, free, no API key) | — | No | — | **Official** |
 | [ibge-br-mcp](https://github.com/SidneyBissoli/ibge-br-mcp) | `npm install ibge-br-mcp` | Brazil IBGE: demographics, SIDRA, census, 227 tests, 97% coverage | 22 | No | — | Low |
 | [ukrainian-stats-mcp-server](https://github.com/VladyslavMykhailyshyn/ukrainian-stats-mcp-server) | `npm install ukrainian-stats-mcp-server` | Ukraine State Statistics via SDMX v3 | 8 | Yes | 49 | Low |
 | [istat_mcp_server](https://github.com/ondata/istat_mcp_server) | Clone + run | Italy ISTAT via SDMX, two-layer caching, rate limiting | 7 | Yes | 1 | Low |
 | [mcp-server-abs](https://github.com/seansoreilly/mcp-server-abs) | Clone + run | Australia ABS via SDMX-ML | 1 | Yes | 7 | Low |
+| [destatis-mcp](https://github.com/inooLabs/destatis-mcp) | Clone + run | Germany Destatis (community) | — | — | — | Low |
+| [inegi-mcp-server](https://github.com/gchavez83/inegi-mcp-server) | Clone + run | Mexico INEGI (community) | — | — | — | Low |
+| [Kolada-MCP](https://github.com/isakskogstad/Kolada-MCP) | Clone + run | Sweden Kolada (municipal-level data, community) | — | — | — | Low |
+| [nso1212-mcp](https://github.com/tsedenbaljir/nso1212-mcp) | Clone + run | Mongolia NSO (1212.mn, community) | — | — | — | Low |
+| [israel-statistics-mcp](https://github.com/reuvenaor/israel-statistics-mcp) | Clone + run | Israel CBS (community) | — | — | — | Low |
+| [data-go-mcp-servers](https://github.com/Koomook/data-go-mcp-servers) | Clone + run | South Korea data.go.kr (community, multi-server monorepo) | — | — | — | Low |
 | [mcp-cbs-cijfers-open-data](https://github.com/dstotijn/mcp-cbs-cijfers-open-data) | Clone + run | Netherlands CBS Open Data (Go) | 7 | No | 7 | Low |
 | [gov-ca-mcp](https://github.com/krunal16-c/gov-ca-mcp) | Clone + run | Canada Open Gov: 250K+ datasets + Statistics Canada | 7 | No | 1 | Low |
 
@@ -101,9 +120,17 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 |--------|---------|-------------|-------|------|-------|-------|
 | [cluster-mcp](https://github.com/baraninja/cluster-mcp) | Clone + run | 6-server monorepo: World Bank, Eurostat, OECD, ILO, WHO, Comtrade | 29 | Yes | 1 | Low |
 
+### 5e. Registries and Discovery (not servers themselves)
+
+| Resource | Type | What it does | Trust |
+|---|---|---|---|
+| [fed-data-mcp-registry](https://github.com/GSA-TTS/fed-data-mcp-registry) | Curated registry | **Official** US GSA-TTS curated registry of federal data MCPs — directory/discovery aid, not an MCP server itself | **Official** |
+
 ### Known gaps (no MCP server exists)
 
-FAO/FAOSTAT, UNESCO/UIS, ILO/ILOSTAT (dedicated), UNDP/HDI, UNSD SDG API, UN DESA Population, UNAIDS, WFP.
+UNESCO/UIS, ILO/ILOSTAT (dedicated), UNDP/HDI, UNSD SDG API, UN DESA Population, UNAIDS, WFP, WHO (dedicated — partial coverage via medical-mcp), BIS, WTO, IAEA. National offices still missing: Statistics Canada (dedicated, vs. gov-ca-mcp), Stats NZ, Statistics Korea (different from data.go.kr), INDEC (Argentina), Statistics Sweden SCB, Statistics Norway SSB, Statistics Finland, Japan e-Stat (separate from public-data portals).
+
+FAO was a long-standing gap until April 2026, now filled by the community [faostat-mcp](https://github.com/berba-q/faostat-mcp) (245 countries, 1961–present, 21 tools).
 
 ---
 
