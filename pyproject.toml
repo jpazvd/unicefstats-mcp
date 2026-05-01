@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "unicefstats-mcp"
-version = "0.5.0"
+version = "0.5.1"
 description = "MCP server for UNICEF child development statistics — 790+ child-focused indicators, 200+ countries, disaggregations by sex/age/wealth/residence. No API key required."
 readme = "README.md"
 license = "MIT"
