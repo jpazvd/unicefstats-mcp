@@ -29,16 +29,16 @@ UNICEF Data Warehouse (primary source)
 
 No transformation is applied to the data values. The MCP reformats the output for LLM consumption (compact/full JSON) and adds metadata (summaries, pagination, tips), but the underlying numbers are passed through as received from the API.
 
-## 2. Ownership and Affiliation
+## 2. Ownership and Status
 
 | Property | Value |
 |---|---|
 | **Publisher / maintainer** | Joao Pedro Azevedo ([`jpazvd`](https://github.com/jpazvd)) |
-| **Institutional affiliation** | Independent researcher |
+| **Status** | Experimental — not an official UNICEF product |
 | **Relationship to UNICEF** | The maintainer is affiliated with UNICEF but this is **not an official UNICEF product** |
 | **License** | MIT |
 
-This MCP server is an independent research project. It does not represent the views or policies of UNICEF. The "UNICEF" in the name refers to the data source, not to institutional endorsement.
+This MCP server is an experimental project. It does not represent the views or policies of UNICEF. The "UNICEF" in the name refers to the data source, not to institutional endorsement.
 
 ### What this means for users
 
