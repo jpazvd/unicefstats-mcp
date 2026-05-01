@@ -27,3 +27,19 @@ jobs:
         run: mypy src/unicefstats_mcp/
       - name: Test
         run: pytest tests/ -v --cov=unicefstats_mcp --cov-report=xml
+
+  markdownlint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Lint Markdown
+        # markdownlint-cli2 is fast, no install step needed (npx fetches it).
+        # Version pinned to stabilise CI — major/minor releases of
+        # markdownlint-cli2 can change rule defaults or behavior. Bump
+        # this number deliberately when you want the upstream change.
+        # Config in .markdownlint.json. Use glob negation (#) to skip internal/
+        # — those are draft-only files that don't sync to the public mirror.
+        run: npx --yes markdownlint-cli2@0.22.1 "**/*.md" "#internal/**"

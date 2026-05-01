@@ -14,6 +14,7 @@ A clear description of what went wrong.
 
 1. Tool called: `get_data(...)` / `search_indicators(...)` / ...
 2. Parameters used:
+
    ```json
    {
      "indicator": "...",
@@ -21,6 +22,7 @@ A clear description of what went wrong.
      "start_year": ...
    }
    ```
+
 3. What happened:
 4. What you expected:
 

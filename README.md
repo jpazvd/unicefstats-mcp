@@ -101,6 +101,7 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 This project is part of a growing ecosystem of MCP servers for international and official statistics. As of March 2026:
 
 ### UN Agencies
+
 | Server | Data Source | Tools | SDMX | Published |
 |---|---|---|---|---|
 | **unicefstats-mcp** (this repo) | UNICEF Data Warehouse | 7 | Yes | PyPI |
@@ -110,6 +111,7 @@ This project is part of a growing ecosystem of MCP servers for international and
 | [medical-mcp](https://github.com/JamesANZ/medical-mcp) | WHO GHO / FDA / PubMed | 18 | No | npm |
 
 ### International Organizations
+
 | Server | Data Source | Tools | SDMX | Published |
 |---|---|---|---|---|
 | [fred-mcp-server](https://github.com/stefanoamorelli/fred-mcp-server) | FRED (800K+ series) | 3 | No | npm |
@@ -119,6 +121,7 @@ This project is part of a growing ecosystem of MCP servers for international and
 | [eurostat-mcp](https://github.com/ano-kuhanathan/eurostat-mcp) | Eurostat EU statistics | 7 | Yes | No |
 
 ### National Statistics Offices
+
 | Server | Data Source | Tools | Published |
 |---|---|---|---|
 | [us-census-bureau-data-api-mcp](https://github.com/uscensusbureau/us-census-bureau-data-api-mcp) | US Census Bureau (official) | 5 | No |
@@ -128,6 +131,7 @@ This project is part of a growing ecosystem of MCP servers for international and
 | [istat_mcp_server](https://github.com/ondata/istat_mcp_server) | Italy ISTAT SDMX | 7 | No |
 
 ### Known gaps
+
 No MCP server exists for: **FAO/FAOSTAT**, **UNESCO/UIS** (4,000+ education indicators), **ILO/ILOSTAT**, **UNSD SDG API**, **UN DESA Population**, **UNDP/HDI**.
 
 Full directory with install commands: [MCP-DIRECTORY-STATS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md)
@@ -232,6 +236,7 @@ The `system-prompt` and `context` resources address the T2 hallucination failure
 ```
 >>> search_indicators("stunting", limit=3)
 ```
+
 ```json
 {
   "query": "stunting",
@@ -251,6 +256,7 @@ The `system-prompt` and `context` resources address the T2 hallucination failure
 ```
 >>> get_indicator_info("CME_MRY0T4")
 ```
+
 ```json
 {
   "code": "CME_MRY0T4",
@@ -271,6 +277,7 @@ The `system-prompt` and `context` resources address the T2 hallucination failure
 ```
 >>> get_temporal_coverage("CME_MRY0T4")
 ```
+
 ```json
 {
   "code": "CME_MRY0T4",
@@ -287,6 +294,7 @@ The `system-prompt` and `context` resources address the T2 hallucination failure
 ```
 >>> get_data("CME_MRY0T4", ["BRA", "IND", "NGA"], start_year=2018, end_year=2023)
 ```
+
 ```json
 {
   "indicator": "CME_MRY0T4",
@@ -333,6 +341,7 @@ Key insights an AI assistant would extract from this:
 ```
 >>> get_api_reference("r", "unicefData")
 ```
+
 ```json
 {
   "language": "r",

@@ -87,9 +87,11 @@ Three tiers:
 ## 5. Scaling Strategy
 
 ### Phase 1: Extract the template (near-term)
+
 Pull the reusable components into a standalone repository — `mcp-official-stats-template` — with placeholder slots where an agency plugs in its own data source. Include the response envelope, anti-fabrication layer, provenance model, CI checks, and publishing pipeline.
 
 ### Phase 2: Pilot with 2–3 agencies (medium-term)
+
 Test the template against other SDMX-based data warehouses:
 - **WHO Global Health Observatory** — similar indicator structure, SDMX-based
 - **ILO ILOSTAT** — labour statistics, SDMX REST API
@@ -98,9 +100,11 @@ Test the template against other SDMX-based data warehouses:
 Each pilot answers: Do the safety patterns generalize? What breaks?
 
 ### Phase 3: Propose standards for a UN MCP Registry (longer-term)
+
 Once multiple agencies have working servers, propose the response envelope and provenance model as minimum requirements for a curated "UN MCP Registry" — a directory of AI-ready data servers that meet shared trust standards. This aligns with ongoing UN Data Commons efforts.
 
 ### Phase 4: National statistical offices
+
 Extend to national statistical offices that publish via SDMX or similar APIs. The same problem applies at the national level: an AI querying Brazil's IBGE should not fabricate state-level data any more than it should fabricate country-level UNICEF data.
 
 ## 6. Next Features, Ranked by Impact
@@ -137,8 +141,8 @@ Extend to national statistical offices that publish via SDMX or similar APIs. Th
 
 ## References
 
-- Azevedo, J. P. (2025). *unicefstats-mcp: UNICEF Statistics MCP Server.* GitHub. https://github.com/jpazvd/unicefstats-mcp
-- Model Context Protocol Specification. https://spec.modelcontextprotocol.io/
-- UNICEF Data Warehouse. https://data.unicef.org/
-- SDMX REST API v2.1. https://sdmx.data.unicef.org/
-- UN Fundamental Principles of Official Statistics. https://unstats.un.org/unsd/dnss/gp/fundprinciples.aspx
+- Azevedo, J. P. (2025). *unicefstats-mcp: UNICEF Statistics MCP Server.* GitHub. <https://github.com/jpazvd/unicefstats-mcp>
+- Model Context Protocol Specification. <https://spec.modelcontextprotocol.io/>
+- UNICEF Data Warehouse. <https://data.unicef.org/>
+- SDMX REST API v2.1. <https://sdmx.data.unicef.org/>
+- UN Fundamental Principles of Official Statistics. <https://unstats.un.org/unsd/dnss/gp/fundprinciples.aspx>

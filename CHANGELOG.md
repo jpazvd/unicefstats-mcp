@@ -7,25 +7,30 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 ## [0.5.0] — 2026-04-30
 
 ### Added
+
 - **`unicef://system-prompt` resource** — recommended system prompt that AI assistants load at session start. Establishes the operating loop (search → coverage → frontier-check → data → answer) and embeds the temporal-frontier rule that addresses the T2 hallucination failure mode (model fabricating values for years beyond the data frontier — measured at 36% T2 Clean ER on the v4 benchmark with R1+R2 pooled). Pattern adopted from World Bank's [data360-mcp `data360://system-prompt`](https://github.com/worldbank/data360-mcp).
 - **`unicef://context` resource** — runtime context returning `current_date` and `current_year` so the model can sanity-check temporal queries before calling tools. Without this, the model has no reliable way to evaluate "is the user's requested year > current year?" Pattern adopted from data360-mcp's `data360://context`.
 - **Anti-extrapolation directive in `unicef://llm-instructions`** — concrete behavioral rule with forbidden-phrase list ("approximately", "projected", "based on the trend", "extrapolating") so the model cannot satisfy "do not estimate" while still composing a hedged numeric forecast. Names the user-visible required text ("No data is available for [year]") rather than relying on abstract "do not fabricate" guidance.
 - **Smoke tests** for the two new resources (`tests/test_prompts_resources.py::test_system_prompt_resource`, `test_context_resource`) — verify operating-loop tool names, temporal-frontier rule, forbidden phrases, and that `unicef://context` returns valid JSON with `current_year` matching `datetime.now(timezone.utc).year`.
 
 ### Changed
+
 - Version bump: `__init__.py`, `pyproject.toml`, `server.json` (both occurrences), and FastMCP constructor in `server.py` synchronized to 0.5.0.
 - `server.json` resources manifest extended from 4 → 6 entries (adds `unicef://system-prompt` and `unicef://context`).
 - **`get_server_metadata().publisher` field rename** (BREAKING for runtime consumers): `affiliation` → `status`. Applied consistently to all three identity sources — `server.py` `get_server_metadata()` publisher block, `server.json` `provenance.status` (was `institutional_affiliation`), `PROVENANCE.md` §2 (was "Ownership and Affiliation" with "Independent researcher"; now "Ownership and Status" with "Experimental — not an official UNICEF product"). Any downstream consumer that read `metadata.publisher.affiliation` or `server.json.provenance.institutional_affiliation` must now read the key `status`.
 
 ### Removed
+
 - **`server.json`**: dropped the `packages[]` Docker entry that was added in v0.4.0. The entry advertised `transport.type=sse, port=8000` for an image that was never actually published — PROVENANCE.md §3 confirms Docker is build-from-source only. Removed it so that registry consumers don't infer a published Docker artifact exists.
 
 ### Fixed
+
 - **`scripts/check_version_consistency.py`**: cleaned up mismatch reporting. (a) Dropped the string-lex canonical selection — `max(found_values)` is a string max, not a semver max, so once any component reached two digits the MISMATCH labels would lie about which file was wrong (`max("0.10.0", "0.9.0") == "0.9.0"` lexically). (b) Dropped the redundant per-location loop — `main()`'s top loop already prints every location's version, so rebuilding the same lines into the errors list mixed informational output with `MISSING:` errors. The OK path is unchanged.
 
 ## [0.4.0] — 2026-04-01
 
 ### Added
+
 - **PROVENANCE.md** — comprehensive provenance and trust documentation covering data origin, ownership, distribution pipeline, verification steps, and interpretation caveats aligned with UN Fundamental Principles of Official Statistics
 - **`get_server_metadata()` tool** — machine-readable identity, version, publisher, data source, and provenance information at runtime (8th tool, no API call)
 - **"How to Verify This MCP" section** in README — 6-step verification protocol (source repo, PyPI, version alignment, attestations, runtime, registry)
@@ -35,17 +40,20 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 - **Gated publish workflow** (`publish.yml`) — 4-stage pipeline: validate (version consistency + tag + changelog + PyPI duplicate check) → build → publish (Trusted Publishing) → verify (install from PyPI)
 
 ### Changed
+
 - **server.json** upgraded with full registry metadata — author, license, tools/resources/prompts manifest, data source details, provenance block with verification URLs, Docker transport entry
 - **README key documents table** now includes PROVENANCE.md
 - **README tools table** updated to 8 tools
 - Version bump: 0.3.3 → 0.4.0 across all files (including fix for FastMCP constructor which was stuck at 0.3.2)
 
 ### Fixed
+
 - **Version inconsistency**: FastMCP constructor `version` was "0.3.2" while all other locations were "0.3.3" — now all synchronized at 0.4.0
 
 ## [0.3.0] — 2026-03-26
 
 ### Benchmark Results (v0.3.0 + unicefdata v2.4.0)
+
 - **EQA = 0.990** across 400 positive queries (200 R1 + 200 R2, 40 countries, 0 overlap)
 - **All 10 indicators at EQA >= 0.95** — 7 of 10 at perfect 1.000
 - **Replicated**: R1 EQA = 0.990, R2 EQA = 0.990 (independent country samples)
@@ -55,6 +63,7 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 - **3-way comparison**: unicefstats-mcp (EQA 0.990) vs sdmx-mcp (0.074) vs bare LLM (0.147)
 
 ### Added
+
 - **4 MCP Resources** — preloaded reference data, no tool call needed ([OECD-MCP](https://github.com/isakskogstad/OECD-MCP) pattern)
   - `unicef://llm-instructions` — DO/DON'T rules, workflow guide, common mistakes, indicator families
   - `unicef://categories` — all indicator categories with counts
@@ -74,15 +83,18 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 - **B-only benchmark script** (`03_rerun_condition_b.py`) — reuses existing A responses, runs only MCP condition
 
 ### Fixed
+
 - `if start_year` → `if start_year is not None` — year=0 was silently ignored
 - Non-numeric period values in `get_temporal_coverage` — now extracts 4-digit year prefix as fallback
 - Tool extraction took oldest row instead of latest in `_extract_from_tool_calls`
 
 ### Changed
+
 - Country column detection extracted to `country_col()` helper (was duplicated in 3 places)
 - Version bump: `__init__.py`, `server.py`, `pyproject.toml` all at 0.3.0
 
 ### Documentation
+
 - **Experimental/Research Prototype** disclaimer with human-in-the-loop warning
 - **CONTRIBUTING.md** — dev setup, code style, commit conventions, PR template
 - **CODE_OF_CONDUCT.md** — Contributor Covenant v2.1
@@ -96,6 +108,7 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 ## [0.2.0] — 2026-03-23
 
 ### Added
+
 - **EQA benchmark pipeline** — ground truth from UNICEF SDMX API, Anthropic API calls for both conditions
   - `00_build_ground_truth.py` — fetches, classifies, samples 300 queries
   - `benchmark_eqa.py` — runs A/B benchmark, saves to parquet
@@ -108,6 +121,7 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 - **Refusal detection** in value extraction pipeline
 
 ### Results
+
 - **v1.3 definitive**: EQA = 0.785 (latest), 0.843 (direct) — 7/10 indicators at perfect 1.000
 - **Wilcoxon signed-rank**: p = 1.64e-14, Cohen's d = 1.34 (large effect)
 - **T2 hallucination**: 38% (MCP) vs 12% (alone) — driven by ground truth misclassification
@@ -115,6 +129,7 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 ## [0.1.0] — 2026-03-22
 
 ### Added
+
 - Initial scaffold — 7 MCP tools + 2 prompts wrapping the `unicefdata` Python package
 - Tools: `search_indicators`, `list_categories`, `list_countries`, `get_indicator_info`, `get_temporal_coverage`, `get_data`, `get_api_reference`
 - Prompts: `compare_indicators`, `write_unicefdata_code`
@@ -127,6 +142,7 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 - README with demo, comparison tables, deployment guide
 
 ### Sources and influences
+
 - **EQA metric**: Azevedo, J.P. (2025). "AI Reliability for Official Statistics." [RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)
 - **MCP design**: [FastMCP](https://github.com/jlowin/fastmcp) framework
 - **Data layer**: [unicefdata](https://github.com/unicef-drp/unicefData) Python package

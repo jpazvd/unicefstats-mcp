@@ -14,6 +14,7 @@ Seed: 20260322
 | Effect size interpretation | large | |
 
 ### Component contribution to EQA gain (baseline_latest)
+
 - dER: +0.340 [+0.210, +0.460]
 - dYA: +0.547 [+0.450, +0.642]
 - dVA: +0.442 [+0.339, +0.542]
@@ -29,12 +30,14 @@ Seed: 20260322
 | Effect size interpretation | large | |
 
 ### Component contribution to EQA gain (direct)
+
 - dER: +0.730 [+0.600, +0.840]
 - dVA: +0.722 [+0.611, +0.822]
 
 ## 2. Hallucination analysis
 
 ### HALLUCINATION_T1 (n=50)
+
 - A hallucination rate: 12% (6/50)
 - B hallucination rate: 14% (7/50)
 - McNemar's test: chi2=0.00, p=1.0000
@@ -54,6 +57,7 @@ Seed: 20260322
   - NT_ANT_WHZ_NE2: A=1/5, B=0/5, Fisher p=1.000
 
 ### HALLUCINATION_T2 (n=50)
+
 - A hallucination rate: 12% (6/50)
 - B hallucination rate: 38% (19/50)
 - McNemar's test: chi2=9.60, p=0.0019

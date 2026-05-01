@@ -33,5 +33,5 @@ This MCP server:
 ## Provenance
 
 - All releases are published to PyPI from GitHub Actions via Trusted Publishing (OIDC)
-- Source code is available at https://github.com/jpazvd/unicefstats-mcp
+- Source code is available at <https://github.com/jpazvd/unicefstats-mcp>
 - The package is maintained by Joao Pedro Azevedo (`jpazvd`)

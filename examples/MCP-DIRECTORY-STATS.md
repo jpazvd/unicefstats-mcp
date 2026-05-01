@@ -7,7 +7,7 @@ Trust levels: **Official** (vendor-maintained), **High** (1K+ stars, reputable o
 
 ## 1. OFFICIAL REFERENCE SERVERS (modelcontextprotocol/servers)
 
-Repo: https://github.com/modelcontextprotocol/servers (81K stars)
+Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 
 | Server | Install | Purpose | Trust |
 |--------|---------|---------|-------|
@@ -309,11 +309,11 @@ FAO/FAOSTAT, UNESCO/UIS, ILO/ILOSTAT (dedicated), UNDP/HDI, UNSD SDG API, UN DES
 
 ## RESOURCES
 
-- **Official MCP Registry:** https://registry.modelcontextprotocol.io/
-- **Awesome MCP Servers:** https://github.com/punkpeye/awesome-mcp-servers
-- **Awesome MCP (wong2):** https://github.com/wong2/awesome-mcp-servers
-- **Smithery.ai:** https://smithery.ai/ (6,000+ servers)
-- **PulseMCP:** https://www.pulsemcp.com/
-- **mcpservers.org:** https://mcpservers.org/
-- **MCP Security Audits:** https://github.com/ModelContextProtocol-Security
-- **Vulnerable MCP Database:** https://vulnerablemcp.info/
+- **Official MCP Registry:** <https://registry.modelcontextprotocol.io/>
+- **Awesome MCP Servers:** <https://github.com/punkpeye/awesome-mcp-servers>
+- **Awesome MCP (wong2):** <https://github.com/wong2/awesome-mcp-servers>
+- **Smithery.ai:** <https://smithery.ai/> (6,000+ servers)
+- **PulseMCP:** <https://www.pulsemcp.com/>
+- **mcpservers.org:** <https://mcpservers.org/>
+- **MCP Security Audits:** <https://github.com/ModelContextProtocol-Security>
+- **Vulnerable MCP Database:** <https://vulnerablemcp.info/>

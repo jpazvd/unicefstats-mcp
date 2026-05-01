@@ -77,9 +77,11 @@ This MCP may appear in third-party directories (LobeHub, Smithery, mcp.so, Glama
 ### For users installing the package
 
 1. **Verify the PyPI package**:
+
    ```bash
    pip show unicefstats-mcp
    ```
+
    Check that `Home-page` points to `https://github.com/jpazvd/unicefstats-mcp`.
 
 2. **Verify the source repository**:
@@ -91,9 +93,11 @@ This MCP may appear in third-party directories (LobeHub, Smithery, mcp.so, Glama
    - Check that release files have attestations linking back to the GitHub Actions workflow.
 
 4. **Verify version alignment**:
+
    ```bash
    python -c "import unicefstats_mcp; print(unicefstats_mcp.__version__)"
    ```
+
    Compare with the version shown on PyPI and in `server.json`.
 
 ### For MCP registry operators

@@ -25,6 +25,7 @@ This document describes how to publish a new version of `unicefstats-mcp` to PyP
   - `src/unicefstats_mcp/server.py` — `FastMCP(version="X.Y.Z", ...)`
 
 - [ ] **Run version consistency check**:
+
   ```bash
   python scripts/check_version_consistency.py --check-changelog
   ```
@@ -32,6 +33,7 @@ This document describes how to publish a new version of `unicefstats-mcp` to PyP
 - [ ] **Update CHANGELOG.md** — add a section for `[X.Y.Z]` with date and changes
 
 - [ ] **Run full test suite**:
+
   ```bash
   ruff check src/ tests/
   mypy src/unicefstats_mcp/
@@ -41,17 +43,20 @@ This document describes how to publish a new version of `unicefstats-mcp` to PyP
 ### 2. Commit and tag
 
 - [ ] **Commit version bump**:
+
   ```bash
   git add pyproject.toml server.json src/unicefstats_mcp/__init__.py src/unicefstats_mcp/server.py CHANGELOG.md
   git commit -m "release: vX.Y.Z"
   ```
 
 - [ ] **Create annotated tag**:
+
   ```bash
   git tag -a vX.Y.Z -m "Release vX.Y.Z"
   ```
 
 - [ ] **Push commit and tag**:
+
   ```bash
   git push origin main
   git push origin vX.Y.Z
@@ -74,6 +79,7 @@ Monitor the workflow at: `https://github.com/jpazvd/unicefstats-mcp/actions/work
 - [ ] **Check PyPI**: [pypi.org/project/unicefstats-mcp](https://pypi.org/project/unicefstats-mcp/)
 - [ ] **Check attestations**: [pypi.org/project/unicefstats-mcp/#files](https://pypi.org/project/unicefstats-mcp/#files)
 - [ ] **Test installation**:
+
   ```bash
   pip install unicefstats-mcp==X.Y.Z
   python -c "import unicefstats_mcp; print(unicefstats_mcp.__version__)"

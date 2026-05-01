@@ -47,6 +47,7 @@ The MCP ecosystem for official statistics emerged in late 2024 and accelerated r
 ## Architectural Generations
 
 ### Generation 1: Direct API wrappers (2024-Q4)
+
 **Pattern:** Thin wrapper around a single REST API. One tool = one endpoint.
 
 | Server | Approach | Limitation |
@@ -58,6 +59,7 @@ The MCP ecosystem for official statistics emerged in late 2024 and accelerated r
 **Weaknesses:** Raw API responses overwhelm LLM context. No validation, no error guidance.
 
 ### Generation 2: SDMX-native servers (2025-Q1–Q2)
+
 **Pattern:** Direct SDMX protocol implementation. Expose structural queries (dataflows, dimensions, codelists) as tools.
 
 | Server | Approach | Innovation |
@@ -71,6 +73,7 @@ The MCP ecosystem for official statistics emerged in late 2024 and accelerated r
 **Weaknesses:** Many tools → LLM tool selection confusion. Raw SDMX-JSON is hard for LLMs to parse (VA=0.11 in our benchmark).
 
 ### Generation 3: Quality-engineered servers (2025-Q3)
+
 **Pattern:** Structured caching, comprehensive testing, modular architecture.
 
 | Server | Innovation | Impact |
@@ -83,6 +86,7 @@ The MCP ecosystem for official statistics emerged in late 2024 and accelerated r
 **Weaknesses:** Higher complexity. Still limited output formatting for LLMs.
 
 ### Generation 4: Benchmarked + LLM-optimized (2026-Q1)
+
 **Pattern:** Output designed for LLM consumption. Quantified accuracy. Anti-hallucination directives.
 
 | Server | Innovation | Impact |
