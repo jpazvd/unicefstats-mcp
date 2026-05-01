@@ -58,7 +58,7 @@
   },
   "provenance": {
     "publisher": "jpazvd",
-    "institutional_affiliation": "Experimental — not an official UNICEF product",
+    "status": "Experimental — not an official UNICEF product",
     "publishing_method": "GitHub Actions via PyPI Trusted Publishing (OIDC)",
     "verification": {
       "source_repo": "https://github.com/jpazvd/unicefstats-mcp",

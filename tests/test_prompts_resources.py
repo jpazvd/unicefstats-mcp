@@ -12,11 +12,13 @@ from tests.conftest import MOCK_COUNTRIES, MOCK_INDICATORS
 from unicefstats_mcp.server import (
     categories_resource,
     compare_indicators,
+    context_resource,
     countries_resource,
     country_profile,
     glossary_resource,
     llm_instructions_resource,
     sdg_progress,
+    system_prompt_resource,
     trend_analysis,
     write_unicefdata_code,
 )
@@ -100,3 +102,39 @@ class TestResources:
         # Must include disaggregation codes
         assert "_T" in content
         assert "Q1" in content
+
+    def test_system_prompt_resource(self):
+        """v0.5.0: anti-extrapolation system prompt with temporal-frontier rule."""
+        content = system_prompt_resource()
+        assert isinstance(content, str)
+        assert content.strip()
+        # Must define the operating loop
+        assert "search_indicators" in content
+        assert "get_temporal_coverage" in content
+        assert "get_data" in content
+        # Must contain the anti-extrapolation rule
+        assert "frontier" in content.lower()
+        assert "No data is available" in content
+        # Must list at least one forbidden phrase
+        assert "approximately" in content.lower() or "extrapolat" in content.lower()
+
+    def test_context_resource(self):
+        """v0.5.0: runtime context with current_date / current_year."""
+        import json
+        from datetime import datetime, timezone
+
+        content = context_resource()
+        assert isinstance(content, str)
+        # Returns valid JSON
+        data = json.loads(content)
+        # current_year is an int matching today's UTC year
+        assert "current_year" in data
+        assert isinstance(data["current_year"], int)
+        assert data["current_year"] == datetime.now(timezone.utc).year
+        # current_date is YYYY-MM-DD string
+        assert "current_date" in data
+        assert isinstance(data["current_date"], str)
+        assert len(data["current_date"]) == 10  # "YYYY-MM-DD"
+        # Carries the anti-extrapolation note
+        assert "note" in data
+        assert "extrapolat" in data["note"].lower()
