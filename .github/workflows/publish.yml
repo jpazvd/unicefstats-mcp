@@ -42,6 +42,14 @@ jobs:
         run: |
           python scripts/check_version_consistency.py --check-pypi
 
+      - name: Install runtime deps for claim check
+        # --check-claims imports unicefdata to call the SDMX API. The
+        # validate job otherwise has no Python deps installed, so install
+        # the package itself (which pulls unicefdata + pyyaml + fastmcp).
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+
       - name: Check upstream-backed numeric claims
         # Gated on release only (not per-PR) — calls UNICEF SDMX API to
         # verify "X+ indicators" / "X+ countries" claims in synced docs
