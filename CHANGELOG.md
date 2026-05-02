@@ -6,6 +6,43 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [0.6.3] — 2026-05-02
+
+Patch release whose sole purpose is to activate the new
+`registry-publish` CI job (added in #35) for the first time. No
+functional / API / behavioural changes vs v0.6.2.
+
+### Why this exists
+
+v0.6.2 shipped to PyPI successfully but never made it to the official
+MCP registry at <https://registry.modelcontextprotocol.io>. That gap
+left downstream catalogues (lobehub, smithery, claude.ai/mcp, etc.)
+showing stale information — lobehub was still serving v0.2.0 from
+March 26 even after v0.6.2 published.
+
+The natural fix is to run `mcp-publisher publish` once locally to
+backfill v0.6.2 to the registry, but that path is blocked on the
+maintainer's UNICEF-managed laptop by corporate AppLocker policy
+(unsigned binary execution refused at the kernel level).
+
+PR #35 added a `registry-publish` job to publish.yml that runs the
+publisher CLI inside a GitHub Actions runner — no AppLocker, no local
+cert dance. That job only fires for new tags, so this v0.6.3 release
+exists to be that first new tag.
+
+### Changed
+
+- Version bumped 0.6.2 → 0.6.3 across the 5 canonical sites
+  (`__init__.py`, `pyproject.toml`, `server.json` × 2, `server.py`
+  FastMCP instance). No other code changes.
+
+### Tested
+
+- `pytest tests/`: 137/137 pass
+- `scripts/check_version_consistency.py`: OK
+- `ruff check`: clean
+- `mypy src/unicefstats_mcp/`: no issues
+
 ## [0.6.2] — 2026-05-01
 
 Server-side country-name resolver. The structural fix for the
