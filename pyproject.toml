@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "unicefstats-mcp"
-version = "0.5.1"
+version = "0.6.2"
 description = "MCP server for UNICEF child development statistics — 790+ child-focused indicators, 200+ countries, disaggregations by sex/age/wealth/residence. No API key required."
 readme = "README.md"
 license = "MIT"
@@ -24,6 +24,11 @@ classifiers = [
 dependencies = [
     "fastmcp>=2.0",
     "unicefdata>=2.4,<3",
+    # PyYAML is technically transitive via unicefdata, but we import it
+    # directly in country_resolver.py to read the SDMX CL_COUNTRY codelist
+    # YAML shipped by unicefdata. Declared explicitly so a future drop of
+    # pyyaml from unicefdata's deps doesn't silently break us.
+    "pyyaml>=6",
 ]
 
 [project.urls]

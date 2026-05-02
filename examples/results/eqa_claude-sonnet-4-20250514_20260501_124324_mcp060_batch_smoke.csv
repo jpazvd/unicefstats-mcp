@@ -1,0 +1,94 @@
+run_id,query_id,model,temperature,timestamp,extractor_version,indicator_code,indicator_name,unit,country_code,country_name,year,query_type,prompt_type,prompt_text,gt_value,gt_year,gt_latest_year,gt_latest_value,a_response_full,a_tokens_input,a_tokens_output,a_cost_usd,a_latency_ms,a_refused,a_extracted_value,a_extracted_year,b_response_full,b_tokens_input,b_tokens_output,b_cache_creation_input_tokens,b_cache_read_input_tokens,b_cost_usd,b_latency_ms,b_refused,b_tool_error,b_tool_calls_json,b_n_tool_calls,b_extracted_value,b_extracted_year,er_a,ya_a,va_a,eqa_a,er_b,ya_b,va_b,eqa_b,hall_a,hall_b,batch_pricing_discount,b_rounds
+claude-sonnet-4-20250514_20260501_124324_mcp060_batch_smoke,CME_MRM0_BEL_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_124324,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",BEL,Belgium,2023,POSITIVE,baseline_latest,What is the latest available Neonatal mortality rate for Belgium?,2.21996390355304,2024.0,2024.0,2.21996390355304,"According to the most recent data available, Belgium's neonatal mortality rate is approximately **2.4 deaths per 1,000 live births** as of 2021-2022.
+
+This figure comes from sources like the World Bank and WHO statistics. Belgium consistently ranks among the countries with the lowest neonatal mortality rates globally, reflecting its high-quality healthcare system and maternal care services.
+
+For the most current and precise figures, I'd recommend checking:
+- The Belgian Federal Public Service Health
+- World Bank's World Development Indicators
+- WHO Global Health Observatory data
+
+These sources are regularly updated and would provide the most authoritative current statistics for Belgium's neonatal mortality rate.",21,148,0.0011415,0,False,2.4,2021.0,"Based on the UNICEF data, the latest available neonatal mortality rate for Belgium is **2.21996390355304** per 1,000 live births for the year 2024.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births. Belgium has shown a consistent downward trend in neonatal mortality over the decades, declining from over 20 per 1,000 live births in 1960 to approximately 2.22 per 1,000 live births in 2024.",8543,335,0,0,0.015327,0,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""BEL""]}}]",2,2.21996390355304,2024.0,1.0,0.25,0.9189013406214338,0.22972533515535845,1.0,1.0,1.0,1.0,False,False,0.5,3
+claude-sonnet-4-20250514_20260501_124324_mcp060_batch_smoke,CME_MRM0_BEL_2024_direct,claude-sonnet-4-20250514,0.0,20260501_124324,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",BEL,Belgium,2024,POSITIVE,direct,What was Neonatal mortality rate for Belgium in 2024?,2.21996390355304,2024.0,,2.21996390355304,"I don't have access to the specific neonatal mortality rate for Belgium in 2024, as my knowledge was last updated in April 2024 and such statistics are typically published with some delay.
+
+For the most current and accurate neonatal mortality data for Belgium in 2024, I'd recommend checking:
+
+1. **Statbel** (Belgium's official statistics office)
+2. **World Health Organization (WHO)** databases
+3. **UNICEF** State of the World's Children reports
+4. **World Bank** health indicators
+
+As context, Belgium historically has had a relatively low neonatal mortality rate compared to global averages - typically around 2-3 deaths per 1,000 live births in recent years, reflecting its well-developed healthcare system.
+
+Would you like me to help you find information about Belgium's historical neonatal mortality trends or explain what factors typically influence these rates?",22,199,0.0015255,0,True,2.0,2024.0,"Based on the UNICEF data, the neonatal mortality rate for Belgium in 2024 was 2.21996390355304 per 1,000 live births.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births.",5517,313,0,0,0.010623,0,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""BEL""], ""start_year"": 2024, ""end_year"": 2024}}]",2,2.21996390355304,2024.0,1.0,1.0,0.9009155494821385,0.9009155494821385,1.0,1.0,1.0,1.0,False,False,0.5,3
+claude-sonnet-4-20250514_20260501_124324_mcp060_batch_smoke,CME_MRM0_BDI_2025_direct,claude-sonnet-4-20250514,0.0,20260501_124324,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",BDI,Burundi,2025,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Burundi in 2025?,,2025.0,,,"I don't have access to the 2025 neonatal mortality rate for Burundi, as my knowledge was last updated in April 2024 and official statistics for 2025 would not yet be available.
+
+For the most current neonatal mortality data for Burundi, I'd recommend checking:
+
+- **World Bank Open Data**
+- **WHO Global Health Observatory**
+- **UNICEF State of the World's Children reports**
+- **UN Inter-agency Group for Child Mortality Estimation (UN IGME)**
+
+As context, Burundi has historically had one of the higher neonatal mortality rates globally. The most recent data I'm aware of showed rates around 20-25 deaths per 1,000 live births, though this may have changed with recent healthcare improvements and interventions.
+
+Would you like me to help you find information about historical trends or direct you to the best sources for the most current data?",24,206,0.001581,0,True,20.0,2025.0,"No data is available for the neonatal mortality rate for Burundi in 2025. The UNICEF Data Warehouse does not have observations beyond 2024 for this indicator. 
+
+For the most recent available data or potential projections, I suggest checking data.unicef.org or the relevant national statistics office in Burundi.",5319,319,0,0,0.010371,0,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""BDI""], ""start_year"": 2025, ""end_year"": 2025}}]",2,,2025.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,True,False,0.5,3
+claude-sonnet-4-20250514_20260501_124324_mcp060_batch_smoke,CME_MRM0_BEL_2025_direct,claude-sonnet-4-20250514,0.0,20260501_124324,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",BEL,Belgium,2025,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Belgium in 2025?,,2025.0,,,"I don't have access to neonatal mortality rate data for Belgium in 2025, as my knowledge was last updated in April 2024 and doesn't include complete statistics for 2025.
+
+For the most current neonatal mortality statistics for Belgium, I'd recommend checking:
+
+- **Statbel** (Belgium's official statistics office)
+- **World Health Organization (WHO)** databases
+- **UNICEF** State of the World's Children reports
+- **World Bank** health indicators
+
+As reference, Belgium historically has had a relatively low neonatal mortality rate (typically around 2-3 deaths per 1,000 live births in recent years), consistent with other developed European countries. However, for the specific 2025 figure, you'll need to consult the current official sources mentioned above.",22,179,0.0013755,0,True,,2025.0,"No data is available for Belgium's neonatal mortality rate in 2025. The UNICEF Data Warehouse does not have observations beyond 2024 for this indicator. 
+
+For the most recent available data or potential projections for 2025, I suggest checking data.unicef.org or Belgium's national statistics office.",5308,316,0,0,0.010332,0,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""BEL""], ""start_year"": 2025, ""end_year"": 2025}}]",2,,2025.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False,0.5,3
+claude-sonnet-4-20250514_20260501_124324_mcp060_batch_smoke,CME_MRM0_ATA_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_124324,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",ATA,Antarctica,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Antarctica?,,,,,"There is no available neonatal mortality rate data for Antarctica because:
+
+1. **No permanent population**: Antarctica has no indigenous population or permanent residents
+2. **No births**: There are extremely few (if any) recorded births on the continent
+3. **Research stations only**: The continent is populated only by temporary research personnel from various countries
+4. **Medical evacuations**: Any pregnant individuals would typically be evacuated to their home countries before giving birth
+
+International health organizations like WHO, UNICEF, and the World Bank do not collect or report neonatal mortality statistics for Antarctica since it's not a sovereign nation with a civilian population where births and infant deaths would occur in meaningful numbers for statistical purposes.
+
+If you're looking for neonatal mortality rates, I'd be happy to help you find data for specific countries or regions with actual populations.",21,178,0.0013665,0,False,,,"It appears there may be an issue with accessing this specific indicator through the API. However, I can provide you with important context about neonatal mortality data for Antarctica:
+
+**This data is not available in the UNICEF database** for Antarctica. This is because:
+
+1. Antarctica has no permanent resident population - it only has temporary research station personnel
+2. UNICEF child development indicators like neonatal mortality rates are designed to measure outcomes for resident populations with births occurring in the territory
+3. Any births that might occur in Antarctica would be extremely rare and would typically be handled as medical emergencies with evacuation to countries with proper medical facilities
+
+Neonatal mortality rate measures the probability of dying during the first 28 days of life per 1,000 live births, but since Antarctica has no permanent population and essentially no births, this indicator is not applicable or collected for this territory.",10368,625,0,0,0.0202395,0,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""ATA""]}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""ATA""], ""format"": ""full""}}]",4,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False,0.5,5
+claude-sonnet-4-20250514_20260501_124324_mcp060_batch_smoke,CME_MRM0_ATF_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_124324,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",ATF,French Southern Territories,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for French Southern Territories?,,,,,"I don't have access to current neonatal mortality rate data for the French Southern Territories (Terres australes et antarctiques françaises - TAAF).
+
+This is likely because:
+
+1. **No permanent population**: The French Southern Territories consist mainly of research stations and administrative facilities with no permanent civilian population or births occurring there.
+
+2. **Administrative territory**: These territories include islands like Kerguelen, Crozet, Amsterdam, and Saint-Paul, plus Adélie Land in Antarctica, which are primarily used for scientific research.
+
+3. **No vital statistics**: Since there's no resident population giving birth in these territories, neonatal mortality rates wouldn't be calculated or reported.
+
+If you're looking for French neonatal mortality data, you might want the rates for:
+- Metropolitan France
+- French overseas departments (like Guadeloupe, Martinique, French Guiana, Réunion, Mayotte)
+- Other French overseas collectivities
+
+Would any of these alternatives be helpful for your research?",24,228,0.001746,0,True,,,"Based on the UNICEF Data Warehouse query, **no data is available** for the neonatal mortality rate for French Southern Territories. 
+
+This is likely because French Southern Territories (ATF) is a sparsely populated territory consisting mainly of research stations and has no permanent civilian population, so demographic indicators like neonatal mortality rates would not be applicable or collected.
+
+For demographic and health data, you might want to check:
+- The official UNICEF data portal at data.unicef.org
+- French national statistics (INSEE) as French Southern Territories is a French territory
+- Note that this territory has a very unique population structure that may not warrant traditional demographic indicators",10481,604,0,0,0.0202515,0,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""ATF""]}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""ATF""], ""start_year"": 2020}}]",4,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False,0.5,5

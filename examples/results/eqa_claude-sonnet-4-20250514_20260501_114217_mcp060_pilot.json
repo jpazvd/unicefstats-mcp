@@ -1,0 +1,22 @@
+{
+  "run_id": "claude-sonnet-4-20250514_20260501_114217_mcp060_pilot",
+  "model": "claude-sonnet-4-20250514",
+  "temperature": 0.0,
+  "timestamp": "20260501_114217",
+  "n_queries": 30,
+  "n_positive": 10,
+  "n_hallucination_t1": 10,
+  "n_hallucination_t2": 10,
+  "ground_truth_source": "examples/ground_truth_mcp060/sample.csv",
+  "positive_metrics": {
+    "mean_eqa_a": 0.3865,
+    "mean_eqa_b": 1.0,
+    "mean_er_a": 0.8,
+    "mean_ya_a": 0.6,
+    "mean_va_a": 0.5523
+  },
+  "hallucination_metrics": {
+    "rate_a": 0.0,
+    "rate_b": 0.0
+  }
+}

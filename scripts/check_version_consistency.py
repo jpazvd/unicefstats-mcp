@@ -29,6 +29,8 @@ Checks (deterministic, always run):
 Optional checks (gated by flags):
   4. If --check-tag is passed, validates that the git tag matches the package version
   5. If --check-pypi is passed, validates that the version is not already published
+  5b. If --check-claims is passed, validates that "X+ indicators" / "X+ countries"
+      claims in synced docs are still backed by upstream registry counts (network)
 
 Canonical locations:
   - pyproject.toml        [project] version
@@ -229,6 +231,74 @@ def check_changelog(version: str) -> list[str]:
     if re.search(pattern, content):
         return []
     return [f"CHANGELOG.md has no entry for version [{version}]"]
+
+
+def check_numeric_claims() -> list[str]:
+    """Validate that "X+ indicators" and "X+ countries" claims in synced docs
+    are still backed by the actual upstream registry counts.
+
+    Closes Issue #11's third drift class: README, PROVENANCE.md, server.py
+    docstring, and server.json description all claim "790+ indicators" /
+    "200+ countries". These counts come from the upstream UNICEF SDMX API
+    via `unicefdata` and can drift if the registry changes substantially.
+
+    Network-gated: imports `unicefdata` at runtime and calls
+    `list_indicators()` and `load_country_codes()`. Both make SDMX API
+    requests. Gated behind --check-claims so per-PR CI doesn't slow down.
+
+    Discipline: the check accepts upward drift (claim ≤ actual) but flags
+    downward drift (claim > actual — ground truth shrank below the
+    advertised number). When the upstream count climbs significantly
+    beyond the claim (e.g. 850 indicators with the doc still saying
+    "790+"), this check is silent — the advertised floor is still met,
+    but a maintainer should consider bumping the claim. We don't enforce
+    that bump because it's a stylistic decision.
+    """
+    errors: list[str] = []
+
+    try:
+        import unicefdata
+    except ImportError as e:
+        return [f"--check-claims: unicefdata not importable ({e})"]
+
+    try:
+        actual_indicators = len(unicefdata.list_indicators())
+        actual_countries = len(unicefdata.load_country_codes())
+    except Exception as e:
+        return [f"--check-claims: upstream registry call failed ({e})"]
+
+    # Files that propagate to public + carry numeric claims.
+    targets = [
+        ROOT / "README.md",
+        ROOT / "PROVENANCE.md",
+        ROOT / "server.json",
+        ROOT / "src" / "unicefstats_mcp" / "server.py",
+    ]
+
+    indicator_claim_re = re.compile(r"(\d+)\+\s+(?:child-focused\s+)?indicators")
+    country_claim_re = re.compile(r"(\d+)\+\s+countries")
+
+    for path in targets:
+        if not path.exists():
+            continue
+        content = path.read_text(encoding="utf-8")
+        for line_no, line in enumerate(content.splitlines(), 1):
+            for m in indicator_claim_re.finditer(line):
+                claim = int(m.group(1))
+                if claim > actual_indicators:
+                    errors.append(
+                        f"{path.relative_to(ROOT)}:{line_no} claims "
+                        f"{claim}+ indicators; upstream has {actual_indicators}"
+                    )
+            for m in country_claim_re.finditer(line):
+                claim = int(m.group(1))
+                if claim > actual_countries:
+                    errors.append(
+                        f"{path.relative_to(ROOT)}:{line_no} claims "
+                        f"{claim}+ countries; upstream has {actual_countries}"
+                    )
+
+    return errors
 
 
 def check_pypi(version: str) -> list[str]:
@@ -554,6 +624,10 @@ def main() -> int:
     parser.add_argument("--check-tag", metavar="TAG", help="Validate git tag matches version")
     parser.add_argument("--check-pypi", action="store_true", help="Check if version exists on PyPI")
     parser.add_argument("--check-changelog", action="store_true", help="Check CHANGELOG.md entry")
+    parser.add_argument(
+        "--check-claims", action="store_true",
+        help="Check upstream-backed numeric claims (790+ indicators / 200+ countries)",
+    )
     args = parser.parse_args()
 
     versions = extract_versions()
@@ -589,6 +663,10 @@ def main() -> int:
         # 5. PyPI duplicate (optional)
         if args.check_pypi:
             all_errors.extend(check_pypi(canonical))
+
+        # 5b. Numeric claims back-pressure check (optional, network-gated)
+        if args.check_claims:
+            all_errors.extend(check_numeric_claims())
 
     # 6. Identity consistency (always runs)
     identity_errors = check_identity()

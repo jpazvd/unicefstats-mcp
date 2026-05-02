@@ -28,6 +28,7 @@ from typing import Any, Literal, TypeVar
 
 from fastmcp import FastMCP
 
+from unicefstats_mcp.country_resolver import resolve_countries
 from unicefstats_mcp.formatters import (
     apply_limit,
     compute_trend,
@@ -43,7 +44,7 @@ from unicefstats_mcp.formatters import (
 from unicefstats_mcp.indicator_context import get_indicator_context
 from unicefstats_mcp.reference import REFERENCES, VALID_LANGUAGES
 from unicefstats_mcp.validators import (
-    validate_countries,
+    MAX_COUNTRIES,
     validate_indicator,
     validate_limit,
     validate_query,
@@ -83,7 +84,7 @@ def _retry(
 
 mcp = FastMCP(
     name="unicefstats-mcp",
-    version="0.5.1",
+    version="0.6.2",
     instructions=(
         "Query UNICEF child development statistics for 200+ countries. "
         "No API key required. 790+ child-focused indicators (mortality, nutrition, "
@@ -484,6 +485,42 @@ def get_temporal_coverage(code: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
+# Per-session cache of data frontier (max year observed) per indicator.
+# Cleared at process restart. Avoids repeated coverage calls during the same
+# session — typical use accesses 1-3 indicators, so the cache pays for itself
+# within a few `get_data` calls. Bounded by indicator count (790 max).
+_data_frontier_cache: dict[str, int] = {}
+
+
+def _get_data_frontier(indicator: str) -> int | None:
+    """Return the max year observed for `indicator` in the UNICEF Data
+    Warehouse, or None if it can't be determined.
+
+    Used by `get_data` for pre-flight year-frontier checks (v0.6.0+). Cached
+    per session — lookup cost is amortized across all `get_data` calls for the
+    same indicator.
+
+    Implementation: calls the existing `get_temporal_coverage` machinery, which
+    fetches a minimal totals-only sample to learn the year range. Returns the
+    `end_year` field from that sample. None on lookup failure (treated as "no
+    frontier check possible" — falls through to the API rather than blocking).
+    """
+    if indicator in _data_frontier_cache:
+        return _data_frontier_cache[indicator]
+    try:
+        cov = get_temporal_coverage(indicator)
+    except Exception:
+        return None
+    if not isinstance(cov, dict) or cov.get("status") != "ok":
+        return None
+    data_block = cov.get("data") if isinstance(cov.get("data"), dict) else None
+    end_year = data_block.get("end_year") if data_block else cov.get("end_year")
+    if isinstance(end_year, int) and end_year > 0:
+        _data_frontier_cache[indicator] = end_year
+        return end_year
+    return None
+
+
 @mcp.tool()
 def get_data(
     indicator: str,
@@ -502,6 +539,30 @@ def get_data(
     (default) for a clean 5-column table; use format="full" for all columns
     including disaggregation details and confidence bounds.
 
+    **`countries` accepts BOTH ISO3 codes AND country names** (v0.6.2). Pass
+    whichever you have from the user's question — the server resolves country
+    names to canonical ISO3 codes for you. Examples:
+      countries=['Burundi']            → resolves to ['BDI']
+      countries=['BDI', 'Belgium']     → resolves to ['BDI', 'BEL']
+      countries=['Cote d\\'Ivoire']     → resolves to ['CIV']
+      countries=['USA', 'UK']          → resolves to ['USA', 'GBR']
+    Common synonyms accepted: 'USA'/'United States', 'UK'/'Great Britain',
+    'Ivory Coast'/'Cote d\\'Ivoire', 'South Korea', 'DRC', 'Czech Republic',
+    'Burma', 'Vatican', etc. The response echoes the resolution under
+    `country_resolutions` and the canonical name+code pairs under
+    `countries_returned_with_names` so you can confirm intent matched.
+
+    **Prefer passing the user's country name verbatim over guessing the ISO3
+    code from memory** — that's where v0.6.0 had a documented failure mode.
+
+    **v0.6.0 server-side hardening**: this tool also performs a pre-flight
+    year-frontier check. If `start_year` or `end_year` exceeds the indicator's
+    data frontier (max year observed), the call is refused server-side without
+    issuing the SDMX request — preventing the silent-truncation pattern where
+    a range like 2020-2027 returns 2020-2024 and the model extrapolates the
+    missing years. Successful responses include a `data_frontier` field
+    naming the max year and an explicit no-extrapolation directive.
+
     Disaggregation filters:
       sex: "_T" (total, default), "M" (male), "F" (female)
       wealth_quintile: "Q1" (lowest) through "Q5" (highest), or "_T" (total)
@@ -513,8 +574,32 @@ def get_data(
     # Validate inputs
     if err := validate_indicator(indicator):
         return error(err)
-    if err := validate_countries(countries):
-        return error(err, tip="Use list_countries() to find valid ISO3 codes.")
+
+    # v0.6.2 country-name resolver: accept ISO3 codes OR country names. The
+    # model often calls get_data with the wrong ISO3 ("Burundi" → 'BEL')
+    # because it's resolving the name from memory. Letting the server do the
+    # canonical name → ISO3 mapping eliminates that failure mode entirely.
+    if not countries:
+        return error("At least one country (ISO3 code or name) is required.")
+    if len(countries) > MAX_COUNTRIES:
+        return error(
+            f"Too many countries ({len(countries)}). Maximum is {MAX_COUNTRIES} per call. "
+            "Split into multiple calls or use list_countries() to find a region filter."
+        )
+    resolved_codes, country_resolutions, unresolved = resolve_countries(countries)
+    if unresolved:
+        return error(
+            f"Could not resolve country/countries: {', '.join(repr(u) for u in unresolved)}. "
+            "Pass either the ISO3 code (e.g. 'BDI') or the country name (e.g. 'Burundi'). "
+            "Common alternates accepted: 'USA'/'United States', 'UK'/'United Kingdom', "
+            "'Ivory Coast'/'Cote d\\'Ivoire', 'South Korea', 'DRC', etc.",
+            tip="Use list_countries() to enumerate valid codes and names.",
+        )
+    # Replace caller's input with canonical ISO3 codes for downstream use.
+    # Keep the original `countries` list for echoing back to the caller.
+    countries_input = countries
+    countries = resolved_codes
+
     if err := validate_limit(limit):
         return error(err)
     if err := validate_year(start_year, "start_year"):
@@ -527,6 +612,49 @@ def get_data(
         return error(err)
     if residence and (err := validate_residence(residence)):
         return error(err)
+
+    # v0.6.0 pre-flight year-frontier check.
+    # Refuse calls where requested year(s) exceed the indicator's data frontier,
+    # WITHOUT issuing the SDMX request. The "silent retry" hallucination pattern
+    # (model asks 2027 → no_data → asks 2020-2027 → API returns 2020-2024 → model
+    # extrapolates) is broken because the broader range is now refused too.
+    if start_year is not None or end_year is not None:
+        max_year = _get_data_frontier(indicator)
+        if max_year is not None:
+            target_start = start_year if start_year is not None else end_year
+            target_end = end_year if end_year is not None else start_year
+            if target_start is not None and target_start > max_year:
+                return error(
+                    f"Year {target_start} exceeds the data frontier ({max_year}) "
+                    f"for indicator '{indicator}'. The UNICEF Data Warehouse does "
+                    f"not have observations beyond {max_year} for this indicator.",
+                    tip=f"Narrow start_year to {max_year} or earlier.",
+                    no_data=True,
+                    extra={
+                        "data_frontier": {
+                            "max_year_observed": max_year,
+                            "indicator": indicator,
+                        },
+                        "out_of_frontier": True,
+                    },
+                )
+            if target_end is not None and target_end > max_year:
+                return error(
+                    f"Requested range {start_year or '...'}-{target_end} extends "
+                    f"past the data frontier ({max_year}) for indicator "
+                    f"'{indicator}'. The API will not silently truncate to "
+                    f"{max_year} on your behalf — that pattern is a known "
+                    f"source of forward-of-frontier extrapolation.",
+                    tip=f"Narrow end_year to {max_year} or earlier.",
+                    no_data=True,
+                    extra={
+                        "data_frontier": {
+                            "max_year_observed": max_year,
+                            "indicator": indicator,
+                        },
+                        "out_of_frontier": True,
+                    },
+                )
 
     # Build year argument (unicefdata accepts "start:end" range syntax)
     year_arg = None
@@ -627,9 +755,40 @@ def get_data(
             if completeness == "complete":
                 completeness = "partial"
 
+    # v0.6.1 — extract resolved country names so the model sees the human-readable
+    # name of every country returned. Mitigates the country-substitution failure
+    # mode revealed at n=500 (model calls get_data with the wrong ISO3 code and
+    # the response had no prominent name to flag the mismatch).
+    countries_returned_with_names: dict[str, str] = {}
+    if countries_col in df.columns:
+        # Find the country-name column. unicefdata uses "country" with
+        # country_names=True; tests simulate "country_name". Accept either.
+        name_col = next(
+            (c for c in ("country", "country_name") if c in df.columns), None
+        )
+        if name_col:
+            unique_pairs = df[[countries_col, name_col]].drop_duplicates()
+            for code, name in unique_pairs.itertuples(index=False):
+                if isinstance(code, str) and isinstance(name, str):
+                    countries_returned_with_names[code.upper()] = name
+
     result: dict[str, Any] = {
         "indicator": indicator,
-        "countries_requested": countries,
+        "countries_requested": countries_input,
+        "countries_resolved_to": countries,
+        # v0.6.2: name → ISO3 resolutions performed server-side. Empty if the
+        # caller passed only ISO3 codes. If non-empty, the model can confirm
+        # "Burundi → BDI" and proceed without worrying about its own ISO3 memory.
+        "country_resolutions": country_resolutions,
+        "countries_returned_with_names": countries_returned_with_names,
+        "verify_country_directive": (
+            "Country resolution: see `country_resolutions` and "
+            "`countries_returned_with_names`. If the names there match what "
+            "the user asked about, proceed. If you passed an ISO3 code and "
+            "the returned country name doesn't match the user's question, "
+            "retry with the country NAME instead of the code — the server "
+            "will resolve it canonically."
+        ),
         "total_rows_available": total_rows,
         "rows_returned": len(records),
         "rows_truncated": truncated,
@@ -660,6 +819,29 @@ def get_data(
         "web_url": "https://data.unicef.org/",
         "note": "Verify values at the URLs above before citing in publications.",
     }
+
+    # v0.6.0 — embed data frontier in successful responses so the model has
+    # the boundary in context at the moment it composes its answer (not just
+    # on the failure path). Computed from the response itself when possible
+    # (most accurate); falls back to the cached frontier from the indicator's
+    # full coverage. The directive names the user-visible behavior to enforce.
+    max_year_in_response: int | None
+    try:
+        max_year_in_response = int(df["period"].astype(float).max())
+    except (ValueError, TypeError, KeyError):
+        max_year_in_response = _get_data_frontier(indicator)
+    if max_year_in_response:
+        result["data_frontier"] = {
+            "max_year_observed": max_year_in_response,
+            "indicator": indicator,
+            "directive": (
+                f"Data does not exist beyond {max_year_in_response} for this "
+                f"indicator. Do not extrapolate, project, or estimate values "
+                f"for years > {max_year_in_response}. If the user asked about "
+                f"a year > {max_year_in_response}, respond 'No data is available "
+                f"for [year]' and do not provide a numeric answer."
+            ),
+        }
 
     if not truncated:
         result["tip"] = None
@@ -1007,33 +1189,24 @@ When a country has no data, say "no data available for [country]" — do NOT est
 - **Never fabricate or estimate a value** when a tool returns "no_data", "error", or empty results
 - **Never use training data** to answer when a tool has already been called and returned no results
 - **Never interpolate** between data points for survey-based indicators (year gaps are normal)
-- **Never extrapolate forward of the data frontier** — if the user asked about a year beyond
-  the latest observation, you MUST say "No data is available for [year]." You MUST NOT produce
-  a numeric value attributed to that year, including phrases like "approximately X", "around X",
-  "projected X", "based on the trend, X", or "extrapolating from recent data, X".
 - Never confuse similar indicators: stunting (HAZ), wasting (WHZ), underweight (WAZ)
 - Never assume the latest year — always check with get_temporal_coverage() or look at the data
 - Never cite a source other than UNICEF Data Warehouse for values retrieved through this MCP
 - **Never report a value for a country that was not in the response**, even if you \
 "know" the value from training
 
-## Temporal-frontier rule (anti-extrapolation)
+## Forward-of-frontier queries — server-enforced
 
-This rule prevents the most common failure mode: when the user asks about a year for which no
-observation exists yet (e.g. a future year), the model retrieves data for the most recent
-*available* years and then extrapolates forward in its answer. That is fabrication, not retrieval.
+In v0.6.0+ the server itself refuses `get_data` calls whose year(s) exceed the indicator's data
+frontier. You will receive `status: "no_data"` with `out_of_frontier: true` and a `data_frontier`
+field naming the max year. You CANNOT bypass this by asking for a broader range — a request like
+`start_year=2020, end_year=2027` will also be refused if 2027 > frontier (no silent truncation).
 
-**Before answering any query that mentions a specific year:**
-1. Read `unicef://context` (or note the current_year value already in your context).
-2. Call `get_temporal_coverage(indicator)` to learn the data frontier (max observed year).
-3. If the user's requested year > max observed year, your final answer **must contain** the literal
-   text *"No data is available for [year]"* and **must not contain** any numeric value attributed
-   to that year.
-4. Do not retry with adjacent years (e.g. user asked 2027, no_data → calling get_data for 2020-2024
-   to "estimate the trend") — adjacent-year data is not an answer to the user's question.
-
-This rule is structural, not advisory. A response that states "the rate in 2027 was approximately
-X based on the 2020-2024 trend" is a fabrication regardless of how it is hedged.
+Successful `get_data` responses also include a `data_frontier` field with `max_year_observed` and
+a `directive`. Read it. If the user asked about a year > max_year_observed, your final answer
+MUST contain the literal text *"No data is available for [year]"* and MUST NOT contain any
+numeric value attributed to that year. The server returned data for years it has; the user's
+question, if it exceeded the frontier, was not answered by that data.
 
 ## Common mistakes
 - Wrong: `get_data("under-5 mortality", ...)` → use the CODE: `get_data("CME_MRY0T4", ...)`
@@ -1088,57 +1261,57 @@ def countries_resource() -> str:
 
 
 SYSTEM_PROMPT = """\
-# UNICEF Stats MCP — System Prompt
+# UNICEF Stats MCP — System Prompt (v0.6.0+)
 
-You are a tool-using assistant for UNICEF child development statistics. The data you can retrieve
-covers 790+ indicators across 200+ countries from the UNICEF Data Warehouse.
+You are a tool-using assistant for UNICEF child development statistics, covering 790+ indicators
+across 200+ countries from the UNICEF Data Warehouse.
 
-## Non-negotiable rule
+## How forward-of-frontier protection works in v0.6.0+
 
-If the user request requires indicator lookup, metadata, codes, or data values, you MUST call tools.
-Do not answer with guesses. Do not stop after describing a plan.
+**The server enforces this structurally — you don't have to police it yourself.** When the user
+asks about a year beyond the data frontier:
 
-## Operating loop (repeat until done)
+- `get_data` with `start_year` or `end_year` > frontier returns `status: "no_data"` with
+  `out_of_frontier: true` server-side. No SDMX call is made.
+- A range that crosses the frontier (e.g. 2020–2027 when frontier is 2024) is also refused —
+  the server will not silently truncate to 2020–2024. Narrow the end_year explicitly.
+- Successful `get_data` responses include a `data_frontier` field with `max_year_observed` and
+  a `directive`. Read both. If the user's requested year > max_year_observed, your answer MUST
+  contain the literal text "No data is available for [year]" — even though you have data for
+  earlier years, that data does not answer the user's question about a future year.
 
-1. **Time-awareness check** — read `unicef://context` once at session start to learn current_year.
-   Every query that mentions a specific year must be evaluated against current_year and against
-   the indicator's data frontier.
-2. **Indicator** — if you don't know the indicator code, call `search_indicators(query)` and pick
-   the single best match. State the choice: *"Selected indicator: [CODE] — [Name]"*.
-3. **Coverage** — call `get_temporal_coverage(indicator)` to learn the data frontier (max observed
-   year) and `get_indicator_info(indicator)` for disaggregations and methodology when needed.
-4. **Frontier check** — if the user's requested year > max observed year, STOP. Do not call
-   `get_data`. Respond: *"No data is available for [year]. The most recent observation in the
-   UNICEF Data Warehouse for this indicator is [max_year]."*
-5. **Data** — call `get_data(indicator, countries, ...)` only when the requested year is within the
-   data frontier. Use ISO3 country codes. Read the response's `status` field.
-6. **Answer** — report the exact numeric value and year from the response. Do not round, paraphrase,
-   or attribute values to years not present in the response.
+## Operating loop
 
-## Anti-extrapolation directive
-
-When the requested year exceeds the data frontier, no amount of trend reasoning makes a fabricated
-value an answer. Your response MUST contain the literal text *"No data is available for [year]"*
-and MUST NOT contain a numeric value attributed to that year. Phrases like *"approximately"*,
-*"projected"*, *"based on the trend"*, *"extrapolating"*, or *"around X"* are all fabrications
-in this context. If you are uncertain whether the requested year is beyond the frontier, call
-`get_temporal_coverage` first.
+1. **Indicator** — if you don't know the code, call `search_indicators(query)` and pick the
+   single best match.
+2. **Data** — call `get_data(indicator, countries, ...)` directly. The server's frontier check
+   makes a separate `get_temporal_coverage` call optional (the server already calls it internally
+   when it needs to).
+3. **Answer** — report exact numeric values from the response. Always include the year. If the
+   response carries a `data_frontier.directive`, follow it.
 
 ## Output behavior
 
 - When a tool is needed, call it. Do not narrate the plan first.
-- After tools return, continue with the next needed tool call.
 - Only produce a final user-facing answer when no further tool calls are required.
 - Always include the year alongside any reported value.
-- If the response includes `warnings`, relay relevant ones to the user.
+- Read the response's `status` field. `no_data` and `out_of_frontier` are authoritative.
+
+## For client implementers — prompt-cache recommendation
+
+This system prompt and the tool definitions are stable across tool-use rounds. Apply Anthropic's
+`cache_control: {"type": "ephemeral"}` to (a) this system prompt block and (b) the last tool
+definition in your tool list. The cache covers everything up to and including the marked block
+and reduces input cost ~10× on cache hits. Within a multi-round tool-use query (system prompt +
+tool defs are re-sent each round), this typically saves 60-70% of input tokens.
 
 ## Reference resources
 
-- `unicef://llm-instructions` — full DO/DON'T rules and common mistakes
-- `unicef://context` — runtime context including current date and year
-- `unicef://categories` — all indicator categories
-- `unicef://countries` — ISO3 codes and country names
-- `unicef://glossary` — disaggregation codes and indicator-prefix legend
+- `unicef://llm-instructions` — full DO/DON'T rules
+- `unicef://context` — runtime current_date / current_year
+- `unicef://categories` — indicator categories
+- `unicef://countries` — ISO3 codes and country names (200+ entries)
+- `unicef://glossary` — disaggregation codes + indicator-prefix legend
 """
 
 

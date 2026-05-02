@@ -138,6 +138,60 @@ class TestGetData:
         assert result["summary"]["value_range"]["max"] == 15.0
         assert result["summary"]["countries_in_result"] == 2
 
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_countries_returned_with_names(self, mock_ud, mock_df):
+        """v0.6.1: response includes countries_returned_with_names so the model
+        can confirm the country name returned matches what the user asked."""
+        ud = MagicMock()
+        ud.unicefData.return_value = mock_df
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="CME_MRY0T4", countries=["BRA", "ARG"])
+        assert "countries_returned_with_names" in result
+        names = result["countries_returned_with_names"]
+        assert names == {"BRA": "Brazil", "ARG": "Argentina"}
+        # v0.6.2 directive points at country_resolutions + retry-with-name path
+        assert "verify_country_directive" in result
+        directive = result["verify_country_directive"]
+        assert "country_resolutions" in directive
+        assert "name" in directive.lower()
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_country_name_input_resolved(self, mock_ud, mock_df):
+        """v0.6.2: passing a country NAME instead of ISO3 should resolve server-side."""
+        ud = MagicMock()
+        ud.unicefData.return_value = mock_df
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="CME_MRY0T4", countries=["Brazil", "Argentina"])
+        assert "error" not in result
+        # Server canonicalised to ISO3 and surfaced the resolution
+        assert result["countries_resolved_to"] == ["BRA", "ARG"]
+        assert result["country_resolutions"] == {"Brazil": "BRA", "Argentina": "ARG"}
+        # And the original input is still echoed back
+        assert result["countries_requested"] == ["Brazil", "Argentina"]
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_country_mixed_iso3_and_name_input(self, mock_ud, mock_df):
+        """v0.6.2: mixed ISO3 + name input — only names appear in resolutions."""
+        ud = MagicMock()
+        ud.unicefData.return_value = mock_df
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="CME_MRY0T4", countries=["BRA", "Argentina"])
+        assert "error" not in result
+        assert result["countries_resolved_to"] == ["BRA", "ARG"]
+        # Only the name input shows up in the resolutions map; ISO3 codes pass through silently
+        assert result["country_resolutions"] == {"Argentina": "ARG"}
+
+    def test_unresolvable_country_returns_error(self):
+        """v0.6.2: unresolvable countries surface a helpful error, not a silent fail."""
+        result = get_data(indicator="CME_MRY0T4", countries=["NotARealCountry"])
+        assert "error" in result
+        assert "Could not resolve" in result["error"]
+        # And the help mentions list_countries() for discovery
+        assert "list_countries" in result.get("tip", "")
+
     def test_too_many_countries(self):
         countries = [f"C{i:02d}" for i in range(35)]
         result = get_data(indicator="CME_MRY0T4", countries=countries)
@@ -149,9 +203,11 @@ class TestGetData:
         assert "error" in result
 
     def test_invalid_country_code(self):
+        # v0.6.2: resolver rejects un-resolvable inputs (not an ISO3 code AND
+        # not a known country name → error mentions "Could not resolve").
         result = get_data(indicator="CME_MRY0T4", countries=["TOOLONG"])
         assert "error" in result
-        assert "Invalid ISO3" in result["error"]
+        assert "Could not resolve" in result["error"]
 
     def test_invalid_limit(self):
         result = get_data(indicator="CME_MRY0T4", countries=["BRA"], limit=999)
@@ -182,15 +238,48 @@ class TestGetData:
         ud.unicefData.return_value = mock_df
         mock_ud.return_value = ud
 
+        # mock_df has periods 2015-2019. v0.6.0 pre-flight check uses
+        # _get_data_frontier (which calls get_temporal_coverage internally)
+        # to learn the indicator's max year. With this mock, frontier=2019.
+        # Use a year range that stays within frontier so the pre-flight passes.
+        result = get_data(
+            indicator="CME_MRY0T4",
+            countries=["BRA"],
+            start_year=2017,
+            end_year=2019,
+        )
+        assert "error" not in result
+        # The pre-flight check makes a separate get_temporal_coverage call before
+        # the main fetch; both go through the same mock, so the last call's
+        # kwargs are the data fetch.
+        call_kwargs = ud.unicefData.call_args.kwargs
+        assert call_kwargs["year"] == "2017:2019"
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_year_range_out_of_frontier(self, mock_ud, mock_df):
+        """v0.6.0: requesting end_year > frontier triggers server-side refusal."""
+        from unicefstats_mcp.server import _data_frontier_cache
+        _data_frontier_cache.clear()  # ensure fresh lookup
+
+        ud = MagicMock()
+        ud.unicefData.return_value = mock_df  # frontier = 2019
+        mock_ud.return_value = ud
+
         result = get_data(
             indicator="CME_MRY0T4",
             countries=["BRA"],
             start_year=2018,
-            end_year=2020,
+            end_year=2024,  # exceeds mock's 2019 frontier
         )
-        assert "error" not in result
-        call_kwargs = ud.unicefData.call_args.kwargs
-        assert call_kwargs["year"] == "2018:2020"
+        assert result["status"] == "no_data"
+        assert result["out_of_frontier"] is True
+        assert result["data_frontier"]["max_year_observed"] == 2019
+        assert result["data_frontier"]["indicator"] == "CME_MRY0T4"
+        # Server should have made the coverage call but NOT the data fetch
+        # (or made it once for coverage). The point is the response is a
+        # structural refusal, not an SDMX-empty result.
+        assert "exceeds the data frontier" in result["error"].lower() or \
+               "extends past the data frontier" in result["error"].lower()
 
     @patch("unicefstats_mcp.server._get_ud")
     def test_api_error_handled(self, mock_ud):

@@ -203,13 +203,23 @@ def ok(
     return result
 
 
-def error(message: str, tip: str | None = None, no_data: bool = False) -> dict[str, Any]:
+def error(
+    message: str,
+    tip: str | None = None,
+    no_data: bool = False,
+    extra: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Wrap an error response with optional tip.
 
-    When no_data=True, includes an explicit anti-hallucination directive.
-    This tells the LLM that the absence of data is authoritative — the
-    UNICEF Data Warehouse was queried and confirmed the data does not exist.
-    The LLM should NOT attempt to answer from training data.
+    When no_data=True, returns a structured no-data envelope with concrete
+    behavioral rules rather than abstract "do not estimate" guidance — the
+    LLM must produce specific user-visible text and avoid specific phrases.
+    This is the v0.6.0 strengthening: the instruction names the user-visible
+    behavior the response must contain instead of asking the model to
+    interpret an abstract directive.
+
+    `extra` is a dict merged into the result for callers that want to add
+    structured fields (e.g. `data_frontier` for out-of-frontier refusals).
     """
     result: dict[str, Any] = {"status": "error", "error": message}
     if tip:
@@ -219,10 +229,20 @@ def error(message: str, tip: str | None = None, no_data: bool = False) -> dict[s
         result["data_completeness"] = "empty"
         result["instruction"] = (
             "This result is authoritative: the UNICEF Data Warehouse was queried "
-            "and confirmed this data does not exist. Do NOT provide an estimate "
-            "from training data, other sources, or approximation. Instead, tell the "
-            "user that this specific data point is not available in the UNICEF "
-            "database and suggest how they might find it (e.g., national statistics "
-            "office, DHS/MICS survey reports, or alternative indicator codes)."
+            "and confirmed this data does not exist. Your response MUST contain "
+            "the literal text 'No data is available' for this query and MUST NOT "
+            "contain any numeric value attributed to it, including phrases like "
+            "'approximately X', 'around X', 'projected X', 'based on the trend X', "
+            "or 'extrapolating from recent data X'. Suggest the user check "
+            "data.unicef.org or the relevant national statistics office."
         )
+    if extra:
+        # Merge extras WITHOUT clobbering core envelope keys. Without this,
+        # a caller could accidentally overwrite `status`/`error`/`tip`/
+        # `instruction`/`data_completeness` and break the response contract.
+        # Reserved keys win; collisions are silently dropped (keep the
+        # signature simple — extra is internal-use only for now).
+        for k, v in extra.items():
+            if k not in result:
+                result[k] = v
     return result

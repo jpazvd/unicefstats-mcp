@@ -108,7 +108,14 @@ MCP_TOOLS = [
     },
     {
         "name": "get_data",
-        "description": "Fetch UNICEF data for an indicator and one or more countries. Returns observations with values, years, and summary statistics.",
+        "description": (
+            "Fetch UNICEF data for an indicator and one or more countries. "
+            "Returns observations with values, years, and summary statistics. "
+            "v0.6.2: `countries` accepts EITHER ISO3 codes OR full country "
+            "names. Prefer passing the user's country name VERBATIM from "
+            "their question — the server does the canonical name → ISO3 "
+            "mapping, which is more reliable than your memory of ISO3 codes."
+        ),
         "input_schema": {
             "type": "object",
             "properties": {
@@ -116,7 +123,12 @@ MCP_TOOLS = [
                 "countries": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": "ISO3 country codes (e.g. ['BRA', 'IND'])",
+                    "description": (
+                        "ISO3 codes OR country names — both are accepted. "
+                        "Examples: ['Burundi'], ['BDI'], ['Cote d'Ivoire'], "
+                        "['Brazil', 'IND'] (mixed). Server returns "
+                        "country_resolutions showing how each input mapped."
+                    ),
                 },
                 "start_year": {"type": "integer", "description": "Start year filter"},
                 "end_year": {"type": "integer", "description": "End year filter"},
@@ -327,10 +339,30 @@ CONDITION_B_SYSTEM = (
 )
 
 
-def _compute_cost(model: str, input_tokens: int, output_tokens: int) -> float:
-    """Compute USD cost from token counts."""
+def _compute_cost(
+    model: str,
+    input_tokens: int,
+    output_tokens: int,
+    cache_read: int = 0,
+    cache_creation: int = 0,
+) -> float:
+    """Compute USD cost from token counts.
+
+    Anthropic prompt-cache pricing (as of 2026-04):
+      - Cache writes (cache_creation_input_tokens): 1.25× base input rate
+      - Cache reads (cache_read_input_tokens):    0.10× base input rate
+      - Regular input (input_tokens):              1.00× base input rate
+
+    Per the API docs, `usage.input_tokens` already EXCLUDES cached reads
+    (it's only the uncached tokens). So total input cost = uncached @ 1.0×
+    + cache_creation @ 1.25× + cache_read @ 0.10×.
+    """
     in_rate, out_rate = MODEL_PRICING.get(model, DEFAULT_PRICING)
-    return (input_tokens * in_rate + output_tokens * out_rate) / 1_000_000
+    input_cost = input_tokens * in_rate
+    cache_creation_cost = cache_creation * in_rate * 1.25
+    cache_read_cost = cache_read * in_rate * 0.10
+    output_cost = output_tokens * out_rate
+    return (input_cost + cache_creation_cost + cache_read_cost + output_cost) / 1_000_000
 
 
 def _detect_refusal(text: str) -> bool:
@@ -405,8 +437,22 @@ def call_llm_with_mcp(client: anthropic.Anthropic, model: str, prompt: str) -> d
     messages = [{"role": "user", "content": prompt}]
     total_input = 0
     total_output = 0
+    total_cache_creation = 0
+    total_cache_read = 0
     tool_calls = []
     tool_error = None
+
+    # v0.6.0+ prompt caching: system prompt + tool defs are stable across
+    # tool-use rounds (and across queries within the 5-minute cache TTL).
+    # cache_control on the last tool tells Anthropic to cache the system
+    # prompt and all tool defs as a single prefix. Subsequent rounds in the
+    # same query, and queries that fire within ~5 minutes, hit the cache at
+    # ~10% of the original input cost — typical 3-round hallucination query
+    # saves ~60-70% of input tokens vs uncached.
+    cached_system = [{"type": "text", "text": CONDITION_B_SYSTEM,
+                      "cache_control": {"type": "ephemeral"}}]
+    cached_tools = list(MCP_TOOLS)
+    cached_tools[-1] = {**cached_tools[-1], "cache_control": {"type": "ephemeral"}}
 
     # Multi-turn tool-use loop (max 5 rounds)
     for _ in range(5):
@@ -414,12 +460,17 @@ def call_llm_with_mcp(client: anthropic.Anthropic, model: str, prompt: str) -> d
             model=model,
             max_tokens=MAX_TOKENS,
             temperature=TEMPERATURE,
-            system=CONDITION_B_SYSTEM,
-            tools=MCP_TOOLS,
+            system=cached_system,
+            tools=cached_tools,
             messages=messages,
         )
         total_input += response.usage.input_tokens
         total_output += response.usage.output_tokens
+        # Track cache hits/misses when available (anthropic 0.34+).
+        cc = getattr(response.usage, "cache_creation_input_tokens", 0) or 0
+        cr = getattr(response.usage, "cache_read_input_tokens", 0) or 0
+        total_cache_creation += cc
+        total_cache_read += cr
 
         # Check if response contains tool_use blocks
         tool_uses = [b for b in response.content if b.type == "tool_use"]
@@ -469,7 +520,11 @@ def call_llm_with_mcp(client: anthropic.Anthropic, model: str, prompt: str) -> d
         "latency_ms": int(latency * 1000),
         "tokens_input": total_input,
         "tokens_output": total_output,
-        "cost_usd": _compute_cost(model, total_input, total_output),
+        "cache_creation_input_tokens": total_cache_creation,
+        "cache_read_input_tokens": total_cache_read,
+        "cost_usd": _compute_cost(model, total_input, total_output,
+                                  cache_read=total_cache_read,
+                                  cache_creation=total_cache_creation),
         "tool_calls": tool_calls,
     }
 
@@ -505,6 +560,27 @@ def load_sample() -> list[TestCase]:
         sys.exit(1)
 
     df = pd.read_csv(SAMPLE_CSV)
+
+    # Guardrail: prompts MUST use country LABELS and indicator LABELS only —
+    # never ISO3 country codes ("BDI") or indicator codes ("CME_MRY0T4",
+    # "NT_ANT_HAZ_NE2"). A prompt with either would short-circuit the
+    # name-resolution failure mode we're trying to measure. The regex matches
+    # any token of length ≥3 starting with an uppercase letter and composed
+    # of uppercase letters / digits / underscores — which catches both
+    # 3-letter ISO3 codes and snake-case indicator codes.
+    if "prompt_text" in df.columns:
+        code_in_prompt = df["prompt_text"].astype(str).str.contains(
+            r"\b[A-Z][A-Z0-9_]{2,}\b", regex=True
+        )
+        if code_in_prompt.any():
+            offenders = df.loc[code_in_prompt, "prompt_text"].head(5).tolist()
+            raise AssertionError(
+                f"Sample {SAMPLE_CSV} contains {code_in_prompt.sum()} prompt(s) "
+                "with embedded ISO3 country codes or indicator codes. "
+                "Prompts must use country names AND indicator names only. "
+                f"First offenders: {offenders}"
+            )
+
     cases = []
     for _, row in df.iterrows():
         year = int(row["year"]) if pd.notna(row["year"]) else None
@@ -607,6 +683,8 @@ def run_queries(
             "b_tool_error": resp_b.get("tool_error"),
             "b_tokens_input": resp_b["tokens_input"],
             "b_tokens_output": resp_b["tokens_output"],
+            "b_cache_creation_input_tokens": resp_b.get("cache_creation_input_tokens", 0),
+            "b_cache_read_input_tokens": resp_b.get("cache_read_input_tokens", 0),
             "b_cost_usd": resp_b["cost_usd"],
             "b_latency": resp_b["latency_ms"],
             "b_tool_calls": resp_b.get("tool_calls", []),
@@ -859,6 +937,8 @@ def main():
             "b_response_full": r.get("b_response_full", ""),
             "b_tokens_input": r["b_tokens_input"],
             "b_tokens_output": r["b_tokens_output"],
+            "b_cache_creation_input_tokens": r.get("b_cache_creation_input_tokens", 0),
+            "b_cache_read_input_tokens": r.get("b_cache_read_input_tokens", 0),
             "b_cost_usd": r["b_cost_usd"],
             "b_latency_ms": r["b_latency"],
             "b_refused": r["b_refused"],

@@ -42,6 +42,14 @@ jobs:
         run: |
           python scripts/check_version_consistency.py --check-pypi
 
+      - name: Check upstream-backed numeric claims
+        # Gated on release only (not per-PR) — calls UNICEF SDMX API to
+        # verify "X+ indicators" / "X+ countries" claims in synced docs
+        # are still met by the live registry. Fails the release if a
+        # public claim has drifted below ground truth.
+        run: |
+          python scripts/check_version_consistency.py --check-claims
+
   # ------------------------------------------------------------------
   # Build: produce sdist + wheel
   # ------------------------------------------------------------------

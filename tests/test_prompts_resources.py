@@ -104,19 +104,28 @@ class TestResources:
         assert "Q1" in content
 
     def test_system_prompt_resource(self):
-        """v0.5.0: anti-extrapolation system prompt with temporal-frontier rule."""
+        """v0.6.0: thinned system prompt that points at server-side enforcement.
+
+        The forbidden-phrase enumeration ("approximately", "extrapolat", etc.)
+        moved INTO the server's `formatters.error()` no_data instruction and
+        the `data_frontier.directive` field on successful get_data responses.
+        The system prompt now points the model to read those structured fields
+        rather than re-stating the rules in skill text.
+        """
         content = system_prompt_resource()
         assert isinstance(content, str)
         assert content.strip()
-        # Must define the operating loop
+        # Operating loop still references the core tools.
         assert "search_indicators" in content
-        assert "get_temporal_coverage" in content
         assert "get_data" in content
-        # Must contain the anti-extrapolation rule
+        # Frontier is still the core concept the prompt names.
         assert "frontier" in content.lower()
+        # Required user-visible refusal text still in the prompt.
         assert "No data is available" in content
-        # Must list at least one forbidden phrase
-        assert "approximately" in content.lower() or "extrapolat" in content.lower()
+        # v0.6.0 contract: prompt names data_frontier and out_of_frontier as
+        # the structured fields the model must read from server responses.
+        assert "data_frontier" in content
+        assert "out_of_frontier" in content
 
     def test_context_resource(self):
         """v0.5.0: runtime context with current_date / current_year."""

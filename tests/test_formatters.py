@@ -166,4 +166,31 @@ class TestErrorEnvelope:
         assert result["status"] == "no_data"
         assert result["data_completeness"] == "empty"
         assert "instruction" in result
-        assert "Do NOT" in result["instruction"]
+        # v0.6.0 strengthened the directive — MUST/MUST NOT are now the load-bearing
+        # behavioral verbs (concrete behavioral rules, not abstract "do not estimate").
+        assert "MUST" in result["instruction"]
+        assert "MUST NOT" in result["instruction"]
+        # Should name the user-visible refusal text the model has to produce.
+        assert "No data is available" in result["instruction"]
+        # And list at least one forbidden hedge phrase.
+        assert "approximately" in result["instruction"].lower()
+
+    def test_error_with_extra(self):
+        """v0.6.0: error() accepts an `extra` dict that gets merged into the result.
+
+        Used by get_data's pre-flight year-frontier check to attach the
+        data_frontier metadata + out_of_frontier flag alongside the standard
+        no_data envelope.
+        """
+        result = error(
+            "Year exceeds frontier",
+            no_data=True,
+            extra={
+                "data_frontier": {"max_year_observed": 2024, "indicator": "CME_MRY0T4"},
+                "out_of_frontier": True,
+            },
+        )
+        assert result["status"] == "no_data"
+        assert result["out_of_frontier"] is True
+        assert result["data_frontier"]["max_year_observed"] == 2024
+        assert result["data_frontier"]["indicator"] == "CME_MRY0T4"

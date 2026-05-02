@@ -1,0 +1,376 @@
+run_id,query_id,model,temperature,timestamp,extractor_version,indicator_code,indicator_name,unit,country_code,country_name,year,query_type,prompt_type,prompt_text,gt_value,gt_year,gt_latest_year,gt_latest_value,a_response_full,a_tokens_input,a_tokens_output,a_cost_usd,a_latency_ms,a_refused,a_extracted_value,a_extracted_year,b_response_full,b_tokens_input,b_tokens_output,b_cost_usd,b_latency_ms,b_refused,b_tool_error,b_tool_calls_json,b_n_tool_calls,b_extracted_value,b_extracted_year,er_a,ya_a,va_a,eqa_a,er_b,ya_b,va_b,eqa_b,hall_a,hall_b
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_ARE_2024_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",ARE,United Arab Emirates,2024,POSITIVE,direct,What was Neonatal mortality rate for United Arab Emirates in 2024?,2.36079230858571,2024.0,,2.36079230858571,"I don't have access to the specific neonatal mortality rate for the United Arab Emirates for 2024, as this data may not yet be fully compiled and published by international health organizations.
+
+However, I can tell you that:
+
+- The UAE has historically had relatively low neonatal mortality rates compared to global averages
+- In recent years (around 2020-2022), the UAE's neonatal mortality rate was approximately 3-4 deaths per 1,000 live births
+- This places the UAE among countries with better neonatal health outcomes
+
+For the most current 2024 data, I'd recommend checking:
+- WHO (World Health Organization) databases
+- UNICEF's State of the World's Children reports
+- The UAE Ministry of Health and Prevention
+- World Bank health statistics
+
+These sources typically publish the most recent and reliable neonatal mortality statistics, though there may be a lag time in data compilation and release.",24,205,0.003147,5060,True,,2024.0,"The neonatal mortality rate for the United Arab Emirates in 2024 was 2.36079230858571 per 1,000 live births.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births.",10785,406,0.038445,12680,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""ARE""], ""start_year"": 2024, ""end_year"": 2024}}]",3,2.36079230858571,2024.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_CHE_2024_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",CHE,Switzerland,2024,POSITIVE,direct,What was Neonatal mortality rate for Switzerland in 2024?,2.77407596962006,2024.0,,2.77407596962006,"I don't have access to the specific neonatal mortality rate for Switzerland in 2024, as my knowledge has a cutoff date and the most recent complete annual statistics may not yet be available.
+
+However, I can provide some context:
+
+- Switzerland historically has had one of the lowest neonatal mortality rates in the world
+- In recent years (2020-2022), Switzerland's neonatal mortality rate was approximately 2-3 deaths per 1,000 live births
+- This places Switzerland among the top-performing countries globally for neonatal health outcomes
+
+For the most current 2024 data, I'd recommend checking:
+- Swiss Federal Statistical Office (FSO)
+- World Health Organization (WHO) databases
+- UNICEF's State of the World's Children reports
+- OECD Health Statistics
+
+These sources would have the most up-to-date and official statistics for Switzerland's 2024 neonatal mortality rate once the data is compiled and published.",22,215,0.003291,4651,True,2.0,2024.0,"The neonatal mortality rate for Switzerland in 2024 was 2.77407596962006 per 1,000 live births.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births.",10764,395,0.038217,9524,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""CHE""], ""start_year"": 2024, ""end_year"": 2024}}]",3,2.77407596962006,2024.0,1.0,1.0,0.7209607890709359,0.7209607890709359,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_DOM_2024_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",DOM,Dominican Republic,2024,POSITIVE,direct,What was Neonatal mortality rate for Dominican Republic in 2024?,21.242122985856,2024.0,,21.242122985856,"I don't have access to the specific neonatal mortality rate for the Dominican Republic for 2024, as this data may not yet be fully compiled and published by international health organizations.
+
+For the most current and accurate neonatal mortality statistics, I'd recommend checking:
+
+1. **World Health Organization (WHO)** - Global Health Observatory data
+2. **UNICEF** - State of the World's Children reports
+3. **World Bank** - Health statistics database
+4. **Dominican Republic's Ministry of Public Health** - National health statistics
+
+As of recent years (2020-2022), the Dominican Republic's neonatal mortality rate was approximately 18-20 deaths per 1,000 live births, but this may have changed. The 2024 figures would typically be published by these organizations in late 2024 or early 2025.
+
+Would you like me to help you find information about how to access these databases, or are you looking for regional comparisons or trends over time?",23,217,0.003324,4897,True,,2024.0,"The neonatal mortality rate for Dominican Republic in 2024 was 21.242122985856 per 1,000 live births.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births.",10768,396,0.038244,10214,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""DOM""], ""start_year"": 2024, ""end_year"": 2024}}]",3,21.242122985856,2024.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_NPL_2024_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",NPL,Nepal,2024,POSITIVE,baseline_latest,What is the latest available Neonatal mortality rate for Nepal?,15.2695715385611,2024.0,2024.0,15.2695715385611,"According to the most recent data available, Nepal's neonatal mortality rate is approximately **21 deaths per 1,000 live births** as of 2021-2022.
+
+This represents a significant improvement from previous decades - Nepal's neonatal mortality rate was much higher in the 1990s and 2000s (around 40-50 per 1,000 live births). The reduction is attributed to:
+
+- Improved maternal and newborn healthcare services
+- Better access to skilled birth attendants
+- Enhanced immunization programs
+- Improved nutrition programs
+- Better healthcare infrastructure
+
+However, Nepal still faces challenges in further reducing neonatal mortality, particularly in rural and remote areas where access to quality healthcare remains limited.
+
+For the most current and precise figures, I'd recommend checking with:
+- Nepal's Ministry of Health and Population
+- WHO country profiles for Nepal
+- UNICEF's State of the World's Children reports
+- Nepal Demographic and Health Survey (NDHS)
+
+These sources are updated regularly and provide the most authoritative data on maternal and child health indicators for Nepal.",21,239,0.003648,6461,False,21.0,2021.0,"The latest available neonatal mortality rate for Nepal is **15.2695715385611 per 1,000 live births** in **2024**.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births. The data shows a positive trend with Nepal's neonatal mortality rate declining consistently from 18.01 in 2020 to 15.27 in 2024, representing an average annual rate of reduction of 4.05%.",15406,537,0.054273,14733,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""NPL""], ""limit"": 5}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""NPL""], ""start_year"": 2020}}]",4,15.2695715385611,2024.0,1.0,0.25,0.6247158312878964,0.1561789578219741,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_RWA_2024_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",RWA,Rwanda,2024,POSITIVE,direct,What was Neonatal mortality rate for Rwanda in 2024?,17.3512665068342,2024.0,,17.3512665068342,"I don't have access to the specific neonatal mortality rate for Rwanda in 2024, as my knowledge was last updated in April 2024 and such statistics are typically published with some delay.
+
+For the most current and accurate data on Rwanda's neonatal mortality rate in 2024, I'd recommend checking:
+
+1. **Rwanda's Ministry of Health** official publications
+2. **World Health Organization (WHO)** country profiles
+3. **UNICEF** State of the World's Children reports
+4. **World Bank** health indicators database
+
+As context, Rwanda has made significant improvements in reducing neonatal mortality over the past decades through healthcare reforms and improved access to maternal and child health services. The country's neonatal mortality rate was around 17-20 deaths per 1,000 live births in recent years prior to 2024, but you'll want to verify the current figure from official sources.",22,199,0.003051,9862,True,17.0,2024.0,"The neonatal mortality rate for Rwanda in 2024 was 17.3512665068342 per 1,000 live births.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births.",10768,396,0.038244,9910,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""RWA""], ""start_year"": 2024, ""end_year"": 2024}}]",3,17.3512665068342,2024.0,1.0,1.0,0.979755569618169,0.979755569618169,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_SDN_2024_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",SDN,Sudan,2024,POSITIVE,baseline_latest,What is the latest available Neonatal mortality rate for Sudan?,23.7111864011919,2024.0,2024.0,23.7111864011919,"According to the most recent data available, Sudan's neonatal mortality rate is approximately **38-40 deaths per 1,000 live births** as of 2021-2022.
+
+This figure comes from sources like:
+- UNICEF's State of the World's Children reports
+- WHO Global Health Observatory data
+- UN Inter-agency Group for Child Mortality Estimation (UN IGME)
+
+It's worth noting that:
+- Sudan has one of the higher neonatal mortality rates globally
+- The rate has been gradually declining over the past decade (it was around 45-50 per 1,000 in the early 2010s)
+- The ongoing conflict and humanitarian crisis since 2023 may have impacted these rates, but updated statistics reflecting this period may not yet be available
+- Data collection in Sudan faces challenges due to the current security situation
+
+For the most current figures, I'd recommend checking the latest reports from UNICEF, WHO, or the Sudan Federal Ministry of Health, as mortality statistics are typically updated annually with some delay.",21,232,0.003543,5604,False,40.0,2021.0,"The latest available neonatal mortality rate for Sudan is **23.7111864011919 per 1,000 live births** for the year **2024**.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births. The data shows a positive trend with the neonatal mortality rate declining from 25.59 in 2020 to 23.71 in 2024, representing an average annual rate of reduction of 1.89%.",15403,536,0.054249,14968,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""SDN""], ""limit"": 5}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""SDN""], ""start_year"": 2020}}]",4,23.7111864011919,2024.0,1.0,0.25,0.31303253564784483,0.07825813391196121,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_TGO_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",TGO,Togo,2023,POSITIVE,baseline_latest,What is the latest available Neonatal mortality rate for Togo?,22.5900204064739,2024.0,2024.0,22.5900204064739,"According to the most recent data from the World Bank and WHO, Togo's neonatal mortality rate was **24 deaths per 1,000 live births** as of 2022.
+
+This represents a significant improvement from previous years - for context, Togo's neonatal mortality rate was around 32 per 1,000 live births in 2010, showing a positive downward trend over the past decade.
+
+However, this rate is still above the global average of approximately 18 deaths per 1,000 live births and significantly higher than rates in developed countries. The main causes of neonatal deaths in Togo include complications from preterm birth, birth asphyxia, and infections.
+
+Please note that these statistics may be updated as new data becomes available from international health organizations.",23,178,0.002739,4749,False,24.0,2022.0,"The latest available neonatal mortality rate for Togo is **22.5900204064739 per 1,000 live births** in **2024**.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births. The data shows a positive trend with the neonatal mortality rate declining from 24.32 in 2020 to 22.59 in 2024, representing an average annual rate of reduction of 1.83%.",15480,538,0.05451,15484,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""TGO""], ""limit"": 5}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""TGO""], ""start_year"": 2020}}]",4,22.5900204064739,2024.0,1.0,0.5,0.9375839610520217,0.46879198052601084,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_TUN_2023_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",TUN,Tunisia,2023,POSITIVE,direct,What was Neonatal mortality rate for Tunisia in 2023?,8.29671529418638,2023.0,,8.29671529418638,"I don't have access to the specific neonatal mortality rate for Tunisia in 2023. The most recent data I have is from earlier years, and 2023 statistics may not yet be fully compiled or published by international organizations like WHO, UNICEF, or the World Bank.
+
+For the most current and accurate 2023 data on Tunisia's neonatal mortality rate, I'd recommend checking:
+
+- WHO Global Health Observatory
+- UNICEF's State of the World's Children reports
+- World Bank health statistics
+- Tunisia's Ministry of Health official publications
+
+As of my last update, Tunisia had been making progress in reducing neonatal mortality over the previous decade, but I cannot provide the specific 2023 figure without access to current data sources.",22,164,0.002526,3706,True,,2023.0,"The neonatal mortality rate for Tunisia in 2023 was 8.29671529418638 per 1,000 live births.",10773,377,0.037974,10167,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""TUN""], ""start_year"": 2023, ""end_year"": 2023}}]",3,8.29671529418638,2023.0,0.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_TUN_2024_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",TUN,Tunisia,2024,POSITIVE,baseline_latest,What is the latest available Neonatal mortality rate for Tunisia?,7.74748921024315,2024.0,2024.0,7.74748921024315,"According to the most recent data available, Tunisia's neonatal mortality rate is approximately **8-9 deaths per 1,000 live births** as of 2021-2022.
+
+This represents a significant improvement from previous decades - Tunisia has made substantial progress in reducing neonatal mortality over the years. For context:
+- In 2000, the rate was around 15 per 1,000 live births
+- By 2010, it had decreased to about 11 per 1,000 live births
+- The current rate of 8-9 per 1,000 represents continued improvement
+
+Tunisia's neonatal mortality rate is now among the lowest in the Middle East and North Africa (MENA) region, reflecting improvements in healthcare infrastructure, maternal care, and neonatal services.
+
+Please note that exact figures may vary slightly depending on the source (WHO, UNICEF, World Bank, etc.) and the specific year of the most recent data available. For the most current and precise statistics, I'd recommend checking the latest reports from WHO or UNICEF.",21,237,0.003618,5352,False,9.0,2021.0,"The latest available neonatal mortality rate for Tunisia is **7.75 deaths per 1,000 live births** in **2024**.
+
+This represents a significant improvement from 2020, when the rate was 10.39 per 1,000 live births, showing a declining trend over the past five years with an average annual rate of reduction of 7.08%.",10950,372,0.03843,10388,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""TUN""], ""start_year"": 2020}}]",3,7.74748921024315,2024.0,1.0,0.25,0.8383333289317946,0.20958333223294864,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_UGA_2024_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",UGA,Uganda,2024,POSITIVE,baseline_latest,What is the latest available Neonatal mortality rate for Uganda?,21.3397488676111,2024.0,2024.0,21.3397488676111,"According to the most recent data available, Uganda's neonatal mortality rate is approximately **19-20 deaths per 1,000 live births** as of 2022.
+
+This represents a significant improvement from previous decades - Uganda's neonatal mortality rate was much higher in the 1990s and 2000s (around 27-30 per 1,000 live births). However, it still remains above the global average and indicates that neonatal deaths continue to be a significant public health challenge in Uganda.
+
+The main causes of neonatal deaths in Uganda include:
+- Birth complications and asphyxia
+- Prematurity and low birth weight
+- Infections (sepsis, pneumonia, meningitis)
+- Congenital anomalies
+
+For the most current and precise figures, I'd recommend checking recent reports from:
+- Uganda Bureau of Statistics (UBOS)
+- WHO Global Health Observatory
+- UNICEF State of the World's Children reports
+- The latest Uganda Demographic and Health Survey
+
+These sources are updated regularly and would provide the most authoritative current data.",21,244,0.003723,5329,False,20.0,2022.0,"The latest available neonatal mortality rate for Uganda is **21.3397488676111 per 1,000 live births** for the year **2024**.
+
+This represents the probability of dying during the first 28 days of life, expressed per 1,000 live births. The data shows a declining trend over recent years, with the rate decreasing from 21.82 in 2020 to 21.34 in 2024.",10948,390,0.038694,10252,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""UGA""], ""start_year"": 2020}}]",3,21.3397488676111,2024.0,1.0,0.5,0.9372181521009117,0.4686090760504559,1.0,1.0,1.0,1.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_ARE_2026_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",ARE,United Arab Emirates,2026,HALLUCINATION_T1,direct,What was Neonatal mortality rate for United Arab Emirates in 2026?,,2026.0,,,"I don't have access to neonatal mortality rate data for the United Arab Emirates in 2026, as that year is in the future from my knowledge cutoff date. 
+
+For the most current and projected neonatal mortality statistics for the UAE, I'd recommend checking:
+
+- WHO (World Health Organization) databases
+- UNICEF's State of the World's Children reports
+- UAE Ministry of Health and Prevention official statistics
+- World Bank health indicators
+
+These sources typically provide the most recent available data and sometimes include projections. The UAE has generally shown improving neonatal health outcomes in recent years, but I cannot provide specific figures for 2026.",24,141,0.002187,7209,True,,2026.0,"No data is available for 2026. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data only extends through 2024, so I cannot provide data for 2026. If you're interested in the most recent available data for the United Arab Emirates, I can retrieve the 2024 figures instead.",7337,275,0.026136,9283,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2026.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_AUT_2028_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",AUT,Austria,2028,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Austria in 2028?,,2028.0,,,"I don't have access to data for 2028, as that year is in the future from my knowledge cutoff date. Neonatal mortality rates are typically reported by health organizations and statistical agencies after data collection and analysis, so 2028 data wouldn't be available yet.
+
+If you're looking for recent neonatal mortality data for Austria, I'd recommend checking:
+- Statistics Austria (the national statistical office)
+- WHO (World Health Organization) databases
+- OECD Health Statistics
+- UNICEF data
+
+These sources typically have the most recent available data, usually with a 1-2 year lag from the current year. Would you like me to help you understand what neonatal mortality rates typically look like for Austria based on historical trends, or help you find where to access the most current available data?",22,178,0.002736,4301,True,,2028.0,"No data is available for 2028. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data only extends through 2024, so I cannot provide data for the requested year of 2028.",7323,248,0.025689,8034,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2028.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_CHE_2027_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",CHE,Switzerland,2027,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Switzerland in 2027?,,2027.0,,,"I don't have access to data for 2027, as that year is in the future from my knowledge cutoff. Neonatal mortality rates are typically reported with a delay of 1-2 years after the year in question, so 2027 data wouldn't be available yet even if I had current information.
+
+For context, Switzerland has historically had one of the lowest neonatal mortality rates in the world. In recent years (around 2019-2021), Switzerland's neonatal mortality rate was approximately 2-3 deaths per 1,000 live births.
+
+If you're looking for the most current available data on Switzerland's neonatal mortality rate, I'd recommend checking:
+- The Swiss Federal Statistical Office
+- WHO Global Health Observatory
+- UNICEF databases
+- OECD Health Statistics
+
+These sources would have the most recent official statistics available.",22,192,0.002946,4708,True,,2027.0,"No data is available for 2027. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data only extends through 2024, so I cannot provide data for 2027 as it is beyond the current data frontier.",7325,254,0.025785,7993,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2027.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_DOM_2029_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",DOM,Dominican Republic,2029,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Dominican Republic in 2029?,,2029.0,,,"I don't have access to neonatal mortality rate data for the Dominican Republic in 2029, as that year is in the future from my knowledge cutoff date. 
+
+If you're looking for:
+- **Historical data** (up to around 2021-2022): I can help you find past neonatal mortality rates
+- **Projections or estimates** for 2029: You might want to check sources like:
+  - World Health Organization (WHO)
+  - UNICEF databases
+  - World Bank data
+  - UN Population Division projections
+
+Would you like me to provide information about the Dominican Republic's historical neonatal mortality trends instead, or help you understand where to find the most current projections?",23,160,0.002469,3593,True,,2029.0,"No data is available for 2029. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data extends from 1951 to 2024, so data for 2029 is not yet available in the UNICEF database.",7328,257,0.025839,8131,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2029.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_ECU_2026_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",ECU,Ecuador,2026,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Ecuador in 2026?,,2026.0,,,"I don't have access to data for 2026, as that year is in the future from my knowledge cutoff. Neonatal mortality rates are typically reported by organizations like the World Health Organization, UNICEF, and national health ministries after data collection and analysis.
+
+For the most current neonatal mortality data for Ecuador, I'd recommend checking:
+
+1. **WHO Global Health Observatory** - provides updated mortality statistics
+2. **UNICEF State of the World's Children reports**
+3. **Ecuador's Ministry of Public Health (Ministerio de Salud Pública)**
+4. **World Bank health indicators**
+
+As of my last update, Ecuador had been making progress in reducing neonatal mortality rates over the past decades, but I cannot provide the specific 2026 figure you're looking for. Would you like me to help you understand what neonatal mortality rates typically measure or suggest where to find the most recent available data?",22,205,0.003141,5051,True,,2026.0,"No data is available for 2026. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data is only available through 2024, so I cannot provide data for 2026 as it is beyond the current data frontier.",7325,255,0.0258,9050,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2026.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_GIN_2025_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",GIN,Guinea,2025,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Guinea in 2025?,,2025.0,,,"I don't have access to neonatal mortality rate data for Guinea for 2025, as my knowledge was last updated in April 2024 and doesn't include complete 2025 statistics.
+
+For the most current neonatal mortality data for Guinea, I'd recommend checking:
+
+- **World Health Organization (WHO)** databases
+- **UNICEF** State of the World's Children reports
+- **World Bank** health indicators
+- Guinea's **Ministry of Health** official statistics
+
+As context, Guinea has historically had relatively high neonatal mortality rates compared to global averages, though there have been improvements over recent decades. The most recent data I have access to showed rates in the range of 20-30 deaths per 1,000 live births, but you'll want to verify current figures from the official sources mentioned above.",22,181,0.002781,3966,True,,2025.0,"No data is available for 2025. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data is only available through 2024, so I cannot provide data for 2025. If you'd like to see the most recent available data for Guinea (2024 or earlier), I'd be happy to retrieve that for you.",7325,276,0.026115,9505,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2025.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_JAM_2025_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",JAM,Jamaica,2025,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Jamaica in 2025?,,2025.0,,,"I don't have access to neonatal mortality rate data for Jamaica in 2025, as my knowledge was last updated in April 2024 and doesn't include complete 2025 statistics.
+
+For the most current neonatal mortality data for Jamaica, I'd recommend checking:
+
+- **World Bank Open Data** (data.worldbank.org)
+- **WHO Global Health Observatory** 
+- **UNICEF State of the World's Children reports**
+- **Jamaica's Ministry of Health and Wellness**
+
+As context, Jamaica's neonatal mortality rate has generally been improving over the years. In recent years prior to 2025, it was typically reported in the range of 8-12 deaths per 1,000 live births, but you'll want to verify the exact 2025 figure from current official sources.",22,183,0.002811,4570,True,,2025.0,"No data is available for 2025. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data is only available through 2024, so I cannot provide data for 2025. If you're interested in Jamaica's most recent neonatal mortality rate data, I can retrieve the 2024 figures for you.",7325,274,0.026085,8058,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2025.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_KHM_2026_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",KHM,Cambodia,2026,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Cambodia in 2026?,,2026.0,,,"I don't have access to data for 2026, as that year is in the future from my knowledge cutoff. Neonatal mortality rates are typically reported with a lag of 1-2 years after the year in question, so 2026 data wouldn't be available yet even if we were currently in 2026.
+
+The most recent data I have for Cambodia's neonatal mortality rate would be from around 2020-2021. If you're looking for current or projected data, I'd recommend checking with:
+
+- WHO (World Health Organization)
+- UNICEF
+- World Bank databases
+- Cambodia's Ministry of Health
+
+These organizations regularly publish maternal and child health statistics and may have more recent estimates or projections. Is there a particular reason you need the 2026 figure, or would more recent historical data be helpful?",22,184,0.002826,4414,True,,2026.0,"No data is available for 2026. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data is only available through 2024, so I cannot provide data for 2026. If you're interested in the most recent available data for Cambodia, I can retrieve the 2024 figures instead.",7325,270,0.026025,8358,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2026.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_LKA_2029_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",LKA,Sri Lanka,2029,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Sri Lanka in 2029?,,2029.0,,,"I don't have access to data for 2029, as that year is in the future. My knowledge has a cutoff date, and I can only provide information about past events and statistics.
+
+If you're looking for Sri Lanka's neonatal mortality rate, I can share historical data or help you find projections from organizations like the World Health Organization (WHO), UNICEF, or the World Bank, which sometimes publish estimated trends for future years.
+
+Would you like me to provide historical neonatal mortality data for Sri Lanka instead, or help you find where you might access current projections for future years?",23,130,0.002019,4009,True,,2029.0,"No data is available for 2029. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data extends from 1951 to 2024, so data for 2029 is not yet available in the UNICEF database.",7328,257,0.025839,8810,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2029.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_MMR_2027_direct,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",MMR,Myanmar,2027,HALLUCINATION_T1,direct,What was Neonatal mortality rate for Myanmar in 2027?,,2027.0,,,"I don't have access to data for Myanmar's neonatal mortality rate in 2027, as that year is in the future from my knowledge cutoff date. 
+
+If you're looking for:
+- **Historical data** (up to around 2021-2022): I can help with that
+- **Current data** for 2024: You'd need to check recent reports from organizations like WHO, UNICEF, or Myanmar's Ministry of Health
+- **Projections** for 2027: These might be available in demographic projection reports from international health organizations
+
+Would you like me to share what I know about Myanmar's historical neonatal mortality trends, or were you perhaps asking about a different year?",22,154,0.002376,3896,True,,2027.0,"No data is available for 2027. The most recent observation in the UNICEF Data Warehouse for this indicator is 2024.
+
+The neonatal mortality rate data only extends through 2024, so I cannot provide data for the requested year of 2027.",7325,249,0.02571,7709,True,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}]",2,,2027.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_ALA_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",ALA,Aland Islands,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Aland Islands?,,,,,"I don't have access to the most current neonatal mortality rate data for the Åland Islands. 
+
+The Åland Islands are an autonomous region of Finland, and their vital statistics are often included in Finland's national data rather than reported separately. Finland generally has one of the lowest neonatal mortality rates in the world (typically around 1-2 deaths per 1,000 live births), and the Åland Islands would likely have similar or even better rates given their high standard of healthcare.
+
+For the most up-to-date and specific data for Åland Islands, I'd recommend checking:
+
+1. **Statistics and Research Åland (ÅSUB)** - the official statistics agency for Åland
+2. **Statistics Finland** - which may have regional breakdowns
+3. **Nordic statistical databases** - which sometimes provide sub-regional data
+4. **WHO European Health Information Gateway** - for regional European data
+
+These sources would have the most recent available figures, though data may be 1-2 years behind due to collection and processing time.",24,233,0.003567,6330,True,,,Let me try the neonatal deaths indicator instead:,14118,467,0.049359,25347,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""ALA""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_TMM0"", ""countries"": [""ALA""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_ASM_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",ASM,American Samoa,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for American Samoa?,,,,,"I don't have access to the most current neonatal mortality rate data for American Samoa. Neonatal mortality statistics for U.S. territories like American Samoa are often reported less frequently than for U.S. states, and there can be delays in data compilation and publication.
+
+For the most up-to-date information, I'd recommend checking:
+
+1. **CDC Wonder Database** - The CDC's online database for vital statistics
+2. **American Samoa Department of Health** - Local health department records
+3. **World Health Organization (WHO)** - Global health statistics database
+4. **CIA World Factbook** - Though this may not have the very latest data
+
+The neonatal mortality rate is typically expressed as deaths per 1,000 live births in the first 28 days of life. If you need this information for research or official purposes, contacting the American Samoa Department of Health directly would likely give you the most current and accurate data available.
+
+Would you like me to help you find contact information for any of these sources?",23,228,0.003489,4656,True,,,Let me get more information about the CME_MRM0 indicator to understand its structure better.,14100,451,0.049065,18311,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""ASM""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_indicator_info"", ""input"": {""code"": ""CME_MRM0""}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_BES_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",BES,"Bonaire, Sint Eustatius and Saba",2023,HALLUCINATION_T2,baseline_latest,"What is the latest available Neonatal mortality rate for Bonaire, Sint Eustatius and Saba?",,,,,"I don't have access to the most current neonatal mortality rate data for Bonaire, Sint Eustatius and Saba (BES islands). These Caribbean Netherlands municipalities have very small populations, which makes specific health statistics less frequently reported or publicly available compared to larger countries.
+
+For the most up-to-date neonatal mortality rates for the BES islands, I'd recommend checking:
+
+1. **Statistics Netherlands (CBS)** - They compile health statistics for the Caribbean Netherlands
+2. **The Netherlands Ministry of Health, Welfare and Sport** - May have recent health data for these territories
+3. **Pan American Health Organization (PAHO)** - Sometimes includes data for Caribbean territories
+4. **Local health departments** on each island
+
+Given that these are special municipalities of the Netherlands, their health outcomes are generally expected to be better than regional Caribbean averages, but I cannot provide the specific current figures without access to the latest official data sources.
+
+Would you like me to help you find contact information for any of these organizations to obtain the most recent statistics?",33,228,0.003519,5930,True,,,Let me try the neonatal deaths indicator instead:,14209,479,0.049812,24379,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""BES""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_TMM0"", ""countries"": [""BES""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_BMU_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",BMU,Bermuda,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Bermuda?,,,,,"I don't have access to the most current neonatal mortality rate data for Bermuda. Neonatal mortality rates are typically updated annually by health organizations, and the ""latest"" data can vary depending on the source and reporting delays.
+
+For the most up-to-date neonatal mortality rate for Bermuda, I'd recommend checking:
+
+1. **Bermuda Department of Health** - Their official health statistics
+2. **World Health Organization (WHO)** - Global Health Observatory data
+3. **UNICEF** - State of the World's Children reports
+4. **World Bank** - Development indicators database
+
+These sources typically provide neonatal mortality rates (deaths per 1,000 live births in the first 28 days of life) with data that may be 1-2 years behind the current year due to collection and verification processes.
+
+Would you like me to help you understand what neonatal mortality rates typically look like for small island nations or developed territories, which might give you context for interpreting Bermuda's data when you find it?",23,232,0.003549,4999,True,,,Let me try the neonatal deaths indicator instead:,14103,461,0.049224,25998,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""BMU""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_TMM0"", ""countries"": [""BMU""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_CUW_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",CUW,Curacao,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Curacao?,,,,,"I don't have access to the most current neonatal mortality rate data for Curaçao. Neonatal mortality statistics are typically published by national health ministries, the World Health Organization (WHO), UNICEF, or the World Bank, but there can be delays in reporting and updates.
+
+For the most recent and accurate neonatal mortality rate for Curaçao, I'd recommend checking:
+
+1. **Curaçao's Ministry of Health** official website or publications
+2. **WHO Global Health Observatory** data repository
+3. **UNICEF's State of the World's Children** reports
+4. **World Bank** health statistics database
+5. **UN Inter-agency Group for Child Mortality Estimation (UN IGME)** reports
+
+These sources typically provide the most reliable and up-to-date statistics on neonatal mortality rates by country and territory. The data is usually reported per 1,000 live births and may be available for recent years, though there's often a 1-2 year lag in official reporting.",23,231,0.003534,5061,True,,,Let me try the neonatal deaths indicator instead:,14107,464,0.049281,26734,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""CUW""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_TMM0"", ""countries"": [""CUW""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_FRO_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",FRO,Faroe Islands,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Faroe Islands?,,,,,"I don't have access to the most current neonatal mortality rate data for the Faroe Islands. Neonatal mortality statistics for small territories like the Faroe Islands are often reported with some delay and may not be updated as frequently as data for larger countries.
+
+For the most recent and accurate neonatal mortality rate for the Faroe Islands, I'd recommend checking:
+
+1. **Statistics Faroe Islands (Hagstova Føroya)** - the official statistical office
+2. **WHO Global Health Observatory** - which compiles international health statistics
+3. **UNICEF databases** - which track child mortality indicators
+4. **The Faroese Ministry of Health**
+
+These sources would have the most up-to-date official figures. Given the Faroe Islands' well-developed healthcare system, the neonatal mortality rate is likely to be quite low, similar to other Nordic countries, but I cannot provide the specific current figure without access to the latest data.",24,213,0.003267,7248,True,,,Let me try the neonatal deaths indicator instead:,14126,469,0.049413,25714,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""FRO""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_TMM0"", ""countries"": [""FRO""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_GGY_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",GGY,Guernsey,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Guernsey?,,,,,"I don't have access to the most current neonatal mortality rate data for Guernsey specifically. Guernsey, as a British Crown Dependency, maintains its own health statistics, but this detailed demographic data isn't always readily available in my training data.
+
+For the most accurate and up-to-date neonatal mortality rate for Guernsey, I'd recommend checking:
+
+1. **States of Guernsey** official website and their health department publications
+2. **Guernsey Registry Office** vital statistics reports
+3. **UK Office for National Statistics** (which sometimes includes Crown Dependencies data)
+4. **World Health Organization** databases, though coverage of small territories can be limited
+
+Neonatal mortality rates for developed regions like Guernsey are typically quite low (often under 5 per 1,000 live births), but for precise current figures, the local government health authorities would be your best source.
+
+Would you like me to help you find contact information for Guernsey's health department or suggest other ways to locate this specific statistic?",24,234,0.003582,17463,True,,,Let me get more information about the neonatal mortality rate indicator to understand its structure better.,14125,458,0.049245,21402,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""GGY""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_indicator_info"", ""input"": {""code"": ""CME_MRM0""}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_GIB_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",GIB,Gibraltar,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Gibraltar?,,,,,"I don't have access to the most current neonatal mortality rate data for Gibraltar. Neonatal mortality statistics are typically published by national health authorities or international organizations like the World Health Organization (WHO), UNICEF, or the World Bank, but there can be delays in reporting.
+
+For the most up-to-date neonatal mortality rate for Gibraltar, I'd recommend checking:
+
+1. **Gibraltar Health Authority** - The local health department's official statistics
+2. **UK Office for National Statistics** - Since Gibraltar is a British Overseas Territory
+3. **WHO Global Health Observatory** - International health statistics database
+4. **UNICEF State of the World's Children reports**
+5. **World Bank health indicators**
+
+These sources would provide the most recent and reliable data on neonatal mortality rates for Gibraltar. The data is typically reported as deaths per 1,000 live births within the first 28 days of life.",21,202,0.003093,4161,True,,,Let me try the under-five mortality rate (CME_MRY0T4) which is commonly available and might include Gibraltar data.,14569,493,0.051102,31129,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""GIB""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""mortality"", ""limit"": 15}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRY0T4"", ""countries"": [""GIB""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_GRL_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",GRL,Greenland,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Greenland?,,,,,"I don't have access to the most current neonatal mortality statistics for Greenland in my training data. Neonatal mortality rates can change from year to year, and the most recent data would typically come from:
+
+1. **Statistics Greenland** (Greenland's official statistics office)
+2. **WHO Global Health Observatory**
+3. **UNICEF State of the World's Children reports**
+4. **World Bank health indicators**
+
+For the most up-to-date and accurate neonatal mortality rate for Greenland, I'd recommend checking these official sources directly, particularly Statistics Greenland's website or the latest WHO/UNICEF reports on child mortality.
+
+Historically, Greenland has had higher neonatal and infant mortality rates compared to Denmark and other Nordic countries, but I cannot provide the specific current figure without risking giving you outdated information.",23,192,0.002949,4645,True,,,Let me try the neonatal deaths indicator instead:,14105,464,0.049275,30383,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""GRL""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_TMM0"", ""countries"": [""GRL""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False
+claude-sonnet-4-20250514_20260501_100415_mcp051_pilot,CME_MRM0_GUM_2023_baseline_latest,claude-sonnet-4-20250514,0.0,20260501_100415,v1.3,CME_MRM0,Neonatal mortality rate,"per 1,000 live births",GUM,Guam,2023,HALLUCINATION_T2,baseline_latest,What is the latest available Neonatal mortality rate for Guam?,,,,,"I don't have access to the most current neonatal mortality rate data for Guam. Neonatal mortality statistics are typically compiled and reported by health departments and international organizations like WHO or UNICEF, but there can be delays in data collection and publication.
+
+For the most up-to-date neonatal mortality rate for Guam, I'd recommend checking:
+
+1. **Guam Department of Public Health and Social Services** - They would have the most current local data
+2. **CDC Wonder Database** - Often includes U.S. territory data
+3. **WHO Global Health Observatory** - May have recent estimates
+4. **Guam's vital statistics reports** - Usually published annually
+
+The neonatal mortality rate measures deaths of infants within the first 28 days of life per 1,000 live births. If you need this information for research or official purposes, contacting Guam's health department directly would likely give you the most recent and accurate figures.
+
+Would you like me to help you find contact information for any of these sources?",23,231,0.003534,5070,True,,,Let me try the neonatal deaths indicator instead:,14117,467,0.049356,27760,False,,"[{""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal mortality rate""}}, {""tool"": ""get_temporal_coverage"", ""input"": {""code"": ""CME_MRM0""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_MRM0"", ""countries"": [""GUM""]}}, {""tool"": ""search_indicators"", ""input"": {""query"": ""neonatal""}}, {""tool"": ""get_data"", ""input"": {""indicator"": ""CME_TMM0"", ""countries"": [""GUM""]}}]",5,,,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,False,False

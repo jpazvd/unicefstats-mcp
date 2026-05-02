@@ -1,0 +1,50 @@
+{
+  "run_id": "claude-sonnet-4-20250514_20260501_154234_mcp060_full",
+  "model": "claude-sonnet-4-20250514",
+  "temperature": 0.0,
+  "timestamp": "20260501_154234",
+  "n_queries": 500,
+  "ground_truth_source": "examples/ground_truth_mcp060/sample.csv",
+  "batch_pricing_discount": 0.5,
+  "batch_ids": [
+    "msgbatch_01H1HqyYgJ1L2jNf9yNFzUB8",
+    "msgbatch_018MkxWr2GV64KwmeJy7KsC2",
+    "msgbatch_01BYQvZW7YZBExGfQzkU7Ykb",
+    "msgbatch_01CLuGrb3pmbeTJF4cmD9oVq",
+    "msgbatch_01BSrGBN2VuJL9vbpeQG5Ri3"
+  ],
+  "queries_unfinished_at_wave5": 214,
+  "positive_metrics": {
+    "mean_eqa_a": 0.0,
+    "mean_eqa_b": 0.0373
+  },
+  "hallucination_metrics": {
+    "rate_a": 0.0875,
+    "rate_b": 0.2875,
+    "n": 400,
+    "by_tier": {
+      "HALLUCINATION_T1": {
+        "n": 200,
+        "rate_a": 0.13,
+        "rate_b": 0.35
+      },
+      "HALLUCINATION_T2": {
+        "n": 200,
+        "rate_a": 0.045,
+        "rate_b": 0.225
+      }
+    }
+  },
+  "cost_summary": {
+    "condition_a_total": 0.7307,
+    "condition_b_total": 7.8516,
+    "condition_a_per_query": 0.001461,
+    "condition_b_per_query": 0.015703
+  },
+  "token_summary": {
+    "b_input_total": 4168487,
+    "b_output_total": 213180,
+    "b_cache_creation_total": 0,
+    "b_cache_read_total": 0
+  }
+}
