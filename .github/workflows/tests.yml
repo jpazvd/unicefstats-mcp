@@ -28,6 +28,42 @@ jobs:
       - name: Test
         run: pytest tests/ -v --cov=unicefstats_mcp --cov-report=xml
 
+  validate-public-workflows:
+    # Files under .github/workflows-public/ are NOT executed on this repo
+    # (GitHub Actions ignores non-standard workflow paths) — they get synced
+    # to the public mirror's .github/workflows/ by sync-to-public.yml.
+    # GitHub's workflow parser therefore never validates them on dev, and
+    # tests.yml's main pytest job doesn't touch them either. Without this
+    # job, a syntax error in a public-only workflow would only surface
+    # AFTER it's been pushed to the public repo as part of a release —
+    # too late to fix without another tag.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PyYAML
+        run: pip install pyyaml
+      - name: Validate YAML syntax of workflows-public/
+        run: |
+          set -euo pipefail
+          if [ ! -d .github/workflows-public ]; then
+            echo "No .github/workflows-public/ directory — nothing to validate."
+            exit 0
+          fi
+          shopt -s nullglob
+          files=(.github/workflows-public/*.yml .github/workflows-public/*.yaml)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No YAML files under .github/workflows-public/ — skipping."
+            exit 0
+          fi
+          for f in "${files[@]}"; do
+            echo "Parsing $f"
+            python -c "import sys, yaml; yaml.safe_load(open(sys.argv[1]))" "$f"
+          done
+          echo "OK: all public-only workflow YAMLs parse cleanly."
+
   markdownlint:
     runs-on: ubuntu-22.04
     steps:

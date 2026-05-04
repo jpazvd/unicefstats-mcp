@@ -6,6 +6,55 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [0.6.4] — 2026-05-02
+
+Release-flow consolidation. The v0.6.3 release surfaced three
+adjacent issues with the dev → public → PyPI → registry chain:
+
+  1. The MCP registry rejected v0.6.3's `server.json` with
+     `expected length <= 100` on the `description` field
+     (was 225 chars).
+  2. The public repo (`jpazvd/unicefstats-mcp`) had a stale
+     `publish.yml` synced from earlier dev versions, redundant now
+     that PyPI publishing happens from `unicefstats-mcp-dev` only.
+  3. GitHub Releases were missing on the public repo for v0.6.2
+     and v0.6.3 (only v0.3.3 / v0.4.0 / v0.5.1 had Release pages),
+     because nothing in the release flow created them.
+
+### Changed
+
+- **`server.json` description shortened to 100 chars** — fixes the
+  registry validation error so future releases publish successfully.
+- **`sync-to-public.yml` no longer copies `publish.yml` to public.**
+  PyPI publishing is now exclusively a dev-repo responsibility.
+  cpina/github-action-push-to-another-repository's force-mirror push
+  removes any stale `publish.yml` from the public repo on next sync.
+
+### Added
+
+- **`.github/workflows-public/release.yml`** — a workflow that lives
+  under a non-standard path in dev (so GitHub Actions does NOT execute
+  it on dev) but gets copied to public's `.github/workflows/release.yml`
+  by the sync workflow. On tag push, public's release.yml extracts
+  notes from CHANGELOG.md and creates a GitHub Release on public using
+  its own `GITHUB_TOKEN` — no PAT or cross-repo secrets required.
+  Also supports `workflow_dispatch` with a `tag` input for retroactive
+  Release creation on existing tags (used to backfill v0.6.2 / v0.6.3).
+- **`sync-to-public.yml` now copies `.github/workflows-public/*.yml`**
+  into `sync-staging/.github/workflows/`. The mechanism is generic —
+  future public-only workflows can be added by dropping a YAML in
+  `.github/workflows-public/` on dev.
+
+### Why a release-only-for-CI-fixes (again)
+
+Same reason as v0.6.3: the new `registry-publish` job (introduced in
+v0.6.3 via PR #35) only fires on new tags. v0.6.3 itself failed at
+the registry step because of the description length, so v0.6.4 is the
+first tag where the full chain (PyPI + registry + sync + public Release)
+should run end-to-end.
+
+No code, API, or behavioural changes vs v0.6.3.
+
 ## [0.6.3] — 2026-05-02
 
 Patch release whose sole purpose is to activate the new

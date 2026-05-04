@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jpazvd/unicefstats-mcp",
   "title": "UNICEF Stats MCP",
-  "description": "UNICEF child development statistics: 790+ indicators across 200+ countries with disaggregations by sex, age, wealth quintile, and residence. Data sourced from UNICEF SDMX REST API. No API key required.",
-  "version": "0.6.3",
+  "description": "UNICEF child development statistics: 790+ indicators, 200+ countries, SDMX-sourced. No API key.",
+  "version": "0.6.4",
   "author": {
     "name": "Joao Pedro Azevedo",
     "github": "jpazvd"
@@ -17,7 +17,7 @@
     {
       "registryType": "pypi",
       "identifier": "unicefstats-mcp",
-      "version": "0.6.3",
+      "version": "0.6.4",
       "transport": {
         "type": "stdio"
       },

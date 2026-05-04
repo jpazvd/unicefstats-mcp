@@ -1,0 +1,87 @@
+# Create GitHub Release on tag push (PUBLIC REPO ONLY)
+#
+# This file lives under .github/workflows-public/ in unicefstats-mcp-dev,
+# which is NOT a path GitHub Actions executes. The sync-to-public workflow
+# in dev copies it to .github/workflows/release.yml on the PUBLIC repo
+# (jpazvd/unicefstats-mcp), where it does run.
+#
+# Trigger: tag push (sync-to-public propagates v* tags from dev to public).
+# Effect: creates a GitHub Release on the public repo with notes pulled
+#         from CHANGELOG.md for the matching version.
+# Auth:   uses public's own GITHUB_TOKEN — no PAT, no cross-repo secrets.
+#
+# Why this is needed: PR #36 onwards, dev-side publish.yml does PyPI +
+# registry-publish but does not create GitHub Releases. The natural place
+# for the public-facing Release is the public repo itself, since that's
+# where users land when they click "Releases" on the README badge.
+
+name: Create GitHub Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to create a Release for (e.g. v0.6.2)"
+        required: true
+        type: string
+
+permissions:
+  contents: write   # required to create Releases
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: Resolve target tag
+        id: tag
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+          echo "Tag: $TAG"
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        run: |
+          VERSION="${{ steps.tag.outputs.version }}"
+          # Pull the section between "## [VERSION]" and the next "## [..."
+          notes=$(awk -v version="$VERSION" '
+            /^## \[/ {
+              if (in_section) exit
+              if ($0 ~ "^## \\[" version "\\]") in_section = 1
+              next
+            }
+            in_section { print }
+          ' CHANGELOG.md)
+          if [ -z "$notes" ]; then
+            notes="Release ${{ steps.tag.outputs.tag }}. See CHANGELOG.md for details."
+          fi
+          {
+            echo "notes<<EOF"
+            echo "$notes"
+            echo ""
+            echo "---"
+            echo ""
+            echo "PyPI: https://pypi.org/project/unicefstats-mcp/${VERSION}/"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.tag.outputs.tag }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          body: ${{ steps.notes.outputs.notes }}
+          draft: false
+          prerelease: false

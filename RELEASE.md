@@ -64,25 +64,44 @@ This document describes how to publish a new version of `unicefstats-mcp` to PyP
 
 ### 3. Automated pipeline (hands-off)
 
-Pushing a `v*` tag fans out to **two** workflows in parallel — both trigger off the same tag, so a single `git push origin vX.Y.Z` ships the release atomically to PyPI and the public mirror.
+Pushing a `v*` tag fans out to **two workflows on the dev repo plus one workflow on the public repo** — together they ship the release to PyPI, the official MCP registry, and the public mirror's GitHub Releases page.
 
-**Workflow A — `publish.yml` (PyPI release):**
+**Workflow A — `publish.yml` (dev → PyPI + MCP registry):**
 
-1. **Validates** version consistency, semver format, tag alignment, changelog entry
+1. **Validates** version consistency, semver format, tag alignment, changelog entry, server.json claims
 2. **Checks** that the version does not already exist on PyPI
 3. **Builds** sdist + wheel via `python -m build`
 4. **Publishes** to PyPI via Trusted Publishing (OIDC, no tokens)
 5. **Verifies** the published package installs correctly from PyPI
+6. **Submits to the MCP registry** via `mcp-publisher` with GitHub OIDC auth
 
 Monitor at: [github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/publish.yml](https://github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/publish.yml)
 
-**Workflow B — `sync-to-public.yml` (public mirror):**
+**Workflow B — `sync-to-public.yml` (dev → public mirror):**
 
 1. **Whitelists** public-safe paths from this dev repo (`src/`, `tests/`, `examples/`, `scripts/`, root files like `README.md`, `CHANGELOG.md`, `pyproject.toml`, `server.json`)
 2. **Verifies** no `internal/` content or the project's documented canary string leaked into staging (the sync workflow itself enforces this — see `.github/workflows/sync-to-public.yml`)
-3. **Pushes** the staging directory to [`jpazvd/unicefstats-mcp:main`](https://github.com/jpazvd/unicefstats-mcp) via the `PUBLIC_DEPLOY_KEY` SSH key
+3. **Pushes** the staging directory to [`jpazvd/unicefstats-mcp:main`](https://github.com/jpazvd/unicefstats-mcp) via the `PUBLIC_DEPLOY_KEY` SSH key, including `tests.yml` and any `*.yml` files from `.github/workflows-public/` (which become public-only workflows). `publish.yml` is intentionally NOT synced — PyPI publishing is dev-only.
+4. **Propagates the v* tag** to the public repo so public-side workflows can fire
 
 Monitor at: [github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/sync-to-public.yml](https://github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/sync-to-public.yml)
+
+**Workflow C — `release.yml` on the public repo (auto-creates GitHub Release):**
+
+Lives only on the public mirror (sourced from `.github/workflows-public/release.yml` in this dev repo, copied by sync workflow B).
+
+1. **Triggers** on the propagated `v*` tag push (or via `workflow_dispatch` with a `tag` input — used to backfill Releases for older tags)
+2. **Extracts** the relevant section from `CHANGELOG.md`
+3. **Creates** a GitHub Release on `jpazvd/unicefstats-mcp` using the public repo's own `GITHUB_TOKEN` (no PAT, no cross-repo secrets)
+
+Monitor at: [github.com/jpazvd/unicefstats-mcp/actions/workflows/release.yml](https://github.com/jpazvd/unicefstats-mcp/actions/workflows/release.yml)
+
+To **backfill a Release for an existing tag** that pre-dates this workflow:
+
+```bash
+gh workflow run release.yml -f tag=v0.6.2 --repo jpazvd/unicefstats-mcp
+gh workflow run release.yml -f tag=v0.6.3 --repo jpazvd/unicefstats-mcp
+```
 
 > **Cadence note**: Only tagged releases sync to public. Doc fixes between tags stay on the dev repo unless you run `sync-to-public.yml` manually via Actions UI (`workflow_dispatch`). This prevents in-flight refactors and intermediate states from leaking publicly.
 

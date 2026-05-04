@@ -65,7 +65,7 @@ This MCP server is an experimental project. It does not represent the views or p
 ### Publishing integrity
 
 - All PyPI releases are built and published exclusively by GitHub Actions using **PyPI Trusted Publishing** (OIDC). No long-lived API tokens are used.
-- The publishing workflow ([`.github/workflows/publish.yml`](.github/workflows/publish.yml)) triggers only on version tags (`v*`).
+- The publishing workflow runs from the upstream dev repo on version tags (`v*`): [github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/publish.yml](https://github.com/jpazvd/unicefstats-mcp-dev/actions/workflows/publish.yml). The public repo does not run a publish workflow — it receives a synced snapshot plus a [GitHub Release](https://github.com/jpazvd/unicefstats-mcp/releases) per tag.
 - PyPI attestations are available at [pypi.org/project/unicefstats-mcp/#files](https://pypi.org/project/unicefstats-mcp/#files).
 
 ### Third-party mirrors and aggregators

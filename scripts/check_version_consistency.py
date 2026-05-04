@@ -163,6 +163,21 @@ def check_identity() -> list[str]:
     server_json = ROOT / "server.json"
     if server_json.exists():
         data = json.loads(server_json.read_text(encoding="utf-8"))
+
+        # MCP registry caps description at 100 chars (HTTP 422 otherwise).
+        # Caught the v0.6.3 release in flight; gating it pre-tag here so a
+        # future copy edit can't silently regress and break the publish chain.
+        # Source: registry's server.schema.json, body.description constraint.
+        REGISTRY_DESCRIPTION_MAX = 100
+        sj_desc = data.get("description", "") or ""
+        if len(sj_desc) > REGISTRY_DESCRIPTION_MAX:
+            errors.append(
+                f"server.json description is {len(sj_desc)} chars, "
+                f"exceeds MCP registry limit of {REGISTRY_DESCRIPTION_MAX}. "
+                f"The registry-publish step in publish.yml will fail with HTTP 422 "
+                f"on the next tag. Shorten the description and tag again."
+            )
+
         sj_name = data.get("name", "")
         if sj_name != CANONICAL_MCP_NAME:
             errors.append(f"server.json name is '{sj_name}', expected '{CANONICAL_MCP_NAME}'")
