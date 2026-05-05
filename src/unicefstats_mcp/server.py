@@ -85,7 +85,7 @@ def _retry(
 
 mcp = FastMCP(
     name="unicefstats-mcp",
-    version="0.7.0",
+    version="0.7.1",
     instructions=(
         "Query UNICEF child development statistics for 200+ countries. "
         "No API key required. 790+ child-focused indicators (mortality, nutrition, "
@@ -618,12 +618,21 @@ def get_data(
                 for code, name in indicator_resolution.candidates
             ]},
         )
-    if indicator_resolution.status in ("synonym_match", "name_index_hit"):
+    if indicator_resolution.status in (
+        "code_passthrough",
+        "synonym_match",
+        "name_index_hit",
+    ):
+        # Adopt the canonical form for code_passthrough too: the resolver
+        # uppercases and strips whitespace ("cme_mrm0" → "CME_MRM0"), so the
+        # downstream SDMX call and the echoed `result["indicator"]` match the
+        # YAML's canonical key. Without this, "  cme_mrm0  " would round-trip
+        # verbatim and obscure successful matches in the response envelope.
         indicator = indicator_resolution.code or indicator
-    # status == "code_passthrough" or "unknown": leave indicator as-is.
-    # Unknown codes flow through to the SDMX call which will 404; this preserves
-    # backward compatibility for callers passing codes the resolver doesn't
-    # know about (e.g., new indicators added upstream after the YAML snapshot).
+    # status == "unknown": leave indicator as-is. Unknown codes flow through
+    # to the SDMX call which will 404; this preserves backward compatibility
+    # for callers passing codes the resolver doesn't know about (e.g., new
+    # indicators added upstream after the YAML snapshot).
 
     # v0.6.2 country-name resolver: accept ISO3 codes OR country names. The
     # model often calls get_data with the wrong ISO3 ("Burundi" → 'BEL')

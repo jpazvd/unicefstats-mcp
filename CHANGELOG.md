@@ -6,6 +6,43 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [0.7.1] — 2026-05-05
+
+Hardening pass on the v0.7.0 indicator resolver, addressing four
+review comments from PR #46. Correctness/contract improvements only —
+no functional change to the resolver's lift on valid queries.
+
+### Fixed
+
+- **`get_data` now canonicalizes indicator codes on `code_passthrough`** —
+  the resolver returned the canonicalized form (e.g., `"  cme_mrm0  "` →
+  `"CME_MRM0"`) in `r.code` for the `code_passthrough` status, but the
+  integration only adopted that form for `synonym_match` /
+  `name_index_hit`. Code-passthrough rows previously flowed through with
+  the user's quirky form, so `result["indicator"]` echoed the lowercase /
+  whitespace-padded original. Now the SDMX call and response envelope
+  carry the canonical code regardless of input shape.
+- **Dropped dead `_SYNONYMS["anc 1+"]` key** — `_normalize` strips `+`
+  as a separator, so the lookup key could never match. Replaced with
+  `"anc 1"` (the post-normalize form).
+- **`resolve_indicator()` docstring contract** — said `"unknown" → fall
+  back to error`, but `get_data` actually passes unknown through to SDMX
+  for backward compat with codes added upstream after the YAML snapshot.
+  Updated docstring to document `"unknown" → caller decides`.
+
+### Added
+
+- **3 integration tests in `TestIndicatorResolverIntegration`** covering
+  the `get_data` resolver wiring (canonicalization, response echo,
+  ambiguous-error envelope shape). Resolver itself was already fully
+  unit-tested in `tests/test_indicator_resolver.py`; these new tests
+  cover the integration boundary.
+- **`internal/BUG_resume_batch_row_alignment.md`** — tracking note for a
+  separate bug discovered during v0.7.1 validation: `resume_batch_run.py`
+  produces row-misaligned parquets. Not a v0.7.1 blocker; affects only
+  the resume-script code path. Direct `benchmark_eqa_batch.py` runs are
+  unaffected.
+
 ## [0.7.0] — 2026-05-05
 
 ### Added

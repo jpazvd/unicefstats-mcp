@@ -300,3 +300,72 @@ class TestGetData:
         result = get_data(indicator="CME_MRY0T4", countries=["BRA"])
         assert "error" in result
         assert "No data" in result["error"]
+
+
+class TestIndicatorResolverIntegration:
+    """v0.7.0 indicator-resolver wiring inside get_data.
+
+    Verifies that the resolver produces canonicalized codes downstream and
+    surfaces the right error shape on ambiguous queries. Resolver itself is
+    unit-tested in tests/test_indicator_resolver.py — these tests focus on
+    the get_data integration boundary.
+    """
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_code_passthrough_canonicalizes_input(self, mock_ud, mock_df):
+        """Lowercase / whitespace-padded code is normalized before SDMX call."""
+        ud = MagicMock()
+        ud.unicefData.return_value = mock_df
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="  cme_mry0t4  ", countries=["BRA"])
+
+        assert "error" not in result
+        # Echoed indicator field should be canonical, not the user-quirky form
+        assert result["indicator"] == "CME_MRY0T4"
+        assert result["indicator_resolution"]["status"] == "code_passthrough"
+        assert result["indicator_resolution"]["resolved_code"] == "CME_MRY0T4"
+        # SDMX call also got the canonical code
+        call_kwargs = ud.unicefData.call_args.kwargs
+        assert call_kwargs["indicator"] == "CME_MRY0T4"
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_synonym_match_resolves_to_canonical_code(self, mock_ud, mock_df):
+        """Human-readable name is translated to canonical code server-side."""
+        ud = MagicMock()
+        # mock_df has indicator_code=CME_MRY0T4; the synonym "u5mr" → CME_MRY0T4
+        ud.unicefData.return_value = mock_df
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="U5MR", countries=["BRA"])
+
+        assert "error" not in result
+        assert result["indicator"] == "CME_MRY0T4"
+        assert result["indicator_resolution"]["status"] == "synonym_match"
+        assert result["indicator_resolution"]["original_input"] == "U5MR"
+        assert result["indicator_resolution"]["resolved_code"] == "CME_MRY0T4"
+        # Downstream SDMX call uses the canonical code, NOT the synonym
+        call_kwargs = ud.unicefData.call_args.kwargs
+        assert call_kwargs["indicator"] == "CME_MRY0T4"
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_ambiguous_indicator_refused_with_disambiguation_list(self, mock_ud):
+        """`'child mortality'` must refuse server-side and never call SDMX."""
+        ud = MagicMock()
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="child mortality", countries=["BRA"])
+
+        # Refusal envelope, not a successful response
+        assert "error" in result
+        assert "ambiguous" in result["error"].lower()
+        # SDMX call must NOT have been made — refusal is structural
+        ud.unicefData.assert_not_called()
+        # Disambiguation list must be present and contain plausible candidates
+        assert "indicator_disambiguation" in result
+        candidate_codes = [c["code"] for c in result["indicator_disambiguation"]]
+        assert "CME_MRM0" in candidate_codes
+        assert "CME_MRY0T4" in candidate_codes
+        # Each candidate must carry a human-readable name for the model
+        for cand in result["indicator_disambiguation"]:
+            assert isinstance(cand["name"], str) and cand["name"]

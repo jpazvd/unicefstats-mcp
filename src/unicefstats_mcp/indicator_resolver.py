@@ -85,7 +85,9 @@ _SYNONYMS: dict[str, str] = {
     "antenatal care": "MNCH_ANC1",
     "antenatal care 1": "MNCH_ANC1",
     "anc1": "MNCH_ANC1",
-    "anc 1+": "MNCH_ANC1",
+    "anc 1": "MNCH_ANC1",
+    # Note: do NOT add "anc 1+" here — `_normalize` strips '+' as a separator,
+    # so the lookup key would never match. Use the post-normalize form above.
     "skilled birth attendant": "MNCH_SAB",
     "skilled birth attendance": "MNCH_SAB",
     "skilled attendance at birth": "MNCH_SAB",
@@ -203,8 +205,11 @@ def resolve_indicator(input_str: str) -> IndicatorResolution:
 
     Always returns an IndicatorResolution. Inspect `.status` to decide:
       - "code_passthrough" / "synonym_match" / "name_index_hit" → use `.code`
-      - "ambiguous" → present `.candidates` to the user / model
-      - "unknown" → fall back to error
+      - "ambiguous" → present `.candidates` to the user / model and refuse
+      - "unknown" → caller decides. `get_data` passes the original string
+        through to the SDMX call (which will 404 if the code doesn't exist),
+        preserving backward compatibility with codes added upstream after
+        the YAML snapshot. Other callers may prefer to error early.
     """
     if not isinstance(input_str, str):
         return IndicatorResolution(status="unknown", original_input=str(input_str))
