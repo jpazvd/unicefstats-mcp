@@ -6,6 +6,24 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-05-05
+
+### Added
+
+- **Indicator-name resolver (`get_data` accepts names)** — extends the
+  v0.6.2 country-resolver pattern to indicators. The model can now pass
+  human-readable names like `"neonatal mortality"`, `"U5MR"`, `"stunting"`,
+  `"LBW"` instead of guessing canonical codes from training data. Genuinely
+  ambiguous queries (`"child mortality"` matches NMR/IMR/U5MR/1-4 mortality)
+  are refused server-side with a disambiguation list rather than silently
+  picking one. Closes the §5.3 known failure mode where the model recalls
+  a similar-but-wrong code and the server returns the wrong indicator's
+  data. Backward-compatible — codes still pass through unchanged. Loads
+  the 738-indicator metadata YAML shipped by `unicefdata`.
+- **`indicator_resolution` echo in get_data response** — every successful
+  call now carries `{original_input, resolved_code, canonical_name, status}`
+  so the model can confirm the resolved indicator matches the user's intent.
+
 ## [0.6.4] — 2026-05-02
 
 Release-flow consolidation. The v0.6.3 release surfaced three

@@ -42,6 +42,7 @@ from unicefstats_mcp.formatters import (
     truncate_description,
 )
 from unicefstats_mcp.indicator_context import get_indicator_context
+from unicefstats_mcp.indicator_resolver import resolve_indicator
 from unicefstats_mcp.reference import REFERENCES, VALID_LANGUAGES
 from unicefstats_mcp.validators import (
     MAX_COUNTRIES,
@@ -84,7 +85,7 @@ def _retry(
 
 mcp = FastMCP(
     name="unicefstats-mcp",
-    version="0.6.4",
+    version="0.7.0",
     instructions=(
         "Query UNICEF child development statistics for 200+ countries. "
         "No API key required. 790+ child-focused indicators (mortality, nutrition, "
@@ -539,6 +540,28 @@ def get_data(
     (default) for a clean 5-column table; use format="full" for all columns
     including disaggregation details and confidence bounds.
 
+    **`indicator` accepts BOTH codes AND human-readable names** (v0.7.0). Pass
+    whichever you have from the user's question — the server resolves names
+    to canonical codes for you. Examples:
+      indicator='CME_MRM0'                     → code passthrough
+      indicator='neonatal mortality'           → resolves to 'CME_MRM0'
+      indicator='Under-five mortality rate'    → resolves to 'CME_MRY0T4'
+      indicator='U5MR'                         → resolves to 'CME_MRY0T4'
+      indicator='stunting'                     → resolves to 'NT_ANT_HAZ_NE2'
+      indicator='LBW' / 'low birth weight'     → resolves to 'NT_BW_LBW'
+    Acronyms accepted: NMR, IMR, U5MR, SBR, LBW, ANC1, SAB, BCG, DTP1/3 …
+
+    Genuinely ambiguous queries are refused with a disambiguation list. Examples:
+      indicator='child mortality'      → refused: pick CME_MRM0 / CME_MRY0 /
+                                          CME_MRY0T4 / CME_MRY1T4
+      indicator='vaccination'          → refused: pick IM_BCG / IM_DTP1/3 / IM_MCV1/2
+
+    **Prefer passing the user's phrasing verbatim over guessing the code from
+    memory** — that's where the v0.6.x had a documented failure mode (model
+    recalls `CME_MRY0T4` thinking it's neonatal mortality; it's under-five).
+    The response echoes the resolution under `indicator_resolution` so you
+    can confirm the canonical code+name match the user's intent.
+
     **`countries` accepts BOTH ISO3 codes AND country names** (v0.6.2). Pass
     whichever you have from the user's question — the server resolves country
     names to canonical ISO3 codes for you. Examples:
@@ -574,6 +597,33 @@ def get_data(
     # Validate inputs
     if err := validate_indicator(indicator):
         return error(err)
+
+    # v0.7.0 indicator-name resolver: accept indicator codes OR human-readable
+    # names. The model often picks indicator codes from training-data memory and
+    # gets a similar-but-wrong one (e.g., wants neonatal mortality, recalls
+    # CME_MRY0T4 instead of CME_MRM0). With server-side resolution, the model
+    # can pass "neonatal mortality" verbatim and the server canonicalizes.
+    indicator_input = indicator
+    indicator_resolution = resolve_indicator(indicator)
+    if indicator_resolution.status == "ambiguous":
+        candidate_lines = "\n".join(
+            f"  - {code}: {name}" for code, name in indicator_resolution.candidates
+        )
+        return error(
+            f"Indicator '{indicator}' is ambiguous — it matches multiple codes. "
+            f"Pass one of these specific codes (or a more precise name):\n{candidate_lines}",
+            tip="Use search_indicators() if you need to browse further.",
+            extra={"indicator_disambiguation": [
+                {"code": code, "name": name}
+                for code, name in indicator_resolution.candidates
+            ]},
+        )
+    if indicator_resolution.status in ("synonym_match", "name_index_hit"):
+        indicator = indicator_resolution.code or indicator
+    # status == "code_passthrough" or "unknown": leave indicator as-is.
+    # Unknown codes flow through to the SDMX call which will 404; this preserves
+    # backward compatibility for callers passing codes the resolver doesn't
+    # know about (e.g., new indicators added upstream after the YAML snapshot).
 
     # v0.6.2 country-name resolver: accept ISO3 codes OR country names. The
     # model often calls get_data with the wrong ISO3 ("Burundi" → 'BEL')
@@ -774,6 +824,16 @@ def get_data(
 
     result: dict[str, Any] = {
         "indicator": indicator,
+        # v0.7.0: indicator name → code resolution performed server-side. The
+        # `status` field tells the model whether the input was a code passthrough,
+        # a synonym match, a name-index hit, or (for ambiguous cases, returned as
+        # an error not here) a refusal. The `name` is the canonical display name.
+        "indicator_resolution": {
+            "original_input": indicator_input,
+            "resolved_code": indicator_resolution.code or indicator,
+            "canonical_name": indicator_resolution.name,
+            "status": indicator_resolution.status,
+        },
         "countries_requested": countries_input,
         "countries_resolved_to": countries,
         # v0.6.2: name → ISO3 resolutions performed server-side. Empty if the
