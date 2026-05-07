@@ -187,6 +187,32 @@ def parse_world_bank(text: str) -> tuple[str, str, dict[str, list[tuple[int, flo
     return ("world-bank (WB API)", indicator_name, by_country)
 
 
+def parse_fred(text: str) -> tuple[str, str, list[tuple[str, float]]]:
+    """FRED MCP returns JSON with data: [{date, value}].
+
+    Returns (label, indicator_name, [(date_str, value)]). Dates are kept
+    as strings (YYYY-MM-DD) for matplotlib's date parsing.
+    """
+    obj = json.loads(text)
+    title = obj.get("title") or obj.get("series_id") or "?"
+    units = obj.get("units")
+    if units:
+        title = f"{title} ({units})"
+    series: list[tuple[str, float]] = []
+    for row in obj.get("data", []):
+        date_str = row.get("date")
+        value = row.get("value")
+        if date_str is None or value is None:
+            continue
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            continue
+        series.append((str(date_str), v))
+    series.sort()
+    return ("fred (Federal Reserve)", title, series)
+
+
 # --- plotting ---------------------------------------------------------------
 
 
@@ -218,6 +244,29 @@ def plot_one(
     ax.set_title(f"{indicator}\n{label}", fontsize=11)
     ax.grid(True, alpha=0.3, linestyle="--")
     ax.legend(loc="best", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(out_path, bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_fred_series(label: str, indicator: str, series: list[tuple[str, float]], out_path: Path) -> None:
+    """FRED data is monthly with date strings — different shape than the
+    yearly country-keyed data the other parsers return."""
+    if not series:
+        return
+    from datetime import datetime as _dt
+
+    dates = [_dt.strptime(d, "%Y-%m-%d") for d, _ in series]
+    values = [v for _, v in series]
+
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    ax.plot(dates, values, linewidth=1.4, color="#0072B2")
+    ax.set_xlabel("Date")
+    ax.set_ylabel(indicator)
+    ax.set_title(f"{indicator}\n{label}", fontsize=11)
+    ax.grid(True, alpha=0.3, linestyle="--")
+    ax.legend([f"n={len(series)}"], loc="best", fontsize=9)
+    fig.autofmt_xdate()
     fig.tight_layout()
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
@@ -331,7 +380,27 @@ def main() -> int:
         except Exception as e:
             print(f"FAILED: {e}")
 
-    # 3. data360 — only exposes data360_search; no time-series tool to plot
+    # 3. fred — Unemployment Rate (UNRATE), monthly time series
+    if "fred" in servers:
+        print("[fred] fetching UNRATE …", end=" ", flush=True)
+        try:
+            text = fetch(
+                servers["fred"],
+                {
+                    "name": "fred_get_series",
+                    "arguments": {"series_id": "UNRATE", "limit": 1000},
+                },
+                timeout=args.timeout,
+            )
+            label, indicator, series = parse_fred(text)
+            print(f"{len(series)} obs; indicator={indicator!r}")
+            out = CANVAS / f"mcp-figure-fred-UNRATE-{today}.png"
+            plot_fred_series(label, indicator, series, out)
+            print(f"  saved: {out}")
+        except Exception as e:
+            print(f"FAILED: {e}")
+
+    # 4. data360 — only exposes data360_search; no time-series tool to plot
     if "data360" in servers:
         print("[data360] no get_data tool exposed; running data360_search probe …", end=" ", flush=True)
         try:
