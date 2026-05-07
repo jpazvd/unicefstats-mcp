@@ -297,7 +297,28 @@ def plot_fred_series(label: str, indicator: str, series: list[tuple[str, float]]
     covid_start = _dt(2020, 3, 1)
     covid_end = _dt(2021, 5, 31)
     if dates and dates[0] <= covid_end and dates[-1] >= covid_start:
-        ax.axvspan(covid_start, covid_end, color="#888888", alpha=0.25, label="COVID-19 pandemic (Mar 2020 – May 2021)")
+        ax.axvspan(
+            covid_start,
+            covid_end,
+            color="#888888",
+            alpha=0.25,
+            label="WHO COVID-19 pandemic (Mar 2020 – May 2021)",
+        )
+        # In-figure annotation pointing at the band so the meaning is obvious
+        # without the legend.
+        mid = covid_start + (covid_end - covid_start) / 2
+        y_max = max(values)
+        y_top = y_max * 0.95
+        ax.annotate(
+            "WHO COVID-19 pandemic\n(11 Mar 2020 declaration —\nwidespread vaccine eligibility,\nend of May 2021)",
+            xy=(mid, y_top * 0.7),
+            xytext=(_dt(2010, 1, 1), y_top),
+            fontsize=8,
+            color="#333333",
+            ha="left",
+            va="top",
+            arrowprops=dict(arrowstyle="->", color="#555555", lw=0.8),
+        )
     ax.set_xlabel("Date")
     ax.set_ylabel(indicator)
     ax.set_title(f"{indicator}\n{label}", fontsize=11)
