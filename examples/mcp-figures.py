@@ -1,0 +1,358 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["matplotlib"]
+# ///
+"""
+mcp-figures.py — render a figure per data MCP from a real tool call.
+
+Companion to scripts/test-mcps.py: where that script *probes* the MCPs for
+health, this one *fetches data and plots it* — proving end-to-end that:
+
+  1. The MCP responds to a tools/call
+  2. The response carries real time-series data
+  3. The data can be parsed into (year, value) tuples
+  4. A figure can be rendered from those tuples
+
+Output:
+  ~/.openclaw/canvas/mcp-figure-<source>-<indicator>-<countries>-<YYYY-MM-DD>.png
+
+Usage:
+  uv run --script scripts/mcp-figures.py             # default: U5MR India
+  uv run --script scripts/mcp-figures.py --countries IND,KEN
+  uv run --script scripts/mcp-figures.py --combined  # also produce overlay
+
+The default indicator is Under-5 mortality:
+  - unicefstats: SDMX code CME_MRY0
+  - world-bank:  series SH.DYN.MORT
+data360 has no get_data tool exposed yet (only data360_search), so it is
+listed as a catalog probe rather than plotted.
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import io
+import json
+import os
+import subprocess
+import sys
+import time
+from datetime import date
+from pathlib import Path
+from typing import Any, Iterable
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+CONFIG = Path.home() / ".openclaw" / "openclaw.json"
+CANVAS = Path.home() / ".openclaw" / "canvas"
+
+
+# --- MCP protocol helpers (mirror test-mcps.py) -------------------------------
+
+
+def jsonrpc(method: str, msg_id: int, params: dict[str, Any] | None = None) -> bytes:
+    payload: dict[str, Any] = {"jsonrpc": "2.0", "id": msg_id, "method": method}
+    if params is not None:
+        payload["params"] = params
+    return (json.dumps(payload) + "\n").encode()
+
+
+def read_response(stdout, deadline: float) -> dict[str, Any] | None:
+    while True:
+        if time.time() > deadline:
+            return None
+        line = stdout.readline()
+        if not line:
+            time.sleep(0.05)
+            continue
+        try:
+            decoded = json.loads(line.decode())
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if isinstance(decoded, dict) and "id" in decoded:
+            return decoded
+
+
+def fetch(server: dict[str, Any], call: dict[str, Any], *, timeout: float = 60.0) -> str:
+    """Run init + tools/call against a server and return the text payload."""
+    cmd = [server["command"], *server.get("args", [])]
+    env = os.environ.copy()
+    for k, v in (server.get("env") or {}).items():
+        if isinstance(v, str) and v.startswith("${") and v.endswith("}"):
+            env[k] = os.environ.get(v[2:-1], "")
+        else:
+            env[k] = str(v)
+
+    proc = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env,
+    )
+    try:
+        proc.stdin.write(
+            jsonrpc(
+                "initialize",
+                1,
+                {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {},
+                    "clientInfo": {"name": "mcp-figures.py", "version": "0.1"},
+                },
+            )
+        )
+        proc.stdin.flush()
+        if read_response(proc.stdout, time.time() + timeout) is None:
+            raise RuntimeError("initialize: no response")
+        proc.stdin.write(b'{"jsonrpc":"2.0","method":"notifications/initialized"}\n')
+        proc.stdin.flush()
+        proc.stdin.write(jsonrpc("tools/call", 2, call))
+        proc.stdin.flush()
+        resp = read_response(proc.stdout, time.time() + timeout)
+        if resp is None:
+            raise RuntimeError("tools/call: no response within timeout")
+        if "error" in resp:
+            raise RuntimeError(f"tools/call: {resp['error']}")
+        content = resp["result"].get("content", [])
+        text_parts = [c.get("text", "") for c in content if isinstance(c, dict) and c.get("type") == "text"]
+        return "\n".join(text_parts)
+    finally:
+        try:
+            proc.stdin.close()
+        except Exception:
+            pass
+        try:
+            proc.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+
+
+# --- per-source response parsers --------------------------------------------
+
+
+def parse_unicefstats(text: str) -> tuple[str, str, dict[str, list[tuple[int, float]]]]:
+    """Returns (label, indicator_name, {country: [(year, value)]})."""
+    obj = json.loads(text)
+    indicator = obj.get("indicator_resolution", {}).get("canonical_name") or obj.get("indicator")
+    by_country: dict[str, list[tuple[int, float]]] = {}
+    for row in obj.get("data", []):
+        country = row.get("country") or row.get("iso3")
+        period = row.get("period")
+        value = row.get("value")
+        if country is None or period is None or value is None:
+            continue
+        try:
+            year = int(period)
+        except (TypeError, ValueError):
+            continue
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            continue
+        by_country.setdefault(country, []).append((year, v))
+    for v in by_country.values():
+        v.sort()
+    return ("unicefstats (UNICEF SDMX)", indicator or "?", by_country)
+
+
+def parse_world_bank(text: str) -> tuple[str, str, dict[str, list[tuple[int, float]]]]:
+    """World Bank MCP returns a CSV string."""
+    rdr = csv.DictReader(io.StringIO(text))
+    by_country: dict[str, list[tuple[int, float]]] = {}
+    indicator_name = "?"
+    for row in rdr:
+        if not row:
+            continue
+        date_str = (row.get("date") or "").strip()
+        value_str = (row.get("value") or "").strip()
+        country = (row.get("country.value") or row.get("countryiso3code") or "").strip()
+        ind_label = (row.get("indicator.value") or "").strip()
+        if ind_label and indicator_name == "?":
+            indicator_name = ind_label
+        if not date_str or not value_str or not country:
+            continue
+        try:
+            year = int(date_str)
+            v = float(value_str)
+        except ValueError:
+            continue
+        by_country.setdefault(country, []).append((year, v))
+    for v in by_country.values():
+        v.sort()
+    return ("world-bank (WB API)", indicator_name, by_country)
+
+
+# --- plotting ---------------------------------------------------------------
+
+
+COLORS = {"India": "#E69F00", "Kenya": "#56B4E9", "Brazil": "#009E73", "Nigeria": "#CC79A7"}
+
+
+def plot_one(
+    label: str,
+    indicator: str,
+    by_country: dict[str, list[tuple[int, float]]],
+    out_path: Path,
+) -> None:
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    for country, series in sorted(by_country.items()):
+        if not series:
+            continue
+        years, values = zip(*series)
+        ax.plot(
+            years,
+            values,
+            marker="o",
+            markersize=2.5,
+            linewidth=1.6,
+            label=f"{country} (n={len(series)})",
+            color=COLORS.get(country),
+        )
+    ax.set_xlabel("Year")
+    ax.set_ylabel(indicator)
+    ax.set_title(f"{indicator}\n{label}", fontsize=11)
+    ax.grid(True, alpha=0.3, linestyle="--")
+    ax.legend(loc="best", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(out_path, bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_combined(
+    panels: list[tuple[str, str, dict[str, list[tuple[int, float]]]]],
+    out_path: Path,
+) -> None:
+    """Overlay all sources on one figure to show source-disagreement, if any."""
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    for label, indicator, by_country in panels:
+        for country, series in sorted(by_country.items()):
+            if not series:
+                continue
+            years, values = zip(*series)
+            ax.plot(
+                years,
+                values,
+                marker="o",
+                markersize=2.5,
+                linewidth=1.4,
+                label=f"{label} — {country}",
+                alpha=0.85,
+            )
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Indicator value")
+    ax.set_title("MCP source comparison: Under-5 / Infant mortality, India", fontsize=11)
+    ax.grid(True, alpha=0.3, linestyle="--")
+    ax.legend(loc="best", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(out_path, bbox_inches="tight")
+    plt.close(fig)
+
+
+# --- main -------------------------------------------------------------------
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("--countries", default="IND", help="Comma-separated ISO3 (default: IND)")
+    parser.add_argument(
+        "--combined",
+        action="store_true",
+        help="Also render a combined overlay figure across sources",
+    )
+    parser.add_argument("--timeout", type=float, default=60.0)
+    args = parser.parse_args()
+
+    countries = [c.strip() for c in args.countries.split(",") if c.strip()]
+    today = date.today().isoformat()
+
+    cfg = json.loads(CONFIG.read_text())
+    servers = cfg.get("mcp", {}).get("servers", {})
+    CANVAS.mkdir(parents=True, exist_ok=True)
+
+    panels: list[tuple[str, str, dict[str, list[tuple[int, float]]]]] = []
+    print(f"countries: {countries}")
+    print(f"output dir: {CANVAS}")
+    print()
+
+    # 1. unicefstats — Under-5 / Infant mortality (CME_MRY0)
+    if "unicefstats" in servers:
+        print("[unicefstats] fetching CME_MRY0 …", end=" ", flush=True)
+        try:
+            text = fetch(
+                servers["unicefstats"],
+                {"name": "get_data", "arguments": {"indicator": "CME_MRY0", "countries": countries}},
+                timeout=args.timeout,
+            )
+            label, indicator, by_country = parse_unicefstats(text)
+            n = sum(len(v) for v in by_country.values())
+            print(f"{n} obs across {len(by_country)} countries; indicator={indicator!r}")
+            out = CANVAS / f"mcp-figure-unicefstats-CME_MRY0-{'-'.join(countries)}-{today}.png"
+            plot_one(label, indicator, by_country, out)
+            print(f"  saved: {out}")
+            panels.append((label, indicator, by_country))
+        except Exception as e:
+            print(f"FAILED: {e}")
+
+    # 2. world-bank — Under-5 mortality (SH.DYN.MORT)
+    if "world-bank" in servers:
+        print("[world-bank] fetching SH.DYN.MORT …", end=" ", flush=True)
+        try:
+            # World Bank MCP fetches one country per call.
+            by_country_all: dict[str, list[tuple[int, float]]] = {}
+            indicator_name = "?"
+            label = "world-bank (WB API)"
+            for c in countries:
+                text = fetch(
+                    servers["world-bank"],
+                    {
+                        "name": "get_indicator_for_country",
+                        "arguments": {"country_id": c, "indicator_id": "SH.DYN.MORT"},
+                    },
+                    timeout=args.timeout,
+                )
+                _label, ind, by_country = parse_world_bank(text)
+                if ind != "?":
+                    indicator_name = ind
+                for k, v in by_country.items():
+                    by_country_all.setdefault(k, []).extend(v)
+            for v in by_country_all.values():
+                v.sort()
+            n = sum(len(v) for v in by_country_all.values())
+            print(f"{n} obs across {len(by_country_all)} countries; indicator={indicator_name!r}")
+            out = CANVAS / f"mcp-figure-world-bank-SH.DYN.MORT-{'-'.join(countries)}-{today}.png"
+            plot_one(label, indicator_name, by_country_all, out)
+            print(f"  saved: {out}")
+            panels.append((label, indicator_name, by_country_all))
+        except Exception as e:
+            print(f"FAILED: {e}")
+
+    # 3. data360 — only exposes data360_search; no time-series tool to plot
+    if "data360" in servers:
+        print("[data360] no get_data tool exposed; running data360_search probe …", end=" ", flush=True)
+        try:
+            text = fetch(
+                servers["data360"],
+                {"name": "data360_search", "arguments": {"query": "under-five mortality"}},
+                timeout=args.timeout,
+            )
+            print(f"OK ({len(text)} chars catalog response — not plotted)")
+        except Exception as e:
+            print(f"FAILED: {e}")
+
+    # Optional combined panel
+    if args.combined and len(panels) >= 2:
+        out = CANVAS / f"mcp-figure-combined-{'-'.join(countries)}-{today}.png"
+        plot_combined(panels, out)
+        print(f"\n[combined] saved: {out}")
+
+    print(f"\ndone. canvas dir: {CANVAS}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
