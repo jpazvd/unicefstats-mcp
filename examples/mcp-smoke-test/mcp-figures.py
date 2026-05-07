@@ -289,12 +289,19 @@ def plot_fred_series(label: str, indicator: str, series: list[tuple[str, float]]
     values = [v for _, v in series]
 
     fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
-    ax.plot(dates, values, linewidth=1.4, color="#0072B2")
+    ax.plot(dates, values, linewidth=1.4, color="#0072B2", label=f"n={len(series)}")
+    # Shade the strict US COVID-19 lockdown window: WHO pandemic declaration
+    # (2020-03-11) through the first wave of state reopenings by mid-June 2020.
+    # Drawn before legend/grid so the band sits behind the line.
+    covid_start = _dt(2020, 3, 11)
+    covid_end = _dt(2020, 6, 15)
+    if dates and dates[0] <= covid_end and dates[-1] >= covid_start:
+        ax.axvspan(covid_start, covid_end, color="#888888", alpha=0.25, label="COVID lockdown (Mar–Jun 2020)")
     ax.set_xlabel("Date")
     ax.set_ylabel(indicator)
     ax.set_title(f"{indicator}\n{label}", fontsize=11)
     ax.grid(True, alpha=0.3, linestyle="--")
-    ax.legend([f"n={len(series)}"], loc="best", fontsize=9)
+    ax.legend(loc="best", fontsize=9)
     fig.autofmt_xdate()
     fig.tight_layout()
     fig.savefig(out_path, bbox_inches="tight")
