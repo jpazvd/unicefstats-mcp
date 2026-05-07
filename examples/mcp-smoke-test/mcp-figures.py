@@ -187,6 +187,35 @@ def parse_world_bank(text: str) -> tuple[str, str, dict[str, list[tuple[int, flo
     return ("world-bank (WB API)", indicator_name, by_country)
 
 
+def parse_data360(text: str) -> tuple[str, str, dict[str, list[tuple[int, float]]]]:
+    """data360 returns SDMX-shaped JSON with data: [{OBS_VALUE, TIME_PERIOD, REF_AREA, ...}]."""
+    obj = json.loads(text)
+    rows = obj.get("data", []) or []
+    by_country: dict[str, list[tuple[int, float]]] = {}
+    indicator = "?"
+    for row in rows:
+        country = row.get("REF_AREA")
+        period = row.get("TIME_PERIOD") or row.get("TIME") or row.get("PERIOD")
+        value = row.get("OBS_VALUE")
+        if country is None or period is None or value is None:
+            continue
+        # TIME_PERIOD may be "2020", "2020-Q1", or full date — extract year
+        try:
+            year = int(str(period)[:4])
+        except (TypeError, ValueError):
+            continue
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            continue
+        by_country.setdefault(country, []).append((year, v))
+        if indicator == "?":
+            indicator = row.get("INDICATOR", indicator)
+    for v in by_country.values():
+        v.sort()
+    return ("data360 (World Bank Data360)", indicator, by_country)
+
+
 def parse_fred(text: str) -> tuple[str, str, list[tuple[str, float]]]:
     """FRED MCP returns JSON with data: [{date, value}].
 
@@ -400,16 +429,41 @@ def main() -> int:
         except Exception as e:
             print(f"FAILED: {e}")
 
-    # 4. data360 — only exposes data360_search; no time-series tool to plot
+    # 4. data360 — Under-5 mortality via WB_WDI database
     if "data360" in servers:
-        print("[data360] no get_data tool exposed; running data360_search probe …", end=" ", flush=True)
+        print("[data360] fetching WB_WDI/WB_WDI_SH_DYN_MORT …", end=" ", flush=True)
         try:
-            text = fetch(
-                servers["data360"],
-                {"name": "data360_search", "arguments": {"query": "under-five mortality"}},
-                timeout=args.timeout,
-            )
-            print(f"OK ({len(text)} chars catalog response — not plotted)")
+            # data360_get_data accepts a single REF_AREA via disaggregation_filters.
+            # For multi-country, call once per country (matches world-bank panel).
+            by_country_all: dict[str, list[tuple[int, float]]] = {}
+            indicator_name = "?"
+            label = "data360 (World Bank Data360)"
+            for c in countries:
+                text = fetch(
+                    servers["data360"],
+                    {
+                        "name": "data360_get_data",
+                        "arguments": {
+                            "database_id": "WB_WDI",
+                            "indicator_id": "WB_WDI_SH_DYN_MORT",
+                            "disaggregation_filters": {"REF_AREA": c},
+                        },
+                    },
+                    timeout=max(args.timeout, 30.0),
+                )
+                _label, ind, by_country = parse_data360(text)
+                if ind != "?":
+                    indicator_name = ind
+                for k, v in by_country.items():
+                    by_country_all.setdefault(k, []).extend(v)
+            for v in by_country_all.values():
+                v.sort()
+            n = sum(len(v) for v in by_country_all.values())
+            print(f"{n} obs across {len(by_country_all)} countries; indicator={indicator_name!r}")
+            out = CANVAS / f"mcp-figure-data360-WB_WDI_SH_DYN_MORT-{'-'.join(countries)}-{today}.png"
+            plot_one(label, indicator_name, by_country_all, out)
+            print(f"  saved: {out}")
+            panels.append((label, indicator_name, by_country_all))
         except Exception as e:
             print(f"FAILED: {e}")
 
