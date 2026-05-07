@@ -101,7 +101,7 @@ mcp = FastMCP(
 
 _ud: types.ModuleType | None = None
 _indicators_cache: dict[str, dict[str, Any]] | None = None
-_countries_cache: dict[str, str] | None = None
+_countries_cache: set[str] | None = None
 
 
 def _get_ud() -> types.ModuleType:
