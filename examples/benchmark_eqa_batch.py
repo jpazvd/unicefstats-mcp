@@ -111,6 +111,128 @@ class QueryState:
 
 
 # ---------------------------------------------------------------------------
+# Checkpoint serialization
+# ---------------------------------------------------------------------------
+#
+# Persisting per-wave state to disk lets `resume_batch_run.py --load-state`
+# skip the live `dispatch_tool` replay path that caused the row-misalignment
+# bug documented in `internal/BUG_resume_batch_row_alignment.md`. The
+# checkpoint is the source of truth for the resume; the original Anthropic
+# batches still need to exist (so newly-submitted continuation waves can
+# finish), but their results are NOT re-fetched or re-dispatched.
+#
+# Schema is bumped if the dict shape changes incompatibly. v1 = the v0.7.2
+# era — query_idx + condition are the lookup keys (TestCase reconstructed
+# from cases at load time).
+
+CHECKPOINT_SCHEMA_VERSION = 1
+
+
+def state_to_dict(state: QueryState) -> dict:
+    """Serialise a QueryState to a JSON-safe dict.
+
+    `tc` is intentionally NOT serialised — it's reconstructed from the
+    same `load_sample()` call at load time using `query_idx`. This keeps
+    checkpoints small and ensures the test case is always sourced from
+    the canonical CSV rather than a frozen-in-time copy.
+    """
+    return {
+        "query_idx": state.query_idx,
+        "condition": state.condition,
+        "messages": state.messages,
+        "done": state.done,
+        "final_text": state.final_text,
+        "tool_error": state.tool_error,
+        "tool_calls": state.tool_calls,
+        "rounds": state.rounds,
+        "tokens_input": state.tokens_input,
+        "tokens_output": state.tokens_output,
+        "cache_creation": state.cache_creation,
+        "cache_read": state.cache_read,
+        "first_wave_started_at": state.first_wave_started_at,
+    }
+
+
+def state_from_dict(d: dict, tc: TestCase) -> QueryState:
+    """Reconstruct a QueryState from a checkpoint dict + the matching TestCase."""
+    state = QueryState(d["query_idx"], tc, d["condition"])
+    state.messages = d.get("messages", [])
+    state.done = d.get("done", False)
+    state.final_text = d.get("final_text", "")
+    state.tool_error = d.get("tool_error")
+    state.tool_calls = d.get("tool_calls", [])
+    state.rounds = d.get("rounds", 0)
+    state.tokens_input = d.get("tokens_input", 0)
+    state.tokens_output = d.get("tokens_output", 0)
+    state.cache_creation = d.get("cache_creation", 0)
+    state.cache_read = d.get("cache_read", 0)
+    state.first_wave_started_at = d.get("first_wave_started_at")
+    return state
+
+
+def save_checkpoint(
+    states_by_id: dict[str, QueryState],
+    path: str,
+    batch_ids: list[str],
+) -> None:
+    """Atomically write a checkpoint snapshot.
+
+    Writes to `<path>.tmp` first then renames over the target — survives
+    a crash mid-write without leaving a half-written file that would
+    poison the next resume.
+    """
+    payload = {
+        "schema_version": CHECKPOINT_SCHEMA_VERSION,
+        "batch_ids": batch_ids,
+        "n_states": len(states_by_id),
+        "states": [state_to_dict(s) for s in states_by_id.values()],
+    }
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(payload, f, default=str)
+    os.replace(tmp, path)
+
+
+def load_checkpoint(
+    path: str,
+    cases: list[TestCase],
+) -> tuple[dict[str, QueryState], list[str]]:
+    """Load a checkpoint and reconstruct states_by_id.
+
+    Returns:
+      - states_by_id: same shape as a fresh-built dict
+      - batch_ids: the batch IDs already submitted at checkpoint time
+        (caller can use these to verify against existing Anthropic batches
+        if continuing with new waves)
+
+    Raises ValueError if schema is unsupported or `cases` length is
+    inconsistent with the checkpoint's referenced indices (which would
+    indicate the sample CSV changed between save and load).
+    """
+    with open(path, encoding="utf-8") as f:
+        payload = json.load(f)
+    sv = payload.get("schema_version")
+    if sv != CHECKPOINT_SCHEMA_VERSION:
+        raise ValueError(
+            f"Unsupported checkpoint schema_version {sv!r}; "
+            f"expected {CHECKPOINT_SCHEMA_VERSION}"
+        )
+    states_by_id: dict[str, QueryState] = {}
+    for d in payload.get("states", []):
+        idx = d["query_idx"]
+        if idx >= len(cases):
+            raise ValueError(
+                f"Checkpoint references query_idx={idx} but only "
+                f"{len(cases)} test cases loaded — sample CSV likely "
+                "changed between save and load."
+            )
+        state = state_from_dict(d, cases[idx])
+        states_by_id[state.custom_id] = state
+    return states_by_id, payload.get("batch_ids", [])
+
+
+# ---------------------------------------------------------------------------
 # Wave dispatcher
 # ---------------------------------------------------------------------------
 
@@ -309,25 +431,56 @@ def collect_wave_results(client, batch_id: str, states_by_id: dict[str, QuerySta
     return next_wave_count
 
 
-def run_batch_waves(client, states_by_id: dict[str, QueryState], model: str) -> None:
-    """Run wave batching loop until all queries are done or MAX_WAVES reached."""
+def run_batch_waves(
+    client,
+    states_by_id: dict[str, QueryState],
+    model: str,
+    checkpoint_path: str | None = None,
+    initial_batch_ids: list[str] | None = None,
+) -> list[str]:
+    """Run wave batching loop until all queries are done or MAX_WAVES reached.
+
+    If `checkpoint_path` is set, writes a checkpoint snapshot after each
+    wave's `collect_wave_results` completes. Subsequent runs can use
+    `load_checkpoint(path, cases)` to resume without re-fetching batch
+    results or re-dispatching tools — eliminates the
+    live-dispatch-divergence misalignment bug in `resume_batch_run.py`'s
+    `replay_existing_wave` path.
+
+    Returns the accumulated list of batch IDs submitted during this run
+    (prepended with `initial_batch_ids` if given, so a checkpoint loaded
+    from a prior partial run can keep its history).
+    """
+    batch_ids: list[str] = list(initial_batch_ids or [])
     wave = 0
     while wave < MAX_WAVES:
         pending = [s for s in states_by_id.values() if not s.done]
         if not pending:
             print(f"\nAll queries complete after {wave} wave(s).")
-            return
+            return batch_ids
         wave += 1
         print(f"\n{'=' * 80}\nWAVE {wave}  ({len(pending)} pending queries)\n{'=' * 80}")
         batch_id = submit_wave(client, states_by_id, model)
+        if batch_id:
+            batch_ids.append(batch_id)
         poll_until_done(client, batch_id)
         print(f"\n  Wave {wave} complete. Collecting results...")
         n_next = collect_wave_results(client, batch_id, states_by_id)
         print(f"  {n_next} queries need another wave.")
+        if checkpoint_path:
+            try:
+                save_checkpoint(states_by_id, checkpoint_path, batch_ids)
+            except OSError as exc:
+                # Don't crash the run on a checkpoint write failure — print
+                # a warning so the user can still recover from Anthropic's
+                # batches if they survive. The next wave's checkpoint
+                # write may succeed.
+                print(f"  WARNING: checkpoint write failed: {exc}", flush=True)
     if wave == MAX_WAVES:
         n_pending = sum(1 for s in states_by_id.values() if not s.done)
         if n_pending:
             print(f"\nMAX_WAVES={MAX_WAVES} reached, {n_pending} queries left unfinished.")
+    return batch_ids
 
 
 # ---------------------------------------------------------------------------
@@ -490,19 +643,22 @@ def main():
         os.path.dirname(args.ground_truth), "ground_truth_values.csv"
     )
 
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    # line_buffering=True so progress prints land in stdout immediately even
+    # when this script is run with output captured to a file. Without it,
+    # the wrapper silently overrides `python -u` and background tasks
+    # appear to hang at 0 bytes for tens of minutes.
+    sys.stdout = io.TextIOWrapper(
+        sys.stdout.buffer, encoding="utf-8", errors="replace", line_buffering=True
+    )
 
-    cases = load_sample()
+    # Use the canonical helper from benchmark_eqa rather than reimplementing
+    # the pos+T1+T2 reorder inline. See load_sample_in_benchmark_order's
+    # docstring for why this matters.
+    from benchmark_eqa import load_sample_in_benchmark_order
+    cases = load_sample_in_benchmark_order(limit_per_section=args.limit)
     positive_cases = [c for c in cases if c.query_type == "POSITIVE"]
     hall_t1_cases = [c for c in cases if c.query_type == "HALLUCINATION_T1"]
     hall_t2_cases = [c for c in cases if c.query_type == "HALLUCINATION_T2"]
-
-    if args.limit > 0:
-        positive_cases = positive_cases[:args.limit]
-        hall_t1_cases = hall_t1_cases[:args.limit]
-        hall_t2_cases = hall_t2_cases[:args.limit]
-
-    cases = positive_cases + hall_t1_cases + hall_t2_cases
     n_queries = len(cases)
 
     print("=" * 90)
@@ -526,17 +682,27 @@ def main():
             s = QueryState(idx, tc, cond)
             states_by_id[s.custom_id] = s
 
-    # Run wave loop
-    t_start = time.time()
-    run_batch_waves(client, states_by_id, args.model)
-    elapsed = int(time.time() - t_start)
-    print(f"\n  Total wall-clock: {elapsed}s ({elapsed/60:.1f} min)")
-
-    # Score and write output
+    # Compute output naming up-front so the per-wave checkpoint shares the
+    # same ts/tag/run_id stem as the final parquet — makes recovery
+    # mechanical (look for `eqa_<run_id>.checkpoint.json` next to where
+    # the parquet would land).
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     model_slug = args.model.replace("/", "_").replace(":", "_")
     tag = f"_{args.tag}" if args.tag else ""
     run_id = f"{model_slug}_{ts}{tag}"
+    out_dir = os.path.join(os.path.dirname(__file__), "results")
+    os.makedirs(out_dir, exist_ok=True)
+    checkpoint_path = os.path.join(out_dir, f"eqa_{run_id}.checkpoint.json")
+    print(f"  Checkpoint:      {checkpoint_path}")
+
+    # Run wave loop with per-wave checkpoint writes. If the run dies
+    # mid-flight (network, OOM, exit 127), the checkpoint is the source of
+    # truth for `resume_batch_run.py --load-state` to pick up — no live
+    # tool re-dispatch, so no row-misalignment.
+    t_start = time.time()
+    run_batch_waves(client, states_by_id, args.model, checkpoint_path=checkpoint_path)
+    elapsed = int(time.time() - t_start)
+    print(f"\n  Total wall-clock: {elapsed}s ({elapsed/60:.1f} min)")
 
     df = score_and_serialise(states_by_id, cases, args.model, run_id, ts, args.ground_truth)
     print_summary(df)
@@ -545,8 +711,6 @@ def main():
         print("\n  No results to save.")
         return
 
-    out_dir = os.path.join(os.path.dirname(__file__), "results")
-    os.makedirs(out_dir, exist_ok=True)
     parquet_file = os.path.join(out_dir, f"eqa_{run_id}.parquet")
     csv_file = os.path.join(out_dir, f"eqa_{run_id}.csv")
     json_file = os.path.join(out_dir, f"eqa_{run_id}.json")

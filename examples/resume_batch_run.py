@@ -256,14 +256,32 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ground-truth", required=True)
     parser.add_argument("--tag", required=True)
-    parser.add_argument("--batch-ids", required=True,
-                        help="comma-separated batch IDs in wave order (oldest first)")
+    parser.add_argument("--batch-ids",
+                        help="comma-separated batch IDs in wave order (oldest first). "
+                             "Triggers the legacy replay path with live tool re-dispatch — "
+                             "AFFECTED by the row-misalignment bug documented in "
+                             "internal/BUG_resume_batch_row_alignment.md. Prefer --load-state.")
+    parser.add_argument("--load-state",
+                        help="Path to a checkpoint .json written by benchmark_eqa_batch.py "
+                             "during the original run. Bypasses replay entirely — no live "
+                             "tool re-dispatch, so no misalignment. The recommended resume path.")
     parser.add_argument("--continue-waves", action="store_true",
                         help="Submit new waves for unfinished queries until all done or MAX_WAVES")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     args = parser.parse_args()
 
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    if not args.batch_ids and not args.load_state:
+        parser.error("Either --batch-ids (legacy replay) or --load-state (checkpoint) is required.")
+    if args.batch_ids and args.load_state:
+        parser.error("Pass exactly one of --batch-ids or --load-state, not both.")
+
+    # line_buffering=True so progress prints land in stdout immediately even
+    # when this script is run with output captured to a file. Without it,
+    # the wrapper silently overrides `python -u` and background tasks
+    # appear to hang at 0 bytes for tens of minutes.
+    sys.stdout = io.TextIOWrapper(
+        sys.stdout.buffer, encoding="utf-8", errors="replace", line_buffering=True
+    )
 
     import benchmark_eqa
     benchmark_eqa.SAMPLE_CSV = args.ground_truth
@@ -271,25 +289,50 @@ def main():
         os.path.dirname(args.ground_truth), "ground_truth_values.csv"
     )
 
-    cases = load_sample()
-    print(f"Loaded {len(cases)} test cases")
-
-    states_by_id: dict[str, QueryState] = {}
-    for idx, tc in enumerate(cases):
-        for cond in ("A", "B"):
-            s = QueryState(idx, tc, cond)
-            states_by_id[s.custom_id] = s
+    # Use the canonical helper from benchmark_eqa rather than reimplementing
+    # the pos+T1+T2 reorder. See load_sample_in_benchmark_order's docstring
+    # for the historical bug this prevents.
+    from benchmark_eqa import load_sample_in_benchmark_order
+    cases = load_sample_in_benchmark_order()
+    pos_n = sum(1 for c in cases if c.query_type == "POSITIVE")
+    t1_n = sum(1 for c in cases if c.query_type == "HALLUCINATION_T1")
+    t2_n = sum(1 for c in cases if c.query_type == "HALLUCINATION_T2")
+    print(f"Loaded {len(cases)} test cases ({pos_n} POS + {t1_n} T1 + {t2_n} T2)")
 
     client = anthropic.Anthropic()
-    batch_ids = [b.strip() for b in args.batch_ids.split(",") if b.strip()]
-    print(f"\nReplaying {len(batch_ids)} existing batch(es)...")
-    waves_used = 0
-    for i, batch_id in enumerate(batch_ids, 1):
-        print(f"\nWave {i}: {batch_id}")
-        n_proc, n_err = replay_existing_wave(client, batch_id, states_by_id)
+
+    if args.load_state:
+        # Recommended path — no replay, no live tool re-dispatch, no
+        # misalignment risk. The checkpoint IS the post-wave state.
+        from benchmark_eqa_batch import load_checkpoint
+        states_by_id, batch_ids = load_checkpoint(args.load_state, cases)
+        waves_used = len(batch_ids)
         n_done = sum(1 for s in states_by_id.values() if s.done)
-        print(f"  Processed: {n_proc}  Errors: {n_err}  Total done: {n_done}/{len(states_by_id)}")
-        waves_used = i
+        print(f"\nLoaded checkpoint: {len(states_by_id)} states, "
+              f"{n_done}/{len(states_by_id)} done, {waves_used} waves already submitted")
+    else:
+        # Legacy --batch-ids replay path. Reconstructs state by re-fetching
+        # batch results AND re-dispatching tool calls live against SDMX —
+        # which causes row-misalignment when the live calls return
+        # differently than during the original run. See
+        # internal/BUG_resume_batch_row_alignment.md.
+        states_by_id: dict[str, QueryState] = {}
+        for idx, tc in enumerate(cases):
+            for cond in ("A", "B"):
+                s = QueryState(idx, tc, cond)
+                states_by_id[s.custom_id] = s
+
+        batch_ids = [b.strip() for b in args.batch_ids.split(",") if b.strip()]
+        print(f"\nReplaying {len(batch_ids)} existing batch(es) "
+              f"(WARNING: legacy --batch-ids path — see "
+              f"internal/BUG_resume_batch_row_alignment.md)...")
+        waves_used = 0
+        for i, batch_id in enumerate(batch_ids, 1):
+            print(f"\nWave {i}: {batch_id}")
+            n_proc, n_err = replay_existing_wave(client, batch_id, states_by_id)
+            n_done = sum(1 for s in states_by_id.values() if s.done)
+            print(f"  Processed: {n_proc}  Errors: {n_err}  Total done: {n_done}/{len(states_by_id)}")
+            waves_used = i
 
     n_unfinished = sum(1 for s in states_by_id.values() if not s.done)
     print(f"\nAfter replay: {n_unfinished} queries unfinished")

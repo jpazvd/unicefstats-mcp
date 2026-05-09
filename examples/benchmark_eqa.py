@@ -606,6 +606,42 @@ def load_sample() -> list[TestCase]:
     return cases
 
 
+def load_sample_in_benchmark_order(limit_per_section: int = 0) -> list[TestCase]:
+    """Load test cases reordered as positive + T1 + T2 (canonical EQA order).
+
+    THIS IS THE CANONICAL CASE-ORDERING for the EQA harness. Custom_ids in
+    Anthropic batches are keyed off this ordering, so any script that
+    consumes batch results (benchmark, resume, salvage) MUST iterate cases
+    in this same order — otherwise `q0042_B` (which Anthropic returns the
+    response for) gets paired with the wrong test case during scoring.
+
+    Args:
+      limit_per_section: when >0, truncate each section to this many cases
+        before concatenating (used by --limit flag in benchmark_eqa_batch).
+        Default 0 keeps the full sample.
+
+    Historical bug (fixed 2026-05-05): `resume_batch_run.py` and
+    `salvage_batches.py` both originally called `load_sample()` directly,
+    inheriting CSV order (T1 + T2 + POS), which mismatched
+    `benchmark_eqa_batch.py`'s `pos + T1 + T2` ordering. Result: 49% of
+    rows in resumed parquets had responses paired with the wrong
+    prompts. See `internal/BUG_resume_batch_row_alignment.md`.
+
+    All callers MUST use this helper rather than re-implementing the
+    reorder. If you're tempted to call `load_sample()` directly in a
+    script that consumes batch results, you have a bug.
+    """
+    cases = load_sample()
+    pos_cases = [c for c in cases if c.query_type == "POSITIVE"]
+    t1_cases = [c for c in cases if c.query_type == "HALLUCINATION_T1"]
+    t2_cases = [c for c in cases if c.query_type == "HALLUCINATION_T2"]
+    if limit_per_section > 0:
+        pos_cases = pos_cases[:limit_per_section]
+        t1_cases = t1_cases[:limit_per_section]
+        t2_cases = t2_cases[:limit_per_section]
+    return pos_cases + t1_cases + t2_cases
+
+
 # ---------------------------------------------------------------------------
 # Run benchmark
 # ---------------------------------------------------------------------------

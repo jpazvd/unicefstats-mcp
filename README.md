@@ -408,7 +408,7 @@ This bridges the gap between conversational exploration (via MCP tools) and repr
 
 We benchmarked the MCP against a bare LLM (Claude Sonnet 4, no tools) using the [EQA metric](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) from Azevedo (2025). 300 queries across 10 indicators, 20 countries, 2 prompt types, and 2 hallucination test categories.
 
-### Headline numbers
+### Headline numbers (300-query benchmark, v0.5.x)
 
 | Metric | LLM alone | LLM + MCP | Improvement |
 |---|---|---|---|
@@ -418,6 +418,18 @@ We benchmarked the MCP against a bare LLM (Claude Sonnet 4, no tools) using the 
 | T1 hallucination (gap years) | 9% | 7% | -2pp |
 | T2 hallucination (never existed) | 11% | 37% raw / ~10% corrected | See analysis |
 | Cost per query | $0.003 | $0.018 | 6× |
+
+### v0.7.1 same-day clean reproduction (n=500, 2026-05-08)
+
+After v0.7.0 shipped the indicator-name resolver, we re-ran a 500-query subset (100 POSITIVE + 200 T1 + 200 T2) on the per-wave checkpoint architecture (PR #53), with the v0.6.4 baseline run **same-day** to control for upstream-model snapshot drift:
+
+| Metric | LLM alone | LLM + MCP (v0.7.1) | Δ |
+|---|---|---|---|
+| POS EQA mean | 0.121 | **0.897** | +77.6 pp (~7×) |
+| T1 + T2 hallucination (combined) | 2.0% | **13.0%** | +11.0 pp |
+| Wall-clock (parallel runs) | 3.8 h (v0.6.4) | 9.2 h (v0.7.1) | +5.4 h |
+
+A-side EQA was within 0.3 pp across the two runs, confirming the same-day discipline worked: the B-side delta is real, not snapshot drift. The v0.7.1 reproduction confirms the original 6.7×/8.2× accuracy headline at 7×, and shows that the v0.4.0 safety layer + v0.7.0 indicator resolver brought T2 fabrication from 37% (v0.3.0) down to 13% — but the residual ~11 pp gap relative to the no-tools baseline appears structural, matching what the broader tool-augmented LLM and RAG literature documents (see [Limitations](#limitations-and-hallucination-risks)).
 
 ### EQA decomposition (baseline_latest prompt)
 
@@ -558,12 +570,24 @@ See the [audit findings](https://github.com/jpazvd/unicefstats-mcp/blob/main/exa
 
 Benchmark testing (600 queries pooled across two replication samples, 10 indicators, 45 countries) identified two patterns:
 
-| Type | Description | Rate | Mitigation |
-|---|---|---|---|
-| **T1 (gap-year)** | LLM cites a year when data exists but for a different year | ~7% | Server returns the actual year; LLM occasionally ignores it |
-| **T2 (forward-of-frontier)** | LLM fabricates a value for a year beyond the data frontier | ~36% | v0.5.0 ships an anti-extrapolation system prompt (`unicef://system-prompt`) and runtime context (`unicef://context`). Load these at session start. |
+| Type | Description | Rate (v0.5.x) | v0.7.1 same-day clean | Mitigation |
+|---|---|---|---|---|
+| **T1 (gap-year)** | LLM cites a year when data exists but for a different year | ~7% | T1+T2 combined: **13%** (n=400) | Server returns the actual year; LLM occasionally ignores it |
+| **T2 (forward-of-frontier)** | LLM fabricates a value for a year beyond the data frontier | ~36% | (T1+T2 combined above) | v0.5.0 ships an anti-extrapolation system prompt (`unicef://system-prompt`) and runtime context (`unicef://context`). Load these at session start. |
 
-T2 is the dominant risk — driven by a "confidence effect" where the LLM, having retrieved adjacent-year data, extrapolates forward. The v0.5.0 system prompt names the failure mechanism and lists forbidden phrases ("approximately", "projected", "based on the trend") so the directive cannot be satisfied by hedged forecasts. Skill / system-prompt enforcement is structural; tool-description guidance is advisory.
+T2 was historically the dominant risk — driven by a **confidence effect** where the LLM, having retrieved adjacent-year data, extrapolates forward. The v0.4.0 safety layer + v0.5.0 system prompt + v0.7.0 indicator resolver brought combined T1+T2 fabrication from 37% (v0.3.0) down to 13% (v0.7.1, same-day clean baseline) — a ~24 pp reduction.
+
+The residual ~11 pp gap relative to the no-tools baseline (2%) appears **structural**, not a bug we have not yet fixed. This finding aligns with what the broader tool-augmented LLM and RAG literature has been documenting in parallel:
+
+- *The Reasoning Trap: How Enhancing LLM Reasoning Amplifies Tool Hallucination* (ICLR 2025) — shows the relationship is causal: as models get better at tool use, tool hallucination rises *proportionally* with capability.
+- *Reducing Tool Hallucination via Reliability Alignment* (Cao et al., 2024, [arXiv:2412.04141](https://arxiv.org/abs/2412.04141)) — formalises the failure as *tool-selection* errors (wrong tool, failed refusal) and *tool-usage* errors (fabricated parameters).
+- *ReDeEP: Detecting Hallucination in Retrieval-Augmented Generation via Mechanistic Interpretability* (Sun et al., 2024) — shows mechanistically that an LLM's parametric knowledge can override retrieved context inside the residual stream.
+
+The takeaway for users: server-side guardrails reduce the magnitude of tool-augmented hallucination; they do not, on current evidence, change the direction. Any production deployment should:
+
+1. Load the `unicef://system-prompt` and `unicef://context` resources at session start (handles forward-of-frontier fabrication).
+2. Treat MCP results as best-effort retrieval, not infallible truth — verify load-bearing values against the [UNICEF Data Warehouse](https://data.unicef.org/) before citing.
+3. Prefer queries with explicit years ("under-five mortality in Nigeria in 2023") over open-ended ones ("the latest under-five mortality in Nigeria") — the former triggers refusal more reliably when data is absent.
 
 Full benchmark methodology: [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)
 

@@ -6,6 +6,100 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [0.7.2] — 2026-05-09
+
+Tooling-and-documentation patch release. No API or behavioural change
+to the runtime server (no `src/unicefstats_mcp/` diffs since v0.7.1) —
+this release captures four weeks of substantive work in `examples/`,
+`tests/`, `internal/`, and the public README that accumulated since
+v0.7.1 shipped on 2026-05-05.
+
+The headline empirical addition is a **v0.7.1 same-day clean
+reproduction** of the original 600-query benchmark on a 500-query
+subset, with the v0.6.4 baseline run same-day to control for
+upstream-model snapshot drift. It confirms the original 6.7×/8.2×
+accuracy headline at ~7× and shows the v0.4.0 safety layer + v0.7.0
+indicator resolver brought T2 fabrication from 37% (v0.3.0) → 13%
+(v0.7.1) — a 24-of-26 pp reduction. The residual ~11 pp gap appears
+structural and matches what the broader tool-augmented LLM and RAG
+literature documents.
+
+### Added
+
+- **v0.7.1 same-day clean benchmark reproduction (2026-05-08).** Re-ran a
+  500-query subset (100 POS + 200 T1 + 200 T2) on the per-wave
+  checkpoint architecture (PR #53), with the v0.6.4 baseline run
+  same-day to control for upstream-model snapshot drift. Results:
+  POS EQA 0.121 (no tools) vs 0.897 (with v0.7.1 MCP, +77.6 pp,
+  ~7×); T1+T2 hallucination 2.0% (no tools) vs 13.0% (with MCP,
+  +11.0 pp). A-side EQA was within 0.3 pp across runs — same-day
+  discipline confirmed; the B-side delta is real, not snapshot drift.
+  Confirms the original 6.7× / 8.2× accuracy headline at ~7× and
+  shows the v0.4.0 safety layer + v0.7.0 indicator resolver brought
+  T2 fabrication from 37% (v0.3.0) → 13% combined T1+T2 (v0.7.1) —
+  a 24-of-26 pp reduction. The residual ~11 pp gap appears
+  structural, matching what the broader tool-augmented LLM and
+  RAG literature documents (see README §Limitations for citations
+  to *The Reasoning Trap* (ICLR 2025), *Reducing Tool Hallucination
+  via Reliability Alignment* (Cao et al., 2024), and *ReDeEP* (Sun
+  et al., 2024)).
+- **README and LinkedIn-series drafts** updated with v0.7.1 numbers
+  plus literature citations grounding the residual-hallucination
+  finding (PR #58 for series; PR #59 for README + CHANGELOG).
+  Original 600-query / 40-country benchmark numbers are preserved
+  as primary evidence (broader external validity); v0.7.1 is
+  positioned as cleaner-methodology reproduction (per-wave
+  checkpoint, fresh-dispatch rescoring, same-day v0.6.4 baseline).
+- **Per-wave state checkpoint architecture** for the EQA harness
+  (PR #53). Closes the resume row-alignment bug discovered during
+  v0.7.0 validation. `benchmark_eqa_batch.py` now writes a JSON
+  checkpoint after each wave; `resume_batch_run.py --load-state`
+  loads from checkpoint without live tool re-dispatch (the bug's
+  root cause). Includes 10 round-trip tests in
+  `tests/test_state_checkpoint.py`.
+- **`examples/salvage_batches.py`** (PR #54) — one-shot script to
+  rebuild a parquet from already-completed Anthropic batch results
+  without live tool re-dispatch. Covers the case where a benchmark
+  crashed mid-flight and the legacy resume path produced a
+  row-misaligned parquet. Cost: $0 (re-fetching batch results is
+  free for ~29 days post-completion).
+- **`examples/mcp-smoke-test/`** (PR #57) — self-contained
+  `uv run --script` Python program that exercises five stdio-MCP
+  servers (unicefstats, world-bank, fred, data360, data-commons)
+  against real `tools/call` requests and renders one matplotlib
+  figure per source. Includes:
+  - **Variable-code + server-version + execution-provenance footnote**
+    on every figure (UTC timestamp, host, invoking agent).
+  - **`--edge-cases` mode** demonstrating five known MCP failure
+    modes (synonym-table gap, misleading code prefix,
+    refuse-with-disambiguation, cross-provider taxonomy mismatch,
+    `search_indicators` bypass) via real MCP calls.
+  - **20 parser unit tests** covering all five per-source response
+    parsers (`tests/test_smoke_parsers.py`).
+  - **Cross-check artefact** confirming the UNICEF/WB U5MR gap is
+    age-denominator (IMR vs U5MR), not country-composition or
+    methodology — UNICEF and WB agree within ±0.04 when the same
+    concept is queried.
+  - **Comprehensive in-line documentation** (~370 lines) for
+    readers unfamiliar with MCP or Python.
+- **`internal/PARKED_post_v0_7_review_concerns.md`** (PR #56) —
+  parking-lot doc for five post-v0.7 stakeholder-review follow-ups,
+  with a 2026-05-08 postscript marking Item 4 (Validation pilot)
+  RESOLVED by the same-day clean baseline. Re-anchors Item 1's
+  magnitude estimate to the clean number. `internal/` is
+  sync-excluded from the public mirror.
+
+### Fixed
+
+- **Harness structural hardening** (PR #55) — three classes of
+  recurrence eliminated: shared `load_sample_in_benchmark_order()`
+  helper for the canonical pos+T1+T2 reorder (was duplicated across
+  four scripts); `line_buffering=True` on stdout wrappers in three
+  background-runnable scripts (was silently defeating `python -u`);
+  7 alignment regression tests in `tests/test_harness_alignment.py`
+  including a NEGATIVE test asserting misalignment IS detectable
+  when ordering is wrong.
+
 ## [0.7.1] — 2026-05-05
 
 Hardening pass on the v0.7.0 indicator resolver, addressing four

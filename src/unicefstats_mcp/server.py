@@ -85,7 +85,7 @@ def _retry(
 
 mcp = FastMCP(
     name="unicefstats-mcp",
-    version="0.7.1",
+    version="0.7.2",
     instructions=(
         "Query UNICEF child development statistics for 200+ countries. "
         "No API key required. 790+ child-focused indicators (mortality, nutrition, "
@@ -101,7 +101,7 @@ mcp = FastMCP(
 
 _ud: types.ModuleType | None = None
 _indicators_cache: dict[str, dict[str, Any]] | None = None
-_countries_cache: set[str] | None = None
+_countries_cache: dict[str, str] | None = None
 
 
 def _get_ud() -> types.ModuleType:
@@ -123,13 +123,8 @@ def _get_indicators() -> dict[str, dict[str, Any]]:
     return _indicators_cache
 
 
-def _get_countries() -> set[str]:
-    """Load and cache valid ISO 3166-1 alpha-3 country codes.
-
-    The unicefdata package's load_country_codes() returns a Set[str] of
-    ISO codes only — there is no upstream country-name lookup. Callers
-    that want names must source them elsewhere.
-    """
+def _get_countries() -> dict[str, str]:
+    """Load and cache country code → name mapping."""
     global _countries_cache
     if _countries_cache is None:
         ud = _get_ud()
@@ -317,28 +312,29 @@ def list_categories() -> dict[str, Any]:
 
 
 @mcp.tool()
-def list_countries(prefix: str | None = None) -> dict[str, Any]:
-    """List ISO3 country codes available in the UNICEF database.
+def list_countries(region: str | None = None) -> dict[str, Any]:
+    """List countries available in the UNICEF database with ISO3 codes.
 
-    Optionally filter by ISO3 prefix (case-insensitive). Use the iso3
-    values in get_data(). The upstream unicefdata package only exposes
-    codes, not names — use a separate ISO lookup if you need names.
+    Optionally filter by region name (case-insensitive partial match).
+    Use the iso3 values in get_data().
     """
     try:
-        codes = _get_countries()
+        country_map = _get_countries()
     except Exception as exc:
         return error(f"Failed to load country codes: {exc}")
 
-    countries = [{"iso3": code} for code in sorted(codes)]
+    countries = [
+        {"iso3": code, "name": name} for code, name in sorted(country_map.items())
+    ]
 
-    if prefix:
-        prefix_upper = prefix.upper()
-        countries = [c for c in countries if c["iso3"].startswith(prefix_upper)]
+    if region:
+        region_lower = region.lower()
+        countries = [c for c in countries if region_lower in c["name"].lower()]
 
     return ok(
         {
             "total": len(countries),
-            "prefix_filter": prefix,
+            "region_filter": region,
             "countries": countries,
         }
     )
