@@ -6,6 +6,19 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-06-01
+
+### Fixed
+
+- **LLM-instructions resource did not document any v1.2.0 envelope field.** The MCP server shipped a rich response envelope in v1.2.0 (`mode`, `units`, `dimensions_available`, `tier_reason`, `failed_validation`, `filter_requested_no_data`, `alert`, `dataflow_used`, `truncated`) but neither the `unicef://llm-instructions` resource nor the `unicef://system-prompt` resource told the LLM these fields existed. Without documentation, the LLM could not exploit the v1.2.0 work at the consumer surface — the server-side fixes were doing nothing for end-users until the prompt-layer caught up.
+- `LLM_INSTRUCTIONS` now includes a `## v1.2.0 envelope fields — dimension-aware responses (READ THESE)` section with one paragraph per field naming the concrete behavior change required of the LLM. Notably: `units.interpretation` must be applied BEFORE reporting any number (the v1.1.x `DM_POP_U5` misinterpretation failure mode); `mode == "totals_fallback"` requires explicitly telling the user that the filtered slice was empty and totals were substituted; `tier: 2` requires a pivot to `search_indicators` for the leaf code.
+- `SYSTEM_PROMPT` gets a tighter mirror section covering the same fields with one-line rules.
+
+### Notes
+
+- No source-logic or test changes. Pure prompt-layer release.
+- The two resources are also accessible to clients via `unicef://llm-instructions` and `unicef://system-prompt` URIs.
+
 ## [1.2.0] — 2026-05-30
 
 ### Breaking

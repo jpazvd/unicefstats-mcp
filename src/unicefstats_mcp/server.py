@@ -2403,6 +2403,55 @@ Every response from this MCP includes structured metadata you MUST respect:
 When data_completeness is "partial" or "truncated", explicitly state what is missing.
 When a country has no data, say "no data available for [country]" — do NOT estimate.
 
+## v1.2.0 envelope fields — dimension-aware responses (READ THESE)
+
+Every successful `get_data` response now carries structured fields telling you how the \
+slice was fetched and what other slices are available. Reading these prevents three v1.1.x \
+failure modes: silent filter drop, unit misinterpretation, dead-end on tier-2 codes.
+
+- **`mode`**: `"first_class"` (simplified path, sex+limit only), `"raw_filtered"` (raw \
+SDMX path, any disaggregation), or `"totals_fallback"` (your filter slice was empty; server \
+substituted the totals slice). When `mode != "first_class"`, the response was filtered via \
+the raw SDMX path — different rows than v1.1.x would have silently returned.
+
+- **`units`**: `{measure, measure_name, multiplier, multiplier_name, interpretation}` — \
+e.g. `{"interpretation": "values × 10^3 Persons"}`. **Read `units.interpretation` before \
+reporting any number.** A raw value of `0.188` with `multiplier_name: "thousands"` and \
+`measure_name: "Persons"` is `188 Persons`, NOT 188 children or 0.188 anything. The SDMX \
+convention is `value × 10^multiplier measure`. Synthesizing units on the fly without \
+reading this field is the v1.1.x `DM_POP_U5` misinterpretation failure mode (Haiku 4.5 \
+read 0.188 as both "188 children" and "~188,000 people"; both are wrong).
+
+- **`alert` + `filter_requested_no_data`** (totals_fallback only): when \
+`mode == "totals_fallback"`, the user's filter slice was empty in SDMX so the server \
+substituted the totals slice. `alert` is a UX message naming the substitution; \
+`filter_requested_no_data` preserves the original filter. **Tell the user explicitly \
+that the filtered slice was unavailable and that the totals were substituted** — do NOT \
+report the totals data as if it answered the filtered query.
+
+- **`dimensions_available`**: full per-dimension codelist menu for this indicator's \
+primary dataflow. When a filter fails or the user asks for a disaggregation you don't \
+see in the response, pivot here for a valid value — no separate `get_indicator_info` \
+round-trip required.
+
+- **`failed_validation: {available_dimensions, available_values}`** (when present): the \
+user's filter named a dimension or value the indicator's dataflow doesn't support. Pick \
+from `available_dimensions` / `available_values` and retry in the same wave — no \
+defensive `get_indicator_info` call needed.
+
+- **`tier: 2` + `tier_reason`**: the requested code is a family / aggregator (e.g. \
+`"CME"` for the whole child-mortality family), not a leaf indicator. `get_data` cannot \
+serve it. Call `search_indicators` to find the tier-1 leaf code (e.g. `CME_MRY0T4` for \
+under-5 mortality) and retry with that. Unknown codes (typos) return \
+`metadata_status: "unknown_code"` with no `tier` field — distinct from tier-2.
+
+- **`dataflow_used`**: which SDMX dataflow served the response (e.g. `"HIV_AIDS"` for \
+HVA codes, `"GLOBAL_DATAFLOW"` for cross-cutting). Surface only if the user asks about \
+provenance.
+
+- **`truncated: true`**: row count hit `limit` (default 200). More rows exist. Either \
+narrow filters or call `get_data` again with a higher `limit`.
+
 ## DO
 - Always start with search_indicators if you don't know the indicator code
 - Use the EXACT indicator code returned by search (e.g., "CME_MRY0T4", not "under-5 mortality")
@@ -2507,6 +2556,21 @@ asks about a year beyond the data frontier:
   a `directive`. Read both. If the user's requested year > max_year_observed, your answer MUST
   contain the literal text "No data is available for [year]" — even though you have data for
   earlier years, that data does not answer the user's question about a future year.
+
+## v1.2.0 envelope (read these on every successful get_data)
+
+- `units.interpretation` (e.g. `"values × 10^3 Persons"`) — apply BEFORE reporting any
+  number. Synthesizing units on the fly is the v1.1.x DM_POP_U5 misinterpretation failure
+  mode.
+- `mode` ∈ `{first_class, raw_filtered, totals_fallback}` — `totals_fallback` means the
+  user's filter slice was empty and the server substituted totals; `alert` carries the UX
+  message and you MUST relay it. Do NOT report the totals as if they answered the filter.
+- `dimensions_available` — pivot here on filter failure; no separate `get_indicator_info`
+  round-trip needed.
+- `failed_validation` (when present) — pick from `available_dimensions` /
+  `available_values` and retry in the same wave.
+- `tier: 2` + `tier_reason` — the code is a family / aggregator; call `search_indicators`
+  for the leaf code (e.g. `CME` → `CME_MRY0T4`) and retry.
 
 ## Operating loop
 
