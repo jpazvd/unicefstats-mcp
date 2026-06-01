@@ -6,6 +6,19 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [1.2.4] — 2026-06-01
+
+### Added
+
+- **`evaluation/unicefstats_mcp_eval.xml`** — a 10-question evaluation suite following the MCP evaluation rubric (10 read-only, independent, non-destructive, idempotent QA pairs verifiable by direct-string-comparison). Questions cover indicator-code lookup (CME_MRY0T4, CME_MRY0, CME_MRM0), synonym layer (IMR / NMR acronyms), metadata (HVA_EPI_INF_RT dataflow), behavior (tier-2 refusal, country-name resolution, MAX_COUNTRIES, totals_fallback mode), and the MCP resource URI scheme. All answers were verified against the running v1.2.3 server.
+- **`evaluation/README.md`** — explains how to run the suite against any MCP evaluation harness (the Microsoft `ms-mcp-builder` harness is one example; any tool that consumes the standard `<evaluation><qa_pair>` XML format works), and documents the rubric: stability (no answers that drift with annual data refreshes), realism (most questions reflect public-health analyst use cases), and multi-tool coverage (each question benefits from chained tool calls).
+
+### Notes
+
+- Pure additive — zero source-logic change, zero test change. 468 tests still pass.
+- Closes the last unchecked box from the ms-mcp-builder rubric review: previously there was no evaluation **suite** — now there is one. The harness itself (a runner that consumes the XML and drives an LLM through the MCP) is deliberately not vendored: the suite is harness-agnostic and the runner lives in the user's evaluation toolchain.
+- Adding questions: follow the rubric in `evaluation/README.md`. Verify every answer by running the relevant tool calls yourself before committing.
+
 ## [1.2.3] — 2026-06-01
 
 ### Added
