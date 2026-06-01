@@ -370,7 +370,10 @@ def check_tool_count() -> list[str]:
         errors.append("server.py: not found — cannot count @mcp.tool() decorators")
         return errors
 
-    actual = len(re.findall(r"@mcp\.tool\(\s*\)", server_py.read_text(encoding="utf-8")))
+    # Count @mcp.tool decorators regardless of whether they carry annotations.
+    # v1.2.2 added annotations={...} blocks, so the old @mcp\.tool\(\s*\) regex
+    # (empty parens only) under-counted. Match the prefix instead.
+    actual = len(re.findall(r"@mcp\.tool\(", server_py.read_text(encoding="utf-8")))
     if actual == 0:
         errors.append("server.py: no @mcp.tool() decorators found")
         return errors

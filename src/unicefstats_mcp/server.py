@@ -23,9 +23,10 @@ import time as _time
 import types
 from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Literal, TypeVar
+from typing import Annotated, Any, Literal, TypeVar
 
 from fastmcp import FastMCP
+from pydantic import Field
 
 from unicefstats_mcp import __version__
 from unicefstats_mcp import dimensions as _dims
@@ -424,8 +425,37 @@ def _indicator_matches_dim(code: str, name: str, hints: set[str]) -> bool:
     return False
 
 
-@mcp.tool()
-def search_indicators(query: str, limit: int = 20) -> dict[str, Any]:
+@mcp.tool(
+    annotations={
+        "title": "Search UNICEF Indicators",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+def search_indicators(
+    query: Annotated[
+        str,
+        Field(
+            description=(
+                "Natural-language search query (e.g. 'under-5 mortality', 'stunting', "
+                "'IMR', 'modelled estimates'). Accepts acronyms, common synonyms, and "
+                "methodology phrases."
+            ),
+            min_length=2,
+            max_length=200,
+        ),
+    ],
+    limit: Annotated[
+        int,
+        Field(
+            description="Maximum number of indicator candidates to return.",
+            ge=1,
+            le=100,
+        ),
+    ] = 20,
+) -> dict[str, Any]:
     """Search UNICEF child development indicators by keyword.
 
     Returns indicator codes, names, and categories. Use the returned `code`
@@ -807,7 +837,15 @@ def search_indicators(query: str, limit: int = 20) -> dict[str, Any]:
     )
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "List UNICEF Indicator Categories",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
 def list_categories() -> dict[str, Any]:
     """List all UNICEF indicator categories (thematic groups).
 
@@ -844,8 +882,29 @@ def list_categories() -> dict[str, Any]:
     )
 
 
-@mcp.tool()
-def list_countries(region: str | None = None) -> dict[str, Any]:
+@mcp.tool(
+    annotations={
+        "title": "List UNICEF Country Codes",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+def list_countries(
+    region: Annotated[
+        str | None,
+        Field(
+            description=(
+                "Optional region filter applied as a case-insensitive substring "
+                "match against each country's name (e.g. 'asia' matches 'South Asia'). "
+                "Not a UNICEF region code lookup. When omitted, returns all 200+ "
+                "countries."
+            ),
+            max_length=50,
+        ),
+    ] = None,
+) -> dict[str, Any]:
     """List countries available in the UNICEF database with ISO3 codes.
 
     Optionally filter by region name (case-insensitive partial match).
@@ -941,8 +1000,29 @@ def _build_indicator_envelope(
     }
 
 
-@mcp.tool()
-def get_indicator_info(code: str) -> dict[str, Any]:
+@mcp.tool(
+    annotations={
+        "title": "Get UNICEF Indicator Metadata",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+def get_indicator_info(
+    code: Annotated[
+        str,
+        Field(
+            description=(
+                "Exact UNICEF SDMX indicator code (e.g. 'CME_MRY0T4' for under-5 "
+                "mortality, 'NT_ANT_HAZ_NE2' for stunting). Case-sensitive. Use "
+                "search_indicators if you don't already know the code."
+            ),
+            min_length=2,
+            max_length=50,
+        ),
+    ],
+) -> dict[str, Any]:
     """Get full metadata for a UNICEF indicator.
 
     Returns description, category, dataflow, and SDMX API details.
@@ -988,8 +1068,30 @@ def get_indicator_info(code: str) -> dict[str, Any]:
     )
 
 
-@mcp.tool()
-def lookup_by_code(code: str) -> dict[str, Any]:
+@mcp.tool(
+    annotations={
+        "title": "Lookup UNICEF Indicator by Exact Code",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+def lookup_by_code(
+    code: Annotated[
+        str,
+        Field(
+            description=(
+                "Exact UNICEF SDMX indicator code (e.g. 'CME_MRY0T4'). Same "
+                "envelope as get_indicator_info — both route through a shared "
+                "_build_indicator_envelope helper, so the disaggregation_filters "
+                "block is literally identical across both tools."
+            ),
+            min_length=2,
+            max_length=50,
+        ),
+    ],
+) -> dict[str, Any]:
     """Strict canonical lookup of a UNICEF indicator by its exact code.
 
     Use this INSTEAD of search_indicators when you already have a
@@ -1104,8 +1206,30 @@ def lookup_by_code(code: str) -> dict[str, Any]:
     )
 
 
-@mcp.tool()
-def get_temporal_coverage(code: str) -> dict[str, Any]:
+@mcp.tool(
+    annotations={
+        "title": "Get UNICEF Indicator Temporal Coverage",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+)
+def get_temporal_coverage(
+    code: Annotated[
+        str,
+        Field(
+            description=(
+                "Exact UNICEF SDMX indicator code. Returns the min/max observed year "
+                "range (the 'data frontier') across all countries. The MCP uses this "
+                "internally to refuse get_data calls whose year(s) exceed the frontier "
+                "— callers can also query it directly to display the data window."
+            ),
+            min_length=2,
+            max_length=50,
+        ),
+    ],
+) -> dict[str, Any]:
     """Check what years of data are available for a UNICEF indicator.
 
     Fetches a small sample to determine the time range. Lightweight — does not
@@ -1279,23 +1403,121 @@ def _seed_data_frontier_cache(indicator: str, df: Any) -> None:
             _data_frontier_cache[indicator] = max_year
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Fetch UNICEF Indicator Data",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+)
 def get_data(
-    indicator: str,
-    countries: list[str],
-    start_year: int | None = None,
-    end_year: int | None = None,
-    sex: str = "_T",
-    age: str | None = None,
-    filters: dict[str, str | None] | None = None,
-    format: Literal["compact", "full"] = "compact",
-    limit: int = 200,
+    indicator: Annotated[
+        str,
+        Field(
+            description=(
+                "UNICEF SDMX indicator code (e.g. 'CME_MRY0T4') OR human-readable "
+                "name (e.g. 'under-5 mortality'). Names are resolved server-side."
+            ),
+            min_length=2,
+            max_length=50,
+        ),
+    ],
+    countries: Annotated[
+        list[str],
+        Field(
+            description=(
+                "List of ISO3 country codes (e.g. ['BRA', 'IND', 'NGA']) OR country "
+                "names (e.g. ['Brazil', 'India']). Names are resolved server-side. "
+                "Hard cap of 30 entries per request."
+            ),
+            min_length=1,
+            max_length=30,
+        ),
+    ],
+    start_year: Annotated[
+        int | None,
+        Field(
+            description="Inclusive start year (e.g. 2010). Refused if > frontier.",
+            ge=1900,
+            le=2100,
+        ),
+    ] = None,
+    end_year: Annotated[
+        int | None,
+        Field(
+            description="Inclusive end year (e.g. 2023). Refused if > frontier.",
+            ge=1900,
+            le=2100,
+        ),
+    ] = None,
+    sex: Annotated[
+        str,
+        Field(
+            description=(
+                "SDMX sex code: '_T' (total, default), 'F' (female), 'M' (male). "
+                "First-class via the unicefData() call."
+            ),
+            max_length=10,
+        ),
+    ] = "_T",
+    age: Annotated[
+        str | None,
+        Field(
+            description=(
+                "SDMX age slice (e.g. 'Y15T19' for 15-19 years). Routed through "
+                "raw=True + post-filter — engages mode='raw_filtered'."
+            ),
+            max_length=20,
+        ),
+    ] = None,
+    filters: Annotated[
+        dict[str, str | None] | None,
+        Field(
+            description=(
+                "Free-form filter dict for any dim not first-class via unicefData() "
+                "— WEALTH_QUINTILE, RESIDENCE, EDUCATION_LEVEL, DISABILITY_STATUS, "
+                "etc. Engages mode='raw_filtered'. Use get_indicator_info to discover "
+                "valid dims and codelists per indicator."
+            ),
+        ),
+    ] = None,
+    format: Annotated[
+        Literal["compact", "full"],
+        Field(
+            description=(
+                "'compact' = 5-column table (default); 'full' = all SDMX columns "
+                "including disaggregation details and confidence bounds."
+            ),
+        ),
+    ] = "compact",
+    limit: Annotated[
+        int,
+        Field(
+            description="Maximum row count. Carries `truncated: true` in envelope if hit.",
+            ge=1,
+            le=500,
+        ),
+    ] = 200,
     # v1.1.x removed-kwarg tripwires — direct Python callers still hit these.
     # Passing them returns the structured migration error (see below). The MCP
     # tool schema will advertise them with their docstring deprecation note,
     # so LLM callers also see the migration guidance up front.
-    wealth_quintile: str | None = None,
-    residence: str | None = None,
+    wealth_quintile: Annotated[
+        str | None,
+        Field(
+            description="REMOVED in v1.2.0. Use filters={'WEALTH_QUINTILE': 'Q1'}.",
+            deprecated=True,
+        ),
+    ] = None,
+    residence: Annotated[
+        str | None,
+        Field(
+            description="REMOVED in v1.2.0. Use filters={'RESIDENCE': 'U'}.",
+            deprecated=True,
+        ),
+    ] = None,
 ) -> dict[str, Any]:
     """Fetch UNICEF data for an indicator and one or more countries.
 
@@ -2076,10 +2298,40 @@ def get_data(
 # ---------------------------------------------------------------------------
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get unicefdata API Reference (Python / R / Stata)",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
 def get_api_reference(
-    language: str = "python",
-    function: str | None = None,
+    language: Annotated[
+        str,
+        Field(
+            description=(
+                "Target language for the unicefdata code template. One of "
+                "'python', 'r', or 'stata' (case-insensitive — the server "
+                "normalises before lookup). Returns the language-specific API "
+                "surface for users who want to reproduce the MCP's data fetches "
+                "in their own scripts."
+            ),
+            max_length=20,
+        ),
+    ] = "python",
+    function: Annotated[
+        str | None,
+        Field(
+            description=(
+                "Optional function name to filter the reference to a single entry "
+                "(e.g. 'unicefData', 'list_indicators'). If omitted, returns the "
+                "full reference."
+            ),
+            max_length=100,
+        ),
+    ] = None,
 ) -> dict[str, Any]:
     """Get the unicefdata package API reference for Python, R, or Stata.
 
@@ -2683,7 +2935,15 @@ def glossary_resource() -> str:
 # ---------------------------------------------------------------------------
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get unicefstats-mcp Server Metadata",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
 def get_server_metadata() -> dict[str, Any]:
     """Return machine-readable identity, provenance, and version information for this MCP server.
 

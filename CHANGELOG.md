@@ -6,6 +6,23 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [1.2.2] — 2026-06-01
+
+### Added
+
+- **Tool annotations on all 9 `@mcp.tool` functions**: `readOnlyHint` (true), `destructiveHint` (false), `idempotentHint` (true), `openWorldHint` (true for SDMX-calling tools, false for local-metadata tools), plus human-readable `title`. Closes the gap identified by the MCP best-practices rubric (see [modelcontextprotocol.io](https://modelcontextprotocol.io/specification/)) — clients now have machine-readable hints for parallelization, approval flow, and tool discoverability.
+  - `openWorldHint=true` (touch the live SDMX API): `get_data`, `get_temporal_coverage`.
+  - `openWorldHint=false` (local YAML / cached metadata only): `search_indicators`, `list_categories`, `list_countries`, `get_indicator_info`, `lookup_by_code`, `get_api_reference`, `get_server_metadata`.
+- **Inline Pydantic `Field()` constraints on every tool parameter** via `typing.Annotated`. Adds `description`, `min_length` / `max_length` for strings, `ge` / `le` for ints, `Literal[...]` enums where applicable. FastMCP picks up these constraints and validates inputs before dispatch — closes the Python MCP Quality Checklist's "All Pydantic Fields have explicit types and descriptions with constraints" line item without changing any tool signature (zero test-side churn). Constraints are mirror-aligned with the runtime limits enforced by `validators.py` (`MIN_QUERY_LEN=2`, `MAX_QUERY_LEN=200`, `MAX_COUNTRIES=30`, `MAX_LIMIT=500`, indicator `max_length=50`) so the advertised schema never promises inputs the tool will reject.
+  - Examples: `search_indicators(query=Annotated[str, Field(min_length=1, max_length=200)], limit=Annotated[int, Field(ge=1, le=100)] = 20)`; `get_data` covers all 11 params including the v1.1.x deprecated `wealth_quintile` / `residence` (marked `deprecated=True` in the Field metadata so clients render the migration warning).
+
+### Notes
+
+- Zero source-logic, zero test changes — pure schema decoration. 458 tests pass.
+- Direct Python callers can keep using `search_indicators(query="...", limit=10)` exactly as before — the `Annotated` style preserves the signature; only the JSON schema FastMCP exposes to MCP clients gains the new constraints.
+- v1.2.3 (queued): pagination metadata (`has_more` / `next_offset` / `total_count`) + `offset` param on `list_*` tools.
+- v1.2.4 (queued): `evaluation/unicefstats_mcp_eval.xml` per the MCP evaluation rubric (10 read-only, independent, stable QA pairs verifiable by direct string comparison).
+
 ## [1.2.1] — 2026-06-01
 
 ### Fixed
