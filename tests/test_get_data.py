@@ -10,6 +10,18 @@ import pytest
 from unicefstats_mcp.server import get_data
 
 
+@pytest.fixture(autouse=True)
+def _isolate_frontier_cache(monkeypatch):
+    """Give every test a fresh empty `_data_frontier_cache`.
+
+    Replaces the v0.7.1 pattern of mutating the module global directly
+    (which leaked between tests). monkeypatch restores the original cache
+    object after each test, so any real-process cache survives outside
+    the test session.
+    """
+    monkeypatch.setattr("unicefstats_mcp.server._data_frontier_cache", {})
+
+
 @pytest.fixture
 def mock_df():
     """DataFrame with 10 rows mimicking unicefData output."""
@@ -69,8 +81,13 @@ class TestGetData:
         assert result["rows_returned"] == 10
         assert result["rows_truncated"] is False
         assert "summary" in result
+        # v1.2.0 Commit 6: to_compact now renames alias columns
+        # (country_code/country_name/indicator_code) to the canonical
+        # `iso3`/`country`/`indicator` so the LLM-facing schema is
+        # consistent whether the source df came from the simplified path
+        # or the raw=True path (REF_AREA / OBS_VALUE / TIME_PERIOD).
         assert set(result["data"][0].keys()).issubset(
-            {"country_code", "country_name", "period", "indicator_code", "value"}
+            {"iso3", "country", "period", "indicator", "value"}
         )
 
     @patch("unicefstats_mcp.server._get_ud")
@@ -218,19 +235,32 @@ class TestGetData:
         assert "error" in result
         assert "Invalid sex" in result["error"]
 
-    def test_invalid_wealth_quintile(self):
-        result = get_data(
-            indicator="CME_MRY0T4", countries=["BRA"], wealth_quintile="Q9"
-        )
-        assert "error" in result
-        assert "Invalid wealth_quintile" in result["error"]
+    def test_v1_1_x_wealth_quintile_kwarg_routes_to_migration_error(self):
+        """v1.1.x callers passing wealth_quintile=Q1 see the structured
+        v1.2.0 migration error, NOT a silent acceptance, NOT a silent drop.
 
-    def test_invalid_residence(self):
+        The kwarg is still present in the signature as a deprecation
+        trip-wire (FastMCP rejects **kwargs) so it can intercept the
+        legacy call shape. The migration message names the new shape
+        and surfaces the structured `removed_kwargs` field at top level.
+        """
         result = get_data(
-            indicator="CME_MRY0T4", countries=["BRA"], residence="X"
+            indicator="CME_MRY0T4", countries=["BRA"], wealth_quintile="Q1"
         )
         assert "error" in result
-        assert "Invalid residence" in result["error"]
+        assert "Removed in v1.2.0" in result["error"]
+        assert "filters" in result["error"]
+        assert result.get("removed_kwargs") == ["wealth_quintile"]
+        assert result.get("v1_2_0") is True
+
+    def test_v1_1_x_residence_kwarg_routes_to_migration_error(self):
+        """Same pattern as above for the v1.1.x residence kwarg."""
+        result = get_data(
+            indicator="CME_MRY0T4", countries=["BRA"], residence="U"
+        )
+        assert "error" in result
+        assert "Removed in v1.2.0" in result["error"]
+        assert result.get("removed_kwargs") == ["residence"]
 
     @patch("unicefstats_mcp.server._get_ud")
     def test_year_range(self, mock_ud, mock_df):
@@ -257,10 +287,10 @@ class TestGetData:
 
     @patch("unicefstats_mcp.server._get_ud")
     def test_year_range_out_of_frontier(self, mock_ud, mock_df):
-        """v0.6.0: requesting end_year > frontier triggers server-side refusal."""
-        from unicefstats_mcp.server import _data_frontier_cache
-        _data_frontier_cache.clear()  # ensure fresh lookup
+        """v0.6.0: requesting end_year > frontier triggers server-side refusal.
 
+        The autouse `_isolate_frontier_cache` fixture handles cache reset.
+        """
         ud = MagicMock()
         ud.unicefData.return_value = mock_df  # frontier = 2019
         mock_ud.return_value = ud
@@ -369,3 +399,179 @@ class TestIndicatorResolverIntegration:
         # Each candidate must carry a human-readable name for the model
         for cand in result["indicator_disambiguation"]:
             assert isinstance(cand["name"], str) and cand["name"]
+
+
+class TestFrontierCacheSeeding:
+    """v0.7.3: a successful `get_data` response seeds the per-session frontier
+    cache from `df["period"].max()` so subsequent calls with year args don't
+    re-issue a totals-only `get_temporal_coverage` round-trip just to learn
+    the same frontier we already observed."""
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_response_seeds_cache(self, mock_ud, mock_df):
+        from unicefstats_mcp.server import _data_frontier_cache
+
+        ud = MagicMock()
+        ud.unicefData.return_value = mock_df  # max period = 2019
+        mock_ud.return_value = ud
+
+        # First call without year args → no pre-flight, no cache lookup.
+        result = get_data(indicator="CME_MRY0T4", countries=["BRA"])
+        assert "error" not in result
+        # The response itself populates the cache from df["period"].max().
+        assert _data_frontier_cache.get("CME_MRY0T4") == 2019
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_seeded_cache_avoids_extra_fetch(self, mock_ud, mock_df):
+        """After one successful get_data, a subsequent get_data with year args
+        should not need to call get_temporal_coverage — the cache is already
+        warm from the response."""
+        ud = MagicMock()
+        ud.unicefData.return_value = mock_df
+        mock_ud.return_value = ud
+
+        # Warm the cache.
+        get_data(indicator="CME_MRY0T4", countries=["BRA"])
+        first_call_count = ud.unicefData.call_count
+
+        # Second call WITH year args. Pre-flight frontier check should now hit
+        # the cache rather than issuing a coverage fetch.
+        get_data(
+            indicator="CME_MRY0T4",
+            countries=["BRA"],
+            start_year=2017,
+            end_year=2019,
+        )
+        second_call_count = ud.unicefData.call_count
+
+        # Without cache seeding, this would be +2 (coverage + data). With
+        # seeding, it's exactly +1 (data fetch only).
+        assert second_call_count - first_call_count == 1
+
+    def test_seed_does_not_lower_existing_frontier(self):
+        """Year-bounded queries must not poison the cache with a lower frontier.
+
+        Regression: in the initial v0.7.3 seed implementation, any successful
+        get_data response unconditionally overwrote the cache with df["period"].max().
+        Because df is filtered by start_year/end_year/country, a query like
+        `get_data(CME_MRY0T4, [LBR], 2023, 2023)` would set the cache to 2023
+        even when the indicator's true frontier is 2024 — and a subsequent
+        `get_data(CME_MRY0T4, [NLD], 2024)` would then be wrongly refused at
+        the pre-flight frontier check. The seed must take max(existing, new),
+        never lower.
+        """
+        from unicefstats_mcp.server import (
+            _data_frontier_cache,
+            _seed_data_frontier_cache,
+        )
+
+        _data_frontier_cache["CME_MRY0T4"] = 2024  # true indicator frontier
+        bounded_df = pd.DataFrame({"period": [2023]})  # response from year=2023 query
+
+        _seed_data_frontier_cache("CME_MRY0T4", bounded_df)
+
+        assert _data_frontier_cache["CME_MRY0T4"] == 2024  # unchanged
+
+    def test_seed_raises_existing_frontier_when_response_is_higher(self):
+        """When the response shows a higher max year than the cache, seed updates."""
+        from unicefstats_mcp.server import (
+            _data_frontier_cache,
+            _seed_data_frontier_cache,
+        )
+
+        _data_frontier_cache["CME_MRY0T4"] = 2022
+        df = pd.DataFrame({"period": [2024]})
+
+        _seed_data_frontier_cache("CME_MRY0T4", df)
+
+        assert _data_frontier_cache["CME_MRY0T4"] == 2024
+
+
+class TestUnicefdataCascadeIsNoData:
+    """v0.7.3 post-fix: the upstream `unicefdata` package walks a hardcoded
+    fallback dataflow chain when the primary dataflow returns 404 or empty.
+    Under burst load, intermittent upstream 404s on year-out-of-frontier or
+    high-income-country queries trigger the chain walk (extra HTTP requests
+    + log noise), ending in `SDMXNotFoundError: Indicator 'X' not found in
+    any dataflow.` (lowercase 'not found').
+
+    The MCP's exception handler must classify this as a `no_data` response
+    so the model receives an honest "no data" verdict and can refuse cleanly,
+    rather than a generic error that destabilises its tool-loop heuristics.
+
+    Tracking issue filed at unicefdata-dev for the upstream behaviour fix.
+    """
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_cascade_exception_returns_no_data(self, mock_ud):
+        ud = MagicMock()
+
+        # Simulate unicefdata's cascade-end exception. The package raises
+        # SDMXNotFoundError but here a plain Exception with the same message
+        # is sufficient — the heuristic match is on the message text.
+        ud.unicefData.side_effect = Exception(
+            "Indicator 'NT_ANT_HAZ_NE2' not found in any dataflow.\n"
+            "  Tried dataflows: NUTRITION, GLOBAL_DATAFLOW, NUTRITION_STUNTING, "
+            "NUTRITION_WASTING, CHILD_NUTRITION, HEALTH"
+        )
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="NT_ANT_HAZ_NE2", countries=["BRA"])
+
+        assert "error" in result
+        assert result.get("status") == "no_data", (
+            "Cascade-end exception must be classified as no_data so the model "
+            "treats it like any other 'no data exists for this combination' "
+            "verdict; otherwise it falls through to generic-error tool-loop "
+            "behaviour and may hallucinate a value."
+        )
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_lowercase_not_found_classified_as_no_data(self, mock_ud):
+        """The pre-fix heuristic only matched 'Not Found' (Title Case);
+        unicefdata's message uses lowercase 'not found'. The fix lower-cased
+        the comparison."""
+        ud = MagicMock()
+        ud.unicefData.side_effect = Exception("indicator was not found upstream")
+        mock_ud.return_value = ud
+
+        result = get_data(indicator="ED_CR_L1", countries=["CIV"])
+
+        assert "error" in result
+        assert result.get("status") == "no_data"
+
+
+class TestNonNumericPeriods:
+    """v0.7.3: gap detection and frontier extraction must tolerate SDMX
+    quarterly/monthly periods (e.g. `2019-Q1`) instead of raising ValueError
+    on the whole DataFrame."""
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_quarterly_periods_do_not_crash(self, mock_ud):
+        df = pd.DataFrame({
+            "country_code": ["BRA"] * 4,
+            "country_name": ["Brazil"] * 4,
+            "indicator_code": ["CME_MRY0T4"] * 4,
+            "period": ["2019-Q1", "2019-Q2", "2019-Q3", "2019-Q4"],
+            "value": [14.5, 14.4, 14.3, 14.2],
+            "sex": ["_T"] * 4,
+            "age": ["Y0T4"] * 4,
+            "wealth_quintile": ["_T"] * 4,
+            "residence": ["_T"] * 4,
+        })
+        ud = MagicMock()
+        ud.unicefData.return_value = df
+        mock_ud.return_value = ud
+
+        # Without the v0.7.3 fix, this raised ValueError inside the gap-detection
+        # block and broke the whole successful response.
+        result = get_data(
+            indicator="CME_MRY0T4",
+            countries=["BRA"],
+            start_year=2019,
+            end_year=2019,
+        )
+
+        assert "error" not in result
+        # Frontier-from-response should extract 2019 from the year prefix.
+        assert result.get("data_frontier", {}).get("max_year_observed") == 2019

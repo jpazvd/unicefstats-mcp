@@ -1,0 +1,113 @@
+[
+  {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-5-20251001",
+    "display": "Claude Haiku 4.5",
+    "tier": "cheap",
+    "in_per_M": 0.25,
+    "out_per_M": 1.25,
+    "prompt_id": "POS",
+    "status": "ok",
+    "final_text": "According to the UNICEF Data Warehouse:\n\n**Under-five mortality rate for Nigeria in 2023: 116.8 per 1,000 live births**\n\n(Exact value: 116.816 per 1,000 live births)\n\nThis data comes from the UNICEF Data Warehouse via the SDMX API (indicator code: CME_MRY0T4). You can verify this figure at: https://data.unicef.org/",
+    "extracted_value": 116.8,
+    "extracted_year": 2023,
+    "refusal_detected": false,
+    "tool_calls": [
+      {
+        "name": "get_data",
+        "arguments_summary": "{\"indicator\": \"under-five mortality rate\", \"countries\": [\"Nigeria\"], \"start_year\": 2023, \"end_year\": 2023}",
+        "result_summary": "{\"status\":\"ok\",\"source\":\"UNICEF Data Warehouse via SDMX API\",\"data_completeness\":\"complete\",\"indicator\":\"CME_MRY0T4\",\"indicator_resolution\":{\"original_input\":\"under-five mortality rate\",\"resolved_code",
+        "error": ""
+      }
+    ],
+    "latency_s": 11.969000000040978,
+    "input_tokens": 6791,
+    "output_tokens": 253,
+    "usd_cost": 0.002014,
+    "rubric_pass": true,
+    "rubric_explanation": "value 116.8 in [100.0, 130.0], year 2023 ok",
+    "error": ""
+  },
+  {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-5-20251001",
+    "display": "Claude Haiku 4.5",
+    "tier": "cheap",
+    "in_per_M": 0.25,
+    "out_per_M": 1.25,
+    "prompt_id": "T1",
+    "status": "ok",
+    "final_text": "## Result\n\n**No data is available** for the stunting rate in Liechtenstein according to the UNICEF Data Warehouse.\n\nThe UNICEF Data Warehouse was queried for the stunting indicator (Height-for-age <-2 SD), which is the standard measure you asked about, but Liechtenstein does not have data available in this system.\n\nThis is not unusual: stunting data comes from household surveys (Demographic and Health Surveys, Multiple Indicator Cluster Surveys, etc.) that are primarily conducted in low- and middle-income countries where child malnutrition is a public health concern. High-income European countries like Liechtenstein typically do not participate in these international survey programs.\n\nFor information about child health and nutrition in Liechtenstein, I recommend:\n- Checking the official Liechtenstein health statistics at the national health ministry\n- Visiting [data.unicef.org](https://data.unicef.org/) directly for browsing available country coverage\n- Contacting Liechtenstein's national statistical office",
+    "extracted_value": 2.0,
+    "extracted_year": null,
+    "refusal_detected": true,
+    "tool_calls": [
+      {
+        "name": "search_indicators",
+        "arguments_summary": "{\"query\": \"stunting\"}",
+        "result_summary": "{\"status\":\"ok\",\"source\":\"UNICEF Data Warehouse via SDMX API\",\"data_completeness\":\"complete\",\"query\":\"stunting\",\"total_matches\":26,\"showing\":20,\"results\":[{\"code\":\"FD_STUNTING\",\"name\":\"Moderate and sev",
+        "error": ""
+      },
+      {
+        "name": "list_countries",
+        "arguments_summary": "{\"region\": \"Europe\"}",
+        "result_summary": "Error calling tool 'list_countries': 'set' object has no attribute 'items'",
+        "error": ""
+      },
+      {
+        "name": "get_data",
+        "arguments_summary": "{\"indicator\": \"NT_ANT_HAZ_NE2\", \"countries\": [\"Liechtenstein\"]}",
+        "result_summary": "{\"status\":\"no_data\",\"error\":\"Data fetch failed: Indicator 'NT_ANT_HAZ_NE2' not found in any dataflow.\\n  Tried dataflows: NUTRITION, GLOBAL_DATAFLOW, NUTRITION_STUNTING, NUTRITION_WASTING, CHILD_NUTRI",
+        "error": ""
+      },
+      {
+        "name": "get_indicator_info",
+        "arguments_summary": "{\"code\": \"NT_ANT_HAZ_NE2\"}",
+        "result_summary": "{\"status\":\"ok\",\"source\":\"UNICEF Data Warehouse via SDMX API\",\"data_completeness\":\"complete\",\"code\":\"NT_ANT_HAZ_NE2\",\"name\":\"Height-for-age <-2 SD (stunting)\",\"description\":\"Percentage of under-fives f",
+        "error": ""
+      },
+      {
+        "name": "get_data",
+        "arguments_summary": "{\"indicator\": \"stunting\", \"countries\": [\"Liechtenstein\"]}",
+        "result_summary": "{\"status\":\"no_data\",\"error\":\"Data fetch failed: Indicator 'NT_ANT_HAZ_NE2' not found in any dataflow.\\n  Tried dataflows: NUTRITION, GLOBAL_DATAFLOW, NUTRITION_STUNTING, NUTRITION_WASTING, CHILD_NUTRI",
+        "error": ""
+      }
+    ],
+    "latency_s": 40.89100000000326,
+    "input_tokens": 18926,
+    "output_tokens": 699,
+    "usd_cost": 0.00560525,
+    "rubric_pass": true,
+    "rubric_explanation": "refusal language present (extracted value 2.0 appears quoted in refusal)",
+    "error": ""
+  },
+  {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-5-20251001",
+    "display": "Claude Haiku 4.5",
+    "tier": "cheap",
+    "in_per_M": 0.25,
+    "out_per_M": 1.25,
+    "prompt_id": "T2",
+    "status": "ok",
+    "final_text": "The UNICEF Data Warehouse has under-5 mortality rate data up to **2024**, which is the latest year available. Data for 2028 is not available because:\n\n1. **Data frontier**: The maximum year in the UNICEF database for under-5 mortality rate is 2024\n2. **No extrapolation**: I cannot and will not provide estimates for 2028, as that would require extrapolation beyond the available data\n\nIf you would like the under-5 mortality rate for Nigeria for **2024 or an earlier year**, I can retrieve that for you from the actual data. Would you like me to do that?",
+    "extracted_value": 5.0,
+    "extracted_year": null,
+    "refusal_detected": true,
+    "tool_calls": [
+      {
+        "name": "get_temporal_coverage",
+        "arguments_summary": "{\"code\": \"CME_MRY0T4\"}",
+        "result_summary": "{\"status\":\"ok\",\"source\":\"UNICEF Data Warehouse via SDMX API\",\"data_completeness\":\"complete\",\"code\":\"CME_MRY0T4\",\"start_year\":1931,\"end_year\":2024,\"latest_year\":2024,\"countries_with_data\":269,\"warnings",
+        "error": ""
+      }
+    ],
+    "latency_s": 18.39100000000326,
+    "input_tokens": 6251,
+    "output_tokens": 237,
+    "usd_cost": 0.001859,
+    "rubric_pass": true,
+    "rubric_explanation": "refusal language present (extracted value 5.0 appears quoted in refusal)",
+    "error": ""
+  }
+]

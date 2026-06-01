@@ -53,6 +53,93 @@ MOCK_INDICATORS: dict[str, dict] = {
     },
 }
 
+# Extended fixture covering the indicator-resolver edge cases tracked in
+# issue #64 (Indicator resolver picks wrong variant for 3 prompts).
+# These reproduce the real-data shape: tier-2 category codes have NO
+# `parent` field; tier-1 indicators do; derived metrics (national
+# targets, annual-rate-of-reduction variants) carry the same name tokens
+# as their canonical indicator but live in TRGT_* / *_ARR_* codes.
+MOCK_INDICATORS_ISSUE_64: dict[str, dict] = {
+    # Tier-2 category code — should be filtered out of search.
+    "CME": {
+        "code": "CME",
+        "name": "Child mortality",
+        "description": "Child mortality",
+        # No `parent` field: this is a category, not an indicator.
+    },
+    # Tier-1: canonical mortality variants.
+    "CME_MRY0T4": {
+        "code": "CME_MRY0T4",
+        "name": "Under-five mortality rate",
+        "description": "Probability of dying before exact age 5 per 1,000 live births.",
+        "category": "CME",
+        "parent": "CME",
+    },
+    "CME_MRY0": {
+        "code": "CME_MRY0",
+        "name": "Infant mortality rate",
+        "description": "Probability of dying before exact age 1 per 1,000 live births.",
+        "category": "CME",
+        "parent": "CME",
+    },
+    "CME_MRM0": {
+        "code": "CME_MRM0",
+        "name": "Neonatal mortality rate",
+        "description": "Probability of dying within the first 28 days per 1,000 live births.",
+        "category": "CME",
+        "parent": "CME",
+    },
+    "CME_MRY1T4": {
+        "code": "CME_MRY1T4",
+        "name": "Child mortality rate (aged 1-4 years)",
+        "description": "Probability of dying between exact ages 1 and 5.",
+        "category": "CME",
+        "parent": "CME",
+    },
+    # Derived metric: shares "U5MR" acronym with the canonical CME_MRY0T4.
+    "CME_ARR_U5MR": {
+        "code": "CME_ARR_U5MR",
+        "name": "Annual Rate of Reduction in Under-five mortality rate",
+        "description": "AARC for under-five mortality.",
+        "category": "CME",
+        "parent": "CME",
+    },
+    # Derived metric: national target shares the canonical name.
+    "TRGT_2030_CME_MRY0T4": {
+        "code": "TRGT_2030_CME_MRY0T4",
+        "name": "National target (Year 2030) for Under-five mortality rate",
+        "description": "Country-level 2030 target for U5MR.",
+        "category": "TRGT",
+        "parent": "TRGT_CME",
+    },
+    # Tier-1: early childbearing (the canonical MNCH_BIRTH18 indicator).
+    "MNCH_BIRTH18": {
+        "code": "MNCH_BIRTH18",
+        "name": (
+            "Early childbearing - percentage of women (aged 20-24 years) "
+            "who gave birth before age 18"
+        ),
+        "description": (
+            "Percentage of women aged 20-24 who reported a first birth "
+            "before age 18."
+        ),
+        "category": "MNCH",
+        "parent": "MNCH",
+    },
+    # Tier-1: confusable adolescent-fertility variant (population 15-19).
+    "MNCH_ABR": {
+        "code": "MNCH_ABR",
+        "name": (
+            "Adolescent birth rate (number of live births to adolescent "
+            "women per 1,000 adolescent women)"
+        ),
+        "description": "Live births per 1,000 women aged 15-19.",
+        "category": "MNCH",
+        "parent": "MNCH",
+    },
+}
+
+
 MOCK_COUNTRIES: dict[str, str] = {
     "AFG": "Afghanistan",
     "ALB": "Albania",

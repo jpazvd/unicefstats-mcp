@@ -1,0 +1,22 @@
+{
+  "run_id": "claude-sonnet-4-20250514_20260509_162442_smoke_v073",
+  "model": "claude-sonnet-4-20250514",
+  "temperature": 0.0,
+  "timestamp": "20260509_162442",
+  "n_queries": 9,
+  "n_positive": 3,
+  "n_hallucination_t1": 3,
+  "n_hallucination_t2": 3,
+  "ground_truth_source": "examples/ground_truth_mcp060/sample.csv",
+  "positive_metrics": {
+    "mean_eqa_a": 0.3003,
+    "mean_eqa_b": 1.0,
+    "mean_er_a": 0.6667,
+    "mean_ya_a": 0.4167,
+    "mean_va_a": 0.3003
+  },
+  "hallucination_metrics": {
+    "rate_a": 0.0,
+    "rate_b": 0.0
+  }
+}

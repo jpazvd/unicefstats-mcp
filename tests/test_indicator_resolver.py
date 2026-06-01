@@ -154,6 +154,45 @@ class TestAmbiguous:
             assert isinstance(name, str) and name
 
 
+class TestHyphenatedCodes:
+    """Hyphenated codes (e.g. ED_15-24_LR, PT_F_15-49_FGM) must round-trip
+    through both the synonym path AND the code-passthrough path.
+
+    Added in v0.7.3 to lock in the codelist contract: if `unicefdata`'s YAML
+    ever drops a hyphen from one of these codes, the synonym entry's
+    `if code in code_to_name` guard would silently fall through to "unknown",
+    and the user-facing failure would be a 404 at the SDMX layer with no hint
+    that the resolver dropped the input. This test makes the drift visible.
+    """
+
+    def test_youth_literacy_synonym_resolves(self):
+        r = resolve_indicator("youth literacy")
+        assert r.status == "synonym_match"
+        assert r.code == "ED_15-24_LR"
+        assert r.name  # canonical name populated
+
+    def test_youth_literacy_rate_synonym_resolves(self):
+        r = resolve_indicator("youth literacy rate")
+        assert r.status == "synonym_match"
+        assert r.code == "ED_15-24_LR"
+
+    def test_hyphenated_code_passthrough(self):
+        r = resolve_indicator("ED_15-24_LR")
+        assert r.status == "code_passthrough"
+        assert r.code == "ED_15-24_LR"
+
+    def test_lowercase_hyphenated_code_normalizes(self):
+        r = resolve_indicator("ed_15-24_lr")
+        assert r.status == "code_passthrough"
+        assert r.code == "ED_15-24_LR"
+
+    def test_fgm_hyphenated_code_passthrough(self):
+        # PT_F_15-49_FGM is referenced by a synonym AND must passthrough as code.
+        r = resolve_indicator("PT_F_15-49_FGM")
+        assert r.status == "code_passthrough"
+        assert r.code == "PT_F_15-49_FGM"
+
+
 class TestUnknown:
     """Inputs that don't match anything return unknown."""
 

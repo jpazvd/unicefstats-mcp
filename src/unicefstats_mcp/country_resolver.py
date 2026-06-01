@@ -159,6 +159,21 @@ def resolve_country(input_str: str) -> str | None:
     return name_index.get(_normalize(s))
 
 
+def lookup_country_name(iso3: str) -> str | None:
+    """Reverse lookup: ISO3 → canonical country name.
+
+    v1.2.0 Commit 7 — used by ``get_data`` to fill
+    ``countries_returned_with_names`` when the fetch payload doesn't
+    carry a country-name column (the ``raw=True`` SDMX path only
+    returns ``REF_AREA`` codes, no human names). Returns ``None`` for
+    unknown codes.
+    """
+    if not isinstance(iso3, str) or len(iso3) != 3:
+        return None
+    valid_codes, _ = _load_country_index()
+    return valid_codes.get(iso3.upper())
+
+
 def resolve_countries(
     inputs: list[str],
 ) -> tuple[list[str], dict[str, str], list[str]]:

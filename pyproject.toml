@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "unicefstats-mcp"
-version = "0.7.2"
+version = "1.2.0"
 description = "MCP server for UNICEF child development statistics — 790+ child-focused indicators, 200+ countries, disaggregations by sex/age/wealth/residence. No API key required."
 readme = "README.md"
 license = "MIT"
@@ -12,7 +12,7 @@ requires-python = ">=3.10"
 authors = [{ name = "Joao Pedro Azevedo" }]
 keywords = ["mcp", "unicef", "child-development", "indicators", "statistics", "data", "ai", "sdmx"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -22,7 +22,12 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "fastmcp>=2.0",
+    # fastmcp pinned to >=3.0,<4. CI has been resolving fastmcp 3.x even with
+    # the old `>=2.0` floor, so 3.x is what's actually tested. fastmcp 2.x
+    # wraps `@mcp.tool()`-decorated functions in a non-callable FunctionTool,
+    # which breaks the test suite — bumping the floor closes that latent
+    # incompatibility. Upper bound `<4` blocks an unannounced future major.
+    "fastmcp>=3.0,<4",
     "unicefdata>=2.4,<3",
     # PyYAML is technically transitive via unicefdata, but we import it
     # directly in country_resolver.py to read the SDMX CL_COUNTRY codelist
@@ -57,6 +62,12 @@ benchmark = [
     "python-dotenv",
     "pandas",
     "pyarrow",
+    # Plotting (used by examples/plot_results.py, benchmark.ipynb, statistical_analysis.py)
+    "matplotlib>=3.8,<4",
+    # Stats helpers (used by examples/statistical_analysis.py for Wilcoxon, bootstrap CI, McNemar)
+    "scipy>=1.11",
+    # Numerical (used across ground-truth scripts, plotting, and stats)
+    "numpy>=1.26,<3",
 ]
 
 [tool.mypy]

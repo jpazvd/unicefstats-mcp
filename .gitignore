@@ -16,5 +16,9 @@ htmlcov/
 .venv/
 venv/
 metadata/
-examples/ground_truth/
+# Note: actual ground-truth dirs are examples/ground_truth_mcp060/ and
+# examples/ground_truth_r2/ — both tracked. The legacy `examples/ground_truth/`
+# pattern referred to a directory that never existed; removed to avoid
+# silently ignoring a future contributor's `examples/ground_truth/` work.
+
 # internal/ is tracked in -dev repo

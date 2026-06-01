@@ -91,12 +91,24 @@ def extract_versions() -> dict[str, str | None]:
     else:
         versions["__init__.py"] = None
 
-    # server.py FastMCP constructor
+    # server.py FastMCP constructor.
+    #
+    # Two valid shapes:
+    #   1. `version="0.7.3"`           — literal; we extract the string
+    #   2. `version=__version__`        — delegates to __init__.py (no second
+    #      source of truth); we mark this location as "delegated" by mirroring
+    #      the __init__.py value, so the consistency check still passes.
     server = ROOT / "src" / "unicefstats_mcp" / "server.py"
     if server.exists():
         content = server.read_text(encoding="utf-8")
-        m = re.search(r'FastMCP\([^)]*version="([^"]+)"', content, re.DOTALL)
-        versions["server.py (FastMCP)"] = m.group(1) if m else None
+        m_lit = re.search(r'FastMCP\([^)]*version="([^"]+)"', content, re.DOTALL)
+        if m_lit:
+            versions["server.py (FastMCP)"] = m_lit.group(1)
+        elif re.search(r'FastMCP\([^)]*version=__version__', content, re.DOTALL):
+            # Delegated to __init__.py; mirror that value so consistency holds.
+            versions["server.py (FastMCP)"] = versions.get("__init__.py")
+        else:
+            versions["server.py (FastMCP)"] = None
     else:
         versions["server.py"] = None
 

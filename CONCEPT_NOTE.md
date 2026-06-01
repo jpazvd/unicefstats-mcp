@@ -1,6 +1,6 @@
 # Concept Note: MCP as Reference Architecture for AI-Ready Official Statistics
 
-**Version:** 1.1 — April 2026
+**Version:** 1.2 — May 2026
 **Author:** Joao Pedro Azevedo
 **Status:** Working draft for discussion
 
@@ -12,11 +12,13 @@ UNICEF publishes that 4.9 million children under five died in 2022. WHO publishe
 
 Now AI systems — ChatGPT, Claude, Copilot, and the autonomous agents built on them — retrieve and present these statistics to users. When the data exists, this works well. When it doesn't, AI systems fill the gap. They fabricate plausible-sounding numbers and present them with the same confidence as real data.
 
-This is not hypothetical. In benchmark testing of an LLM querying UNICEF data, approximately 10% of queries where the API returned no data still produced fabricated statistics in the AI's response. The fabricated numbers looked authoritative because they came from a conversation about real UNICEF data.
+This is not hypothetical. In benchmark testing of an LLM querying UNICEF data, an early version of the `unicefstats-mcp` server was producing fabricated values on ~2.5% of queries where the API returned no data — *higher* than the no-tools baseline (~2.5%), not lower. The MCP layer was reducing magnitude relative to a no-safety-layer baseline but not below the floor a model would have hit reasoning from training data alone. The fabricated numbers looked authoritative because they came from a conversation about real UNICEF data.
 
-Current data APIs were built for human analysts who can spot a missing value. They return empty results and trust the user to notice. AI systems do not notice. They fill the silence.
+Three releases of safety-layer engineering, four engineering fixes in the v0.7.3 cycle, and one corrected evaluator (v1.4 extractor that respects refusal language) were required before the MCP version of the model fabricated *less* often than the no-tools baseline: hall_b 1.00% vs hall_a 2.50% on the original 40-country sample, hall_b 2.25% vs hall_a 2.50% on a disjoint 20-country validation sample.
 
-**The core question this project addresses:** Can we build a data interface that *tells* AI systems when data is missing, partial, or unreliable — in a format they are designed to obey?
+Current data APIs were built for human analysts who can spot a missing value. They return empty results and trust the user to notice. AI systems do not notice. They fill the silence. The architecture below makes that filling pattern visible to the data layer and gives it tools to prevent it — and this concept note documents *both* the architecture and the implementation disciplines (cache monotonicity, error-vs-no-data classification, refusal-respecting evaluators) needed to land its safety property empirically.
+
+**The core question this project addresses:** Can we build a data interface that *tells* AI systems when data is missing, partial, or unreliable — in a format they are designed to obey — and verify, with a repeatable benchmark, that the AI actually obeys it?
 
 ## 2. What We Built
 

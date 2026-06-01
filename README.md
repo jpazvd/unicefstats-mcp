@@ -1,6 +1,11 @@
 <!-- mcp-name: io.github.jpazvd/unicefstats-mcp -->
 [![MCP Badge](https://lobehub.com/badge/mcp/jpazvd-unicefstats-mcp?style=for-the-badge)](https://lobehub.com/mcp/jpazvd-unicefstats-mcp)
 
+[![PyPI](https://img.shields.io/pypi/v/unicefstats-mcp.svg)](https://pypi.org/project/unicefstats-mcp/)
+[![Python](https://img.shields.io/pypi/pyversions/unicefstats-mcp.svg)](https://pypi.org/project/unicefstats-mcp/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://static.pepy.tech/badge/unicefstats-mcp)](https://pepy.tech/projects/unicefstats-mcp)
+
 # unicefstats-mcp
 
 > Experimental — not an official UNICEF product. Verify retrieved values against the [UNICEF Data Warehouse](https://data.unicef.org/) before citing in publications. See [Limitations](#limitations-and-hallucination-risks).
@@ -58,6 +63,7 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 | [examples/results/related_work.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/results/related_work.md) | Annotated bibliography — 15 papers on tool-augmented hallucination |
 | [examples/results/statistical_summary.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/results/statistical_summary.md) | Wilcoxon, bootstrap CI, McNemar tests on benchmark results |
 | [examples/MCP-DIRECTORY-STATS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md) | Comprehensive directory of all official statistics MCP servers |
+| [examples/mcp-smoke-test/MULTIMODEL_SMOKETEST.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/mcp-smoke-test/MULTIMODEL_SMOKETEST.md) | Cross-model smoke test (Anthropic / OpenAI / Google / OpenRouter) for the v0.7.3 cross-provider generalisation question — design, rubric, ~$1 default run, path to full mini-EQA |
 
 ## How it relates to the unicefdata packages
 
@@ -83,7 +89,7 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 
 | Feature | unicefstats-mcp | FRED MCP | World Bank MCP |
 |---|---|---|---|
-| **Tools** | 8 (search → metadata → data → code → identity) | 3 (browse → search → get) | 1 (get only) |
+| **Tools** | 9 (search → metadata → data → code → identity + strict canonical lookup) | 3 (browse → search → get) | 1 (get only) |
 | **Indicators** | 790+ child-focused indicators | 800,000+ economic series | ~1,600 indicators |
 | **Countries** | 200+ (ISO3) | US-focused (some intl) | 200+ (ISO2) |
 | **Disaggregations** | Sex, age, wealth quintile, residence | Frequency, seasonal adjustment | None |
@@ -146,12 +152,12 @@ UNICEF also maintains [`sdmx-mcp`](https://github.com/unicef-drp/sdmx-mcp), a ge
 | **Tools** | 7 (analyst-friendly, 4-step workflow) | 23 (SDMX power-user, structural queries) |
 | **Data layer** | Wraps `unicefdata` Python package | Direct SDMX REST API calls via `httpx` |
 | **Output** | Formatted for LLMs (compact tables, summaries, tips) | Raw SDMX-JSON/CSV |
-| **Accuracy (EQA)** | **0.990** | 0.074 |
-| **Hallucination** | 7% T1 / 34% T2 | **0% T1 / 0% T2** |
-| **Cost per query** | $0.018 | $0.087 |
-| **Latency** | 9.8s avg | 60s avg |
+| **Accuracy (EQA)** | **0.891** (v0.7.3 + fixes) | 0.074 |
+| **Hallucination** | hall_b 1.00% (mcp060) / 2.25% (mcp073) — below the no-tools hall_a baseline (2.50%) | **0% T1 / 0% T2** |
+| **Cost per query** | ~$0.04 | $0.087 |
+| **Latency** | ~10s avg | 60s avg |
 
-**Key tradeoff**: unicefstats-mcp is dramatically more accurate (EQA 0.990 vs 0.074) because its formatted output is optimized for LLM parsing. sdmx-mcp has zero hallucination because its `assistant_guidance` fields and `validate_query_scope` pattern effectively prevent fabrication when data is absent.
+**Key tradeoff**: unicefstats-mcp is dramatically more accurate (EQA 0.891 vs 0.074) because its formatted output is optimized for LLM parsing. sdmx-mcp achieves zero hallucination on absent-data queries through aggressive `assistant_guidance` fields and a `validate_query_scope` pattern; its accuracy floor is too low to be useful, but the refusal discipline is exemplary. unicefstats-mcp v0.7.3 + fixes is the first version where MCP demonstrably makes the model safer than the no-tools baseline on absent-data queries (hall_b < hall_a), achieved without sdmx-mcp's accuracy cost.
 
 **When to use which:**
 - Use **unicefstats-mcp** for UNICEF child development analysis — it's simpler, faster, and far more accurate
@@ -191,6 +197,19 @@ Add to your MCP settings:
 }
 ```
 
+## What v1.1.0 adds
+
+v1.1.0 is **additive**: v1.0.0's `ambiguity_flag`, `candidates`, and `abstain_instruction` still fire unchanged on ambiguous queries. v1.1.0 layers four new advisory envelope fields on top:
+
+- `requires_confirmation` — true when the server wants the assistant to pause for user input
+- `recommended` — the server's preferred next action (code, country, year, or tool)
+- `assistant_guidance` — short natural-language hint the LLM can paraphrase
+- `next_step` — a structured tool/parameter suggestion the LLM can chain into
+
+**Decision order** (4 stages): strict canonical lookup → ambiguity check (v1.0.0 fields) → confirmation gate (`requires_confirmation`) → advisory hints (`recommended` / `assistant_guidance` / `next_step`).
+
+**Verdict: ALLOW** (no behavioural regression; advisory fields fire on 23/30 Sonnet and 26/30 Haiku paired stuck queries; see `internal/v1.1.0_design/ab_results.md`).
+
 ## Tools
 
 | Tool | Purpose | API call? |
@@ -199,6 +218,7 @@ Add to your MCP settings:
 | `list_categories()` | Browse thematic groups (CME, NUTRITION, EDUCATION, ...) | No |
 | `list_countries(region)` | List countries with ISO3 codes | No |
 | `get_indicator_info(code)` | Full metadata, SDMX details, available disaggregations | No |
+| `lookup_by_code(code)` | **v1.0.0** Strict canonical-code lookup (rejects natural-language input with abstain instruction) | No |
 | `get_temporal_coverage(code)` | Available year range and country count | Yes (lightweight) |
 | `get_data(indicator, countries, ...)` | Fetch observations with optional disaggregation filters | Yes |
 | `get_api_reference(language, function)` | unicefdata package API reference (Python/R/Stata) | No |
@@ -228,6 +248,315 @@ The server exposes six MCP resources clients can load for guidance and reference
 | `unicef://glossary` | Disaggregation codes and indicator-prefix legend |
 
 The `system-prompt` and `context` resources address the T2 hallucination failure mode (model fabricating values for years beyond the data frontier). Pattern adopted from the World Bank [data360-mcp](https://github.com/worldbank/data360-mcp) server. See CHANGELOG entry for v0.5.0.
+
+## Scope: UNICEF DW indicators only
+
+`unicefstats-mcp` searches and serves the **UNICEF Data Warehouse SDMX catalog** — approximately 790 child-focused indicators across mortality, nutrition, education, child protection, WASH, HIV/AIDS, immunization, and early childhood development. Indicator codes follow UNICEF conventions (e.g. `CME_MRY0T4`, `NT_ANT_HAZ_NE2`, `ED_ANAR_L1`).
+
+**Codes from other organisations are out of scope.** The MCP cannot find, resolve, or fetch them because they do not exist in the UNICEF SDMX catalog. Examples of out-of-scope code families:
+
+| Source organisation | Prefix examples | Typical content |
+|---|---|---|
+| World Bank WDI | `SI.POV.DDAY`, `NY.GDP.PCAP.PP.KD`, `SE.PRM.NENR` | Poverty, GDP, broader education |
+| World Bank ASPIRE | `per_allsp.cov_pop_tot`, `per_*` | Social protection coverage |
+| ILO / ILOSTAT | `EIP_*`, `EAP_*`, `DF_*_SEX_RT` | Labour, employment, NEET |
+| UNESCO UIS | `UIS.*` | Education finance, learning outcomes |
+
+These codes will return no hits from `search_indicators` and a not-found error from `get_data`. The refusal is correct behaviour, not a bug.
+
+**For cross-organisation queries, use a sister MCP:**
+
+- [`data360-mcp`](https://github.com/worldbank/data360-mcp) — World Bank's multi-source aggregator covering WDI, ILO, UN, and other official providers under one tool surface.
+- [`worldbank-mcp`](https://github.com/anshumax/world_bank_mcp_server) — World Bank Open Data only.
+
+For SDMX power-user queries against arbitrary registries (Eurostat, OECD, national NSOs), see [`sdmx-mcp`](https://github.com/unicef-drp/sdmx-mcp) — the generic SDMX protocol server discussed under [Relationship to sdmx-mcp](#relationship-to-sdmx-mcp).
+
+The scope boundary was sharpened in v1.1.1 after the v9 edge-test sample surfaced three prompts whose ground-truth codes (`SI.POV.DDAY`, `NY.GDP.PCAP.PP.KD`, `per_allsp.cov_pop_tot`) sit in the World Bank universe rather than the UNICEF Data Warehouse. Full write-up: `internal/v1.1.0_design/ambiguity_forensic.md` sections C-4 to C-6 (dev repo only).
+
+## Understanding UNICEF indicator codes
+
+### Why this matters — the MCP's semantic layer
+
+UNICEF SDMX indicator codes look cryptic on first contact — `PT_F_20-24_MRD_U18`,
+`NT_ANT_HAZ_NE2`, `TRGT_2030_IM_DTP3` — and most of an LLM's failure modes on this
+data start with picking the wrong code. The single biggest piece of added value
+this MCP offers over a raw SDMX endpoint is **exposing the semantic structure
+inside those codes** so the assistant can disambiguate without guessing. The
+implementation lives in `src/unicefstats_mcp/differentiator.py` (segment-level
+suffix meanings and base/variant explanation) and
+`src/unicefstats_mcp/indicator_resolver.py` (natural-language synonyms and known
+ambiguous tokens). v1.1.1 added a query-aware `CURATED_PREFERRED` dimension_hint
+that tells the resolver which code from a family to surface for a given phrasing
+(e.g. "target" → `TRGT_*`, "modelled" → `*_MOD`, "child" → `_T` total rather
+than a sex-disaggregated variant).
+
+This section documents the conventions the MCP relies on so users and downstream
+agents can read codes directly, and so reviewers can audit the resolver's choices.
+
+### Anatomy of a UNICEF code
+
+UNICEF DW codes are concatenations of dot-free, underscore-delimited segments,
+read left-to-right from broadest to most specific. Take a layered protection
+indicator from the catalog:
+
+```
+PT_F_20-24_MRD_U18
+│  │ │     │   │
+│  │ │     │   └── Marriage cutoff:        U18   = first union before age 18 (SDG 5.3.1)
+│  │ │     └────── Indicator class:        MRD   = ever-married / in-union
+│  │ └──────────── Age band (cohort):      20-24 = women 20-24 (retrospective denominator)
+│  └────────────── Population restriction: F     = female-only indicator (women/girls)
+└───────────────── Family prefix:          PT    = Child Protection
+```
+
+Read out loud: "Child Protection / female respondents / cohort aged 20-24 /
+ever-married / before age 18" — i.e. the share of women aged 20-24 who were first
+married before 18. Note that the `F` here is **not** a sex-disaggregation suffix
+appended to a sex-neutral parent; it is a population-restriction marker built
+into a family of indicators that only exist for female respondents (FGM, child
+marriage, anaemia in women, antenatal care). See "Population restrictions vs sex
+disaggregation" below.
+
+The same left-to-right reading applies to the nutrition anthropometric pattern:
+
+```
+NT_ANT_HAZ_NE2
+│  │   │   │
+│  │   │   └── Threshold:    NE2 = below -2 SD (NE = "negative end", 2 = SD count)
+│  │   └────── Metric:       HAZ = Height-for-Age Z-score
+│  └────────── Sub-family:   ANT = Anthropometry
+└───────────── Family:       NT  = Nutrition
+```
+
+`NT_ANT_HAZ_NE2` is the stunting prevalence indicator for children under 5. To
+get the sex-stratified value, query the indicator with the `SEX` dimension
+filter (`get_data(indicator='NT_ANT_HAZ_NE2', sex='F')`), not by appending `_F`
+to the code — see the next subsection.
+
+And the derived-metric pattern, which the v1.1.1 query-aware scoring is
+specifically tuned for:
+
+```
+TRGT_2030_IM_DTP3
+│    │    │  │
+│    │    │  └──── Antigen / dose: DTP3 = third dose of DTP
+│    │    └─────── Family:         IM   = Immunization
+│    └──────────── Target year:    2030 = SDG horizon
+└───────────────── Derived metric: TRGT = country-set target value
+```
+
+The combinatorial reading — family → sub-family → metric → threshold/age band →
+disaggregation token — is the unwritten contract behind almost every code in the
+catalog. The tables below enumerate the parts.
+
+### Topic prefixes (families)
+
+The first segment is the topical family. The top 10–12 prefixes in the catalog
+cover the vast majority of child-focused indicators:
+
+| Prefix | Meaning | Example code |
+|---|---|---|
+| `CME` | Child Mortality Estimates — mortality rates by age bracket (neonatal, infant, under-5, childhood, stillbirth) | `CME_MRY0T4` (under-5 mortality), `CME_SBR` (stillbirth rate) |
+| `NT` | Nutrition — anthropometry, anaemia, birthweight, micronutrients | `NT_ANT_HAZ_NE2` (stunting), `NT_BW_LBW` (low birthweight) |
+| `ED` | Education — completion rates, literacy, attendance by ISCED level | `ED_CR_L1` (primary completion), `ED_15-24_LR` (youth literacy) |
+| `WS` | WASH — water, sanitation, hygiene; population-level access | `WS_PPL_W-SM` (safely managed water) |
+| `IM` | Immunization — vaccine coverage by antigen / dose | `IM_BCG`, `IM_DTP3`, `IM_MCV1` |
+| `MNCH` | Maternal, Newborn & Child Health — antenatal care, skilled birth attendance, early childbearing | `MNCH_ANC1`, `MNCH_SAB`, `MNCH_BIRTH18` |
+| `ECD` | Early Childhood Development — learning materials, parental stimulation, attendance | `ECD_CHLD_LMPSL` (learning materials) |
+| `PT` | Child Protection — FGM, child marriage, violent discipline | `PT_F_20-24_MRD_U18` (married before 18) |
+| `HVA` | HIV/AIDS — ART coverage, prevalence, adolescent indicators | `HVA_ADOL_ART_RECEIVE` |
+| `PV` | Child poverty — monetary and multidimensional | `PV` family |
+| `COD` | Causes of death — disease- and condition-specific mortality / morbidity | `COD_ACUTE_HEPATITIS_A` |
+| `DM` | Demography — household composition, population structure | `DM_HH_U18` (households with member under 18) |
+| `MG` | Migration — child migrants, displacement | `MG` family |
+| `GN` | Gender / adolescent girls (often cross-cuts NT) | `GN_ANEMIA_ADOL_GRL` |
+| `TRGT` | Country-set targets (see "Derived metrics" below) | `TRGT_2030_*` |
+| `HAZARD` | Hazard exposure (climate, conflict, disaster) | `HAZARD` family |
+
+The full mapping of natural-language phrases to these prefixes lives in
+`indicator_resolver._SYNONYMS` — e.g. "stunting" → `NT_ANT_HAZ_NE2`, "child
+marriage" → `PT_F_20-24_MRD_U18`, "BCG" → `IM_BCG`.
+
+### Methodology and provenance suffixes
+
+A trailing segment often signals **how the value was produced**, not what was
+measured. These suffixes are central to the v1.1.1 query-aware scoring because
+users almost always want either "survey" or "modelled" but rarely both.
+
+| Suffix | Meaning | Example code |
+|---|---|---|
+| `_MOD` | Modelled estimate (joint-estimation group output, e.g. UIS for education, IGME for mortality) | `ED_CR_L1_UIS_MOD` (modelled primary completion) |
+| `_MERGE` | Merged across multiple source surveys / years into a single comparable series | `ECD_CHLD_LMPSL_MERGE` |
+| `_PRXY` | Proxy indicator — a related variable used in lieu of the conceptually exact one | `ECD_CHLD_LMPSL_PRXY` |
+| `_NEW` | New / revised methodology series (often runs alongside a legacy series for one cycle) | `*_NEW` |
+| `_NUMTH` | Numerator / threshold variant — alternate cut used by some agencies | `*_NUMTH` |
+| `_AGG` | Aggregate (regional or income-group rollup rather than country observation) | `*_AGG` |
+| `_UIS` | UNESCO Institute for Statistics source / methodology | `ED_CR_L1_UIS_MOD` |
+
+The MCP's `differentiator.py:_SUFFIX_MEANINGS` table is the canonical source.
+When two codes differ only in this trailing segment, `explain_difference()`
+reports them as **base vs. variant** (e.g. `ECD_CHLD_LMPSL` as base, `_MERGE`
+and `_PRXY` as derivation variants).
+
+### Population restrictions vs sex disaggregation
+
+This distinction is easy to miss and routinely trips up downstream agents.
+
+**Population restriction (built into the code).** Some UNICEF indicators only
+exist for one sex because the underlying measurement only applies to one sex:
+FGM prevalence, child-marriage cohorts, anaemia in women of reproductive age,
+antenatal care coverage. In those families, an `F` segment near the start of
+the code (`PT_F_*`, `NT_ANE_WOM_*`, `MNCH_BIRTH18`, antenatal-care codes) is a
+**population-restriction marker** that is part of the indicator's identity.
+There is no `PT_M_20-24_MRD_U18` counterpart for child marriage; the indicator
+is defined on female respondents. Treat the `F` here as part of the indicator
+name, not as a disaggregation switch.
+
+**Sex disaggregation (SEX dimension filter, at query time).** For indicators
+that are defined on both sexes (under-5 mortality, primary completion, stunting,
+literacy), sex is not encoded in the code. It is a separate SDMX dimension —
+the `SEX` dimension — with values `F`, `M`, `_T` (total). You select a slice
+at query time:
+
+```python
+get_data(indicator='CME_MRY0T4', sex='F')   # under-5 mortality, girls
+get_data(indicator='CME_MRY0T4', sex='M')   # under-5 mortality, boys
+get_data(indicator='CME_MRY0T4', sex='_T')  # under-5 mortality, total
+```
+
+The `differentiator.py:_SUFFIX_MEANINGS` table lists `F`, `M`, `_T`, `MF` as
+sex-token meanings; those entries describe the **values** of the `SEX`
+dimension, not a suffix you append to an arbitrary code. Appending `_F` to a
+code that does not already carry it (e.g. inventing `NT_ANT_HAZ_NE2_F`) will
+not resolve — the catalog does not contain such codes.
+
+### Age / wealth / residence disaggregation tokens
+
+Disaggregation tokens appear either embedded in the code (when they are part of
+the canonical definition, e.g. `PT_F_20-24_MRD_U18`) or applied at query time
+via `get_data()` filters. The tokens below are the same in both places.
+
+#### Age bands
+
+Age is encoded as `LOW-HIGH` (inclusive) in the embedded form, or as a bound
+token at the end of the code.
+
+| Token | Meaning |
+|---|---|
+| `15-19`, `20-24`, `15-49` | Inclusive age band in years |
+| `Y0` | Under 1 year (neonatal / infant variants) |
+| `Y0T4` | 0 through 4 years inclusive (under-5) |
+| `Y1T4` | 1 through 4 years inclusive (childhood, post-infant) |
+| `U5`, `U15`, `U18` | "Under" threshold — strictly below the named age |
+| `ADOL` | Adolescent (10–19, occasionally 10–24) |
+
+#### Wealth quintile (query-time filter)
+
+| Token | Meaning |
+|---|---|
+| `Q1` | Lowest quintile (poorest 20%) |
+| `Q2`, `Q3`, `Q4` | Middle quintiles |
+| `Q5` | Highest quintile (richest 20%) |
+| `B20` / `B40` | Bottom 20% / bottom 40% |
+| `T20` | Top 20% |
+
+#### Residence (query-time filter)
+
+| Token | Meaning |
+|---|---|
+| `_T` | Total |
+| `U` | Urban |
+| `R` | Rural |
+
+#### Anthropometric Z-score thresholds
+
+These appear in the `NT_ANT_*` family and need their own table because the
+convention is non-obvious:
+
+| Token | Meaning |
+|---|---|
+| `NE2` | Below -2 SD ("negative end, 2 SD") — moderate-or-severe form |
+| `NE3` | Below -3 SD — severe form |
+| `NE2_T_NE3` | Between -3 SD and -2 SD — moderate-only form |
+| `PO2` | Above +2 SD — overweight side |
+| `HAZ` / `WAZ` / `WHZ` / `BAZ` | Height-for-age / Weight-for-age / Weight-for-height / BMI-for-age Z-scores |
+
+### Derived metrics: `TRGT_` / `_ARR_` / `_PRJ`
+
+Three special grammars flag values that are **not observations** but
+transformations of them. These are the cases where v1.1.1's query-aware
+`CURATED_PREFERRED` scoring matters most. Note that `ARR` is a **middle-segment**
+token (e.g. `CME_ARR_U5MR`, `CME_ARR_SBR`), not a trailing suffix.
+
+| Pattern | Meaning | Example |
+|---|---|---|
+| `TRGT_<year>_<indicator>` | Country-set target value for the named indicator at the named horizon year. `TRGT_2030_IM_DTP3` is the country's 2030 target for DTP3 coverage, not the observed value. | `TRGT_2030_IM_DTP3` |
+| `*_ARR_*` | Annual Rate of Reduction — annualised percentage change derived from the underlying series; appears as a middle-segment token | `CME_ARR_U5MR`, `CME_ARR_SBR` |
+| `*_PRJ` / `*_PRJ_*` | Projected / forecast value rather than observed | `PT_F_20-24_MRD_U15_PRJ` |
+
+**v1.1.1 query-aware scoring (commit `7112e1d`)**: the MCP only surfaces
+`TRGT_*` codes when your natural-language query mentions *target*, *goal*,
+*objective*, or a horizon year. A bare "DTP3 coverage in Brazil" question will
+resolve to the observation series; "Brazil's 2030 DTP3 target" will resolve to
+`TRGT_2030_IM_DTP3`. This is implemented as a hint field on `CURATED_PREFERRED`
+entries in `differentiator.py`, not as a hard exclusion — the target code is
+still discoverable via direct lookup, just demoted in resolver ranking unless
+the query signals intent.
+
+The same query-aware demotion applies to `_MOD` (modelled) variants: queries
+mentioning *survey*, *raw*, or *observed* prefer the un-suffixed code; queries
+mentioning *modelled*, *estimate*, *joint estimation* prefer `_MOD`.
+
+### Education levels
+
+In the `ED_*` family, ISCED levels are abbreviated `L1` / `L2` / `L3`:
+
+| Token | ISCED level | Conventional name |
+|---|---|---|
+| `L1` | ISCED 1 | Primary education |
+| `L2` | ISCED 2 | Lower-secondary education |
+| `L3` | ISCED 3 | Upper-secondary education |
+
+Examples: `ED_ANAR_L1` (adjusted net attendance rate, primary), `ED_ANAR_L2`
+(lower-secondary), `ED_CR_L1` (completion rate, primary). Where a code stops at
+`L1` it is primary-only; where two levels are reported jointly the codes are
+listed separately rather than concatenated.
+
+**Scope caveat.** The `L<n>` = ISCED `<n>` mapping holds **only inside the
+`ED_*` family**. Outside `ED_*`, `L<n>` may encode a non-ISCED level — for
+example `PV_CHLD_MPI_L1` and `PV_CHLD_MPI_L2` use `L1` / `L2` to mean severe
+and moderate multidimensional-poverty deprivation respectively. Some `ED_*`
+codes also use the two-digit form `L01` / `L02` to encode early-childhood or
+pre-primary levels that sit below ISCED 1. Always check the indicator's name
+before assuming `L<n>` means primary / lower-secondary / upper-secondary.
+
+### Where this is encoded in the MCP
+
+The conventions documented above are not folklore — they are encoded in the
+MCP source and can be audited directly:
+
+- **`src/unicefstats_mcp/differentiator.py`** is the canonical reference for
+  segment-level meaning. The `_SUFFIX_MEANINGS` table maps every recognised
+  trailing token to a human-readable gloss; `explain_difference()` walks two
+  codes side-by-side and labels each diverging segment; the `CURATED_PREFERRED`
+  table carries per-indicator `dimension_hint` strings that drive the v1.1.1
+  query-aware scoring.
+- **`src/unicefstats_mcp/indicator_resolver.py`** maps natural-language phrases
+  to canonical codes. `_SYNONYMS` covers the routine cases ("stunting",
+  "under-5 mortality", "child marriage"); `_AMBIGUOUS` flags phrases that
+  legitimately map to more than one code and require user disambiguation;
+  `_DISAMBIGUATION_TIPS` carries the short hints surfaced in the
+  `assistant_guidance` envelope field added in v1.1.0.
+- **`unicef://glossary` MCP resource** — clients that load resources at session
+  start get the disaggregation-code and indicator-prefix legend without having
+  to parse this README.
+
+When the resolver picks a code, the chain is: natural-language query →
+`indicator_resolver` lookup → if ambiguous, `_AMBIGUOUS` hit fires the v1.0.0
+`ambiguity_flag` + candidate list → if a `CURATED_PREFERRED` entry matches, the
+`dimension_hint` re-ranks candidates → the chosen code is annotated by
+`differentiator.py` for the `assistant_guidance` field. Every step is
+inspectable in the source; nothing in this section is heuristic on the LLM side.
 
 ## Demo
 
@@ -408,28 +737,35 @@ This bridges the gap between conversational exploration (via MCP tools) and repr
 
 We benchmarked the MCP against a bare LLM (Claude Sonnet 4, no tools) using the [EQA metric](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) from Azevedo (2025). 300 queries across 10 indicators, 20 countries, 2 prompt types, and 2 hallucination test categories.
 
-### Headline numbers (300-query benchmark, v0.5.x)
+### Current canonical numbers (v0.7.3 + fixes, May 2026)
 
-| Metric | LLM alone | LLM + MCP | Improvement |
+The numbers below are the current canonical scoreboard. They reflect (a) four engineering fixes in the v0.7.3 cycle (see CHANGELOG) and (b) a scoring correction from the v1.4 extractor that respects refusal language. Both samples (mcp060: 40 countries; mcp073: disjoint 20-country validation sample) score under the same v1.4 rules.
+
+| Metric | LLM alone (no tools) | LLM + MCP (v0.7.3 + fixes) | Sample |
 |---|---|---|---|
-| EQA ("latest" prompt) | 0.172 | **0.984** | 5.7× |
-| EQA ("direct" prompt) | 0.121 | **0.995** | 8.2× |
-| Indicators at EQA >= 0.95 | 0/10 | **10/10** | — |
-| T1 hallucination (gap years) | 9% | 7% | -2pp |
-| T2 hallucination (never existed) | 11% | 37% raw / ~10% corrected | See analysis |
-| Cost per query | $0.003 | $0.018 | 6× |
+| POS EQA mean | 0.121 | **0.891** | mcp060 (40 ctry) |
+| POS EQA mean | 0.121 | **0.909** | mcp073 (20 disjoint ctry) |
+| hall_b combined (T1+T2) | 2.50% (hall_a) | **1.00%** | mcp060 |
+| hall_b combined (T1+T2) | 2.50% (hall_a) | **2.25%** | mcp073 |
+| MCP makes model safer (hall_b < hall_a) | — | **Yes — both samples** | both |
 
-### v0.7.1 same-day clean reproduction (n=500, 2026-05-08)
+**v0.7.3 + fixes is the first version where MCP demonstrably makes the model safer than the no-tools baseline on absent-data queries.** Through v0.7.2, hall_b ≥ hall_a — the safety layer was reducing magnitude but not direction. The four fixes that flipped the property:
 
-After v0.7.0 shipped the indicator-name resolver, we re-ran a 500-query subset (100 POSITIVE + 200 T1 + 200 T2) on the per-wave checkpoint architecture (PR #53), with the v0.6.4 baseline run **same-day** to control for upstream-model snapshot drift:
+1. `server.py:_seed_data_frontier_cache` — monotonic max instead of unconditional overwrite (a probe-induced regression of the cached frontier was telling the LLM that current data was unavailable).
+2. `server.py:get_data` exception handler — `unicefdata` cascade exhaustion reclassified as `no_data` (not `error`), so the LLM treats it as authoritative absence rather than tool failure.
+3. `benchmark_eqa_batch.py` — persist tool `result_str` on `state.tool_calls` so the v1.4 extractor can see refusals.
+4. `benchmark_eqa_batch.py` — refusal-respect parity with the sync runner.
 
-| Metric | LLM alone | LLM + MCP (v0.7.1) | Δ |
-|---|---|---|---|
-| POS EQA mean | 0.121 | **0.897** | +77.6 pp (~7×) |
-| T1 + T2 hallucination (combined) | 2.0% | **13.0%** | +11.0 pp |
-| Wall-clock (parallel runs) | 3.8 h (v0.6.4) | 9.2 h (v0.7.1) | +5.4 h |
+Canonical scoreboard: see the **[Unreleased] §Fixed** block at the top of [CHANGELOG.md](CHANGELOG.md) for the full cross-version table, including the four post-fix corrections and the mcp073 second-sample validation. Full per-run write-ups live in `internal/v0_7_3_validation.md` and `internal/v0_7_3_second_sample_validation.md` in the dev repo (`jpazvd/unicefstats-mcp-dev`, dev-only and not synced to this public mirror).
 
-A-side EQA was within 0.3 pp across the two runs, confirming the same-day discipline worked: the B-side delta is real, not snapshot drift. The v0.7.1 reproduction confirms the original 6.7×/8.2× accuracy headline at 7×, and shows that the v0.4.0 safety layer + v0.7.0 indicator resolver brought T2 fabrication from 37% (v0.3.0) down to 13% — but the residual ~11 pp gap relative to the no-tools baseline appears structural, matching what the broader tool-augmented LLM and RAG literature documents (see [Limitations](#limitations-and-hallucination-risks)).
+### Historical: v0.3.0 (n=600, 2025) and v0.7.2 (n=500 same-day, 2026-05-08)
+
+The original v0.3.0 benchmark reported POS EQA 0.147 → 0.990 (6.7×) and T2 hallucination 11% → 37%. Two corrections since:
+
+- The "37%" headline was substantially a **v1.3 extractor scoring artefact**: the extractor counted any numeric value mentioned in the response as a "claim," including values quoted from `no_data` tool results inside an explicit refusal. The v1.4 extractor (`_detect_refusal`) reclassifies those as appropriate refusals. We did not rescore the v0.3.0 parquets under v1.4 (they're archived); the v1.4-equivalent of "37%" is unknown but substantially lower.
+- The v0.7.2 reproduction (n=500, 2026-05-08) under v1.3 scoring reported POS EQA 0.897 and combined T1+T2 hallucination 13%. Under v1.4 scoring the same parquets report POS EQA 0.793 and hall_b 3.75%.
+
+The accuracy headline (~7× lift) has held up across every rescoring. The hallucination headline required both a scoring fix (v1.4 extractor) and a server fix (v0.7.3 cache + cascade fixes) before MCP actually reduced hallucination below the no-tools baseline.
 
 ### EQA decomposition (baseline_latest prompt)
 
@@ -454,15 +790,15 @@ A-side EQA was within 0.3 pp across the two runs, confirming the same-day discip
 
 ### 3-way comparison (vs sdmx-mcp)
 
-| Metric | LLM alone | unicefstats-mcp | sdmx-mcp |
+| Metric | LLM alone | unicefstats-mcp (v0.7.3 + fixes) | sdmx-mcp |
 |---|---|---|---|
-| **EQA (all positive)** | 0.147 | **0.990** | 0.074 |
-| T1 hallucination | 9% | 7% | **0%** |
-| T2 hallucination | 11% | 37% | **0%** |
-| Cost (300 queries) | $0.89 | $5.47 | $26.20 |
-| Avg latency | 5s | 9.8s | 60s |
+| **EQA (POS)** | 0.121 | **0.891** | 0.074 |
+| hall_b combined (T1+T2) | hall_a 2.50% | **1.00% (mcp060) / 2.25% (mcp073)** | **0%** |
+| MCP safer than no-tools? | — | **Yes** | Yes (zero by construction) |
+| Cost per query | ~$0.003 | ~$0.04 | $0.087 |
+| Avg latency | ~5s | ~10s | 60s |
 
-sdmx-mcp's raw SDMX-JSON output is hard for LLMs to parse (VA = 0.11), but its anti-hallucination guardrails are highly effective (0% fabrication). See [Relationship to sdmx-mcp](#relationship-to-sdmx-mcp) for details.
+sdmx-mcp's raw SDMX-JSON output is hard for LLMs to parse (VA ≈ 0.11), but its anti-hallucination guardrails are highly effective (0% fabrication). See [Relationship to sdmx-mcp](#relationship-to-sdmx-mcp) for details.
 
 Full analysis, per-indicator decomposition, and methodology: **[examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)**
 
@@ -568,26 +904,36 @@ See the [audit findings](https://github.com/jpazvd/unicefstats-mcp/blob/main/exa
 
 ### Hallucination risks
 
-Benchmark testing (600 queries pooled across two replication samples, 10 indicators, 45 countries) identified two patterns:
+Benchmark testing across multiple country samples (v0.7.3 + fixes, May 2026):
 
-| Type | Description | Rate (v0.5.x) | v0.7.1 same-day clean | Mitigation |
+| Type | Description | Rate (LLM alone, hall_a) | Rate (LLM + MCP, hall_b) | Notes |
 |---|---|---|---|---|
-| **T1 (gap-year)** | LLM cites a year when data exists but for a different year | ~7% | T1+T2 combined: **13%** (n=400) | Server returns the actual year; LLM occasionally ignores it |
-| **T2 (forward-of-frontier)** | LLM fabricates a value for a year beyond the data frontier | ~36% | (T1+T2 combined above) | v0.5.0 ships an anti-extrapolation system prompt (`unicef://system-prompt`) and runtime context (`unicef://context`). Load these at session start. |
+| **T1 (gap-year)** | LLM cites a value for a year when the indicator has data but not for that specific year | ~1.0% | 0.00% (mcp060) / 0.50% (mcp073) | Below the no-tools rate |
+| **T2 (forward-of-frontier)** | LLM fabricates a value for a year beyond the data frontier | ~3.5% | 2.00% (mcp060) / 4.00% (mcp073) | Below the no-tools rate |
+| **Combined** | T1 + T2 | hall_a 2.50% | **1.00% (mcp060) / 2.25% (mcp073)** | **hall_b < hall_a** — MCP makes safer |
 
-T2 was historically the dominant risk — driven by a **confidence effect** where the LLM, having retrieved adjacent-year data, extrapolates forward. The v0.4.0 safety layer + v0.5.0 system prompt + v0.7.0 indicator resolver brought combined T1+T2 fabrication from 37% (v0.3.0) down to 13% (v0.7.1, same-day clean baseline) — a ~24 pp reduction.
+**v0.7.3 + fixes is the first release where MCP makes the model safer than the no-tools baseline.** Through v0.7.2 (v1.4 scoring), hall_b ≥ hall_a — the safety layer was reducing magnitude relative to a no-safety-layer baseline but never enough to put MCP under the no-tools floor.
 
-The residual ~11 pp gap relative to the no-tools baseline (2%) appears **structural**, not a bug we have not yet fixed. This finding aligns with what the broader tool-augmented LLM and RAG literature has been documenting in parallel:
+What changed:
+1. **Cache contamination in `_seed_data_frontier_cache`** — a probe routine was overwriting the cached max-year for an indicator with whatever year happened to come back, sometimes lower than the cached value. The LLM was being told frontiers were 2018 for indicators whose real frontier was 2023, then answering about 2023 from parametric memory. Fix: monotonic `max()` only.
+2. **`unicefdata` cascade as `no_data`, not `error`** — the underlying wrapper's fallback-dataflow exhaustion was leaking as a tool exception, which the LLM read as "tool failed, fall back to my own knowledge." Now classified as a clean `no_data` signal that the safety layer converts into "do not estimate." Filed [`unicefdata-dev#74`](https://github.com/unicef-drp/unicefData-dev/issues/74) for an upstream fix.
+3. **v1.4 extractor** (`_detect_refusal`) — corrected the long-standing scoring artefact in which any numeric value in a response was counted as a "claim," including values the LLM was quoting from `no_data` tool results inside an explicit refusal. This dropped hall_b in the v0.7.3 PRE-FIX rescoring from ~37% to 2.25% — most of the historical "MCP-makes-it-worse" finding was extractor, not behaviour.
+4. **Batch runner parity** — `result_str` persistence and refusal-respect in the async batch runner.
+
+This finding still leaves room for the broader tool-augmented LLM literature on the structural cost of giving models an answer-producing pathway:
 
 - *The Reasoning Trap: How Enhancing LLM Reasoning Amplifies Tool Hallucination* (ICLR 2025) — shows the relationship is causal: as models get better at tool use, tool hallucination rises *proportionally* with capability.
 - *Reducing Tool Hallucination via Reliability Alignment* (Cao et al., 2024, [arXiv:2412.04141](https://arxiv.org/abs/2412.04141)) — formalises the failure as *tool-selection* errors (wrong tool, failed refusal) and *tool-usage* errors (fabricated parameters).
 - *ReDeEP: Detecting Hallucination in Retrieval-Augmented Generation via Mechanistic Interpretability* (Sun et al., 2024) — shows mechanistically that an LLM's parametric knowledge can override retrieved context inside the residual stream.
 
-The takeaway for users: server-side guardrails reduce the magnitude of tool-augmented hallucination; they do not, on current evidence, change the direction. Any production deployment should:
+These results show the structural tendency is real; the v0.7.3 + fixes result shows it can be reversed for a specific data domain through (a) safety-layer architecture, (b) server-side discipline (no stale frontier cache, no leaking of no-data as tool errors), and (c) honest scoring.
+
+The takeaway for users:
 
 1. Load the `unicef://system-prompt` and `unicef://context` resources at session start (handles forward-of-frontier fabrication).
 2. Treat MCP results as best-effort retrieval, not infallible truth — verify load-bearing values against the [UNICEF Data Warehouse](https://data.unicef.org/) before citing.
 3. Prefer queries with explicit years ("under-five mortality in Nigeria in 2023") over open-ended ones ("the latest under-five mortality in Nigeria") — the former triggers refusal more reliably when data is absent.
+4. The 1.00% / 2.25% residuals were measured on Sonnet 4 only. Cross-model generalisation is the next benchmark.
 
 Full benchmark methodology: [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)
 

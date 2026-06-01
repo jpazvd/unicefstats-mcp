@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 from unicefstats_mcp.validators import (
-    validate_countries,
+    MAX_COUNTRY_NAME_LEN,
+    MAX_QUERY_LEN,
+    MAX_REGION_LEN,
+    validate_country_inputs,
     validate_indicator,
     validate_limit,
     validate_query,
+    validate_region,
     validate_residence,
     validate_sex,
     validate_wealth_quintile,
@@ -51,29 +55,37 @@ class TestValidateYear:
         assert validate_year(2100, "end_year") is None
 
 
-class TestValidateCountries:
-    def test_valid(self):
-        assert validate_countries(["BRA", "IND"]) is None
+class TestValidateCountryInputs:
+    """Per-entry length cap. List-level checks (empty, MAX_COUNTRIES) live in
+    `get_data` itself because the resolver accepts ISO3 codes AND country names
+    of differing widths (v0.6.2)."""
 
-    def test_empty_list(self):
-        assert validate_countries([]) is not None
+    def test_valid_iso3(self):
+        assert validate_country_inputs(["BRA", "IND"]) is None
 
-    def test_too_many(self):
-        codes = [f"C{i:02}" for i in range(35)]
-        assert validate_countries(codes) is not None
+    def test_valid_country_names(self):
+        # v0.6.2 accepts names — must not reject them.
+        assert validate_country_inputs(["Brazil", "India"]) is None
 
-    def test_invalid_code_too_long(self):
-        assert validate_countries(["TOOLONG"]) is not None
+    def test_oversized_entry_rejected(self):
+        assert validate_country_inputs(["A" * (MAX_COUNTRY_NAME_LEN + 1)]) is not None
 
-    def test_invalid_code_numeric(self):
-        assert validate_countries(["123"]) is not None
+    def test_max_length_ok(self):
+        assert validate_country_inputs(["A" * MAX_COUNTRY_NAME_LEN]) is None
 
-    def test_single_country(self):
-        assert validate_countries(["BRA"]) is None
+    def test_non_string_rejected(self):
+        assert validate_country_inputs([123]) is not None  # type: ignore[list-item]
 
-    def test_max_countries(self):
-        codes = [f"C{chr(65 + i // 26)}{chr(65 + i % 26)}" for i in range(30)]
-        assert validate_countries(codes) is None
+
+class TestValidateRegion:
+    def test_none_allowed(self):
+        assert validate_region(None) is None
+
+    def test_short_ok(self):
+        assert validate_region("Africa") is None
+
+    def test_oversized_rejected(self):
+        assert validate_region("A" * (MAX_REGION_LEN + 1)) is not None
 
 
 class TestValidateLimit:
@@ -112,6 +124,12 @@ class TestValidateQuery:
 
     def test_min_length(self):
         assert validate_query("ab") is None
+
+    def test_oversized_rejected(self):
+        assert validate_query("m" * (MAX_QUERY_LEN + 1)) is not None
+
+    def test_at_max_length_ok(self):
+        assert validate_query("m" * MAX_QUERY_LEN) is None
 
 
 class TestValidateSex:

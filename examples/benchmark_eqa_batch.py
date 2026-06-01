@@ -391,11 +391,18 @@ def collect_wave_results(client, batch_id: str, states_by_id: dict[str, QuerySta
             state.done = True
             continue
 
-        # Dispatch tools locally and append to messages history
+        # Dispatch tools locally and append to messages history.
+        # Persist the tool result alongside name+input so that
+        # `_extract_from_tool_calls` can read the exact value at analysis
+        # time without re-invoking the live MCP — see the inverse fix in
+        # benchmark_eqa.py. Without persistence, post-run re-dispatch is
+        # at the mercy of upstream UNICEF SDMX availability and rate
+        # limits, which surfaces as bogus EQA regressions when the
+        # benchmark itself is fine.
         tool_results = []
         for tu in tool_uses:
             result_str = dispatch_tool(tu.name, tu.input)
-            state.tool_calls.append({"tool": tu.name, "input": tu.input})
+            state.tool_calls.append({"tool": tu.name, "input": tu.input, "result": result_str})
             try:
                 parsed = json.loads(result_str)
                 if parsed.get("data_status") == "confirmed_absent":
@@ -520,9 +527,22 @@ def score_and_serialise(states_by_id: dict[str, QueryState], cases: list[TestCas
         tool_value, tool_year = _extract_from_tool_calls(sb.tool_calls)
         b_text_value = extract_numeric(b_text)
         b_text_year = extract_year(b_text)
-        b_value = tool_value if tool_value is not None else b_text_value
-        b_year = tool_year if tool_year is not None else b_text_year
-        b_refused = _detect_refusal(b_text) and tool_value is None
+        # v1.4: trust the model's stated refusal over tool-call data. When the
+        # response text contains explicit refusal language ("no data is
+        # available", "not available"), the model has correctly verdicted
+        # there's no answer — even if a get_data tool call returned data for
+        # a neighbouring year/country that the model offered as conversational
+        # context. The previous behaviour pulled context-capture values as
+        # the answer, scoring 45 of 49 refusals as hallucinations in the v4
+        # post-fix run when the model had refused correctly.
+        b_text_refused = _detect_refusal(b_text)
+        if b_text_refused:
+            b_value = None
+            b_year = None
+        else:
+            b_value = tool_value if tool_value is not None else b_text_value
+            b_year = tool_year if tool_year is not None else b_text_year
+        b_refused = b_text_refused
         b_cost = _compute_cost(model, sb.tokens_input, sb.tokens_output,
                                cache_read=sb.cache_read,
                                cache_creation=sb.cache_creation) * BATCH_DISCOUNT

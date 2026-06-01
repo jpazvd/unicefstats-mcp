@@ -1,0 +1,40 @@
+{
+  "run_id": "claude-sonnet-4-20250514_20260510_030318_v073_postfix_v4_resumed",
+  "model": "claude-sonnet-4-20250514",
+  "n_queries": 500,
+  "ground_truth_source": "examples/ground_truth_mcp060/sample.csv",
+  "batch_pricing_discount": 0.5,
+  "batch_ids_used": [
+    "msgbatch_01617rPKKpYFKnMeeiNGRd99",
+    "msgbatch_01SXxN5N7Aqq7PbcaJVE28F6"
+  ],
+  "queries_unfinished": 1,
+  "positive_metrics": {
+    "n": 100,
+    "mean_eqa_a": 0.1173,
+    "mean_eqa_b": 0.8979
+  },
+  "hallucination_metrics": {
+    "rate_a": 0.025,
+    "rate_b": 0.1225,
+    "n": 400,
+    "by_tier": {
+      "HALLUCINATION_T1": {
+        "n": 200,
+        "rate_a": 0.015,
+        "rate_b": 0.145
+      },
+      "HALLUCINATION_T2": {
+        "n": 200,
+        "rate_a": 0.035,
+        "rate_b": 0.1
+      }
+    }
+  },
+  "cost_summary": {
+    "condition_a_total": 0.7308,
+    "condition_b_total": 8.4671,
+    "condition_a_per_query": 0.001462,
+    "condition_b_per_query": 0.016934
+  }
+}

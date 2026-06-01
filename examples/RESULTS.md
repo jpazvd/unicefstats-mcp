@@ -1,21 +1,36 @@
 # unicefstats-mcp Benchmark Results
 
-**Version**: unicefstats-mcp v0.3.0 + unicefdata v2.4.0
+**Last revised**: 2026-05-10 — added v0.7.3 + fixes section (R4 + R5) and v1.4 scoring note.
+**Original version**: unicefstats-mcp v0.3.0 + unicefdata v2.4.0
 **Model**: Claude Sonnet 4 (`claude-sonnet-4-20250514`)
 **Temperature**: 0.0 (deterministic)
-**Date**: 2026-03-26
+**Original date**: 2026-03-26
 **Metric**: EQA = ER × YA × VA ([Azevedo 2025](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md))
 
-**Two independent samples** (R1 + R2) confirm robustness across 40 countries with zero overlap.
+> **Canonical scoreboard as of 2026-05-10** is v0.7.3 + fixes:
+> POS EQA **0.891** (mcp060, 40 ctry) / **0.909** (mcp073, disjoint 20-ctry).
+> hall_b combined **1.00%** (mcp060) / **2.25%** (mcp073) — both below hall_a 2.50%.
+> First version where MCP makes the model safer on absent-data queries.
+> Detail in [`internal/v0_7_3_validation.md`](../internal/v0_7_3_validation.md) and [`internal/v0_7_3_second_sample_validation.md`](../internal/v0_7_3_second_sample_validation.md).
 
-| Run | Countries | Queries | EQA (B) | Cost |
-|---|---|---|---|---|
-| R1 (original) | NGA, IND, BRA, CHN, USA, ... (20 countries) | 300 | **0.990** | $6.36 |
-| R2 (replication) | MOZ, TCD, AFG, GHA, PER, ... (20 countries) | 300 | **0.990** | $8.70 |
+| Run | Version | Countries | Queries | EQA (B) | hall_b (B) | Note |
+|---|---|---|---|---|---|---|
+| R1 (original) | v0.3.0 | 20 (sample A) | 300 | 0.990 (v1.3 score) | 37% (v1.3) | Scoring superseded — see §v1.4 note |
+| R2 (replication) | v0.3.0 | 20 (sample B, no overlap with R1) | 300 | 0.990 (v1.3 score) | 37% (v1.3) | Scoring superseded |
+| R3 (same-day clean) | v0.7.2 | mcp060 sample | 500 | 0.897 (v1.3) / **0.793 (v1.4)** | 13% (v1.3) / **3.75% (v1.4)** | v1.3 published earlier, v1.4 is canonical |
+| **R4 (v0.7.3 + fixes)** | v0.7.3 + fixes | mcp060 sample (40 ctry) | 500 | **0.891 (v1.4)** | **1.00% (v1.4)** | hall_b < hall_a — first time |
+| **R5 (validation)** | v0.7.3 + fixes | mcp073 sample (20 disjoint ctry) | 500 | **0.909 (v1.4)** | **2.25% (v1.4)** | Independent country sample |
+
+**Important scoring-rule note**: the R1–R3 hallucination numbers above (37%, 13%) are under the v1.3 extractor, which counted any numeric value mentioned in a response as a "claim" — including values the LLM was quoting from `no_data` tool results inside an explicit refusal. The v1.4 extractor (`benchmark_eqa.py:_detect_refusal`) flips the precedence: if the response text contains refusal language, the extracted value is None regardless of what numbers appear in the prose. Re-scoring R3 under v1.4 drops hall_b from 13% to 3.75%. R1 and R2 parquets weren't rescored (they're archived); under v1.4 the values would likely compress similarly. **R4 and R5 are scored under v1.4 from the start**; they are the canonical reference for current hallucination numbers.
 
 **Data**:
 - R1: `eqa_v030_claude-sonnet-4-20250514_20260326_112743.parquet`
 - R2: `eqa_claude-sonnet-4-20250514_20260326_203819_r2v2.parquet`
+- R3: `eqa_claude-sonnet-4-20250514_20260506_172421_sameday_v071.parquet` (POS+T1+T2: 100+200+200) and same-day v0.6.4 baseline at `eqa_claude-sonnet-4-20250514_20260506_233553_sameday_v064.parquet`
+- **R4**: `eqa_claude-sonnet-4-20250514_20260510_030318_v073_postfix_v4_resumed.parquet`
+- **R5**: `eqa_claude-sonnet-4-20250514_20260510_204339_mcp073_v073_postfix.parquet`
+
+R1 and R2 used 200 POS queries each (latest+direct prompt types); R3 used 100 POS queries and adds 400 hallucination queries (T1+T2). R4 and R5 used the full 500-query design (100 POS + 200 T1 + 200 T2). The R3 numbers above are POS-only; for the original hallucination report see [§9. v0.7.2 same-day clean reproduction](#9-v072-same-day-clean-reproduction-2026-05-08); for the current canonical hallucination scoreboard see [`internal/v0_7_3_validation.md`](../internal/v0_7_3_validation.md) + [`internal/v0_7_3_second_sample_validation.md`](../internal/v0_7_3_second_sample_validation.md).
 
 ---
 
@@ -308,3 +323,53 @@ Benchmarking Large Language Models with the UNICEF Data Warehouse."
 UNICEF Chief Statistician Office.
 https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md
 ```
+
+---
+
+## 9. v0.7.2 same-day clean reproduction (2026-05-08)
+
+After the v0.4.0 safety layer and v0.7.0 indicator resolver shipped, we re-ran a 500-query subset of the benchmark on the per-wave checkpoint architecture (PR #53), with the v0.6.4 baseline run **same-day** to control for upstream-model snapshot drift. Sample design: 100 POSITIVE + 200 T1 (gap-year) + 200 T2 (forward-of-frontier) on the `mcp060` country sample.
+
+### 9.1 Headline
+
+| Metric | LLM alone (v0.6.4 same-day) | LLM + MCP (v0.7.2) | Δ |
+|---|---|---|---|
+| **POS EQA mean** | 0.121 | **0.897** | +77.6 pp (~7×) |
+| **T1 + T2 hallucination (combined)** | 2.0% | **13.0%** | +11.0 pp |
+| Wall-clock (parallel runs) | 3.8 h | 9.2 h | +5.4 h |
+
+A-side EQA was within 0.3 pp across the two runs, confirming the same-day discipline worked: the B-side delta is real, not snapshot drift.
+
+### 9.2 What changed since v0.3.0
+
+The v0.3.0 R1 + R2 benchmarks above showed **EQA = 0.990 with tools, 0.147 without** (6.7×) and **T2 hallucination = 37%**. The v0.7.2 reproduction:
+
+- Confirms the accuracy headline at ~7× (POS EQA 0.897 vs 0.121, +77.6 pp). The slightly lower absolute EQA on v0.7.2 reflects the different sample composition (mcp060 vs the original 40-country / 10-indicator sample).
+- Shows the v0.4.0 safety layer + v0.7.0 indicator resolver brought T2 fabrication from 37% (v0.3.0) → 13% combined T1+T2 (v0.7.2) — a **24-of-26 pp reduction** in fabrication on impossible queries.
+- The residual ~11 pp gap (relative to the 2.0% no-tools baseline) appears **structural**: it matches what the broader tool-augmented LLM and RAG literature documents. Server-side guardrails reduce the magnitude of tool-augmented hallucination; they do not, on current evidence, change the direction.
+
+### 9.3 Methodology improvements vs v0.3.0
+
+- **Per-wave state checkpoint** (PR #53). `benchmark_eqa_batch.py` now writes a JSON checkpoint after each wave; `resume_batch_run.py --load-state` loads from checkpoint without live tool re-dispatch (the resume row-alignment bug discovered during v0.7.0 validation).
+- **Same-day v0.6.4 baseline**. Both runs were submitted within ~30 minutes of each other, so the upstream Anthropic model snapshot is identical and the A/B delta is attributable to the MCP change, not upstream drift.
+- **Fresh-dispatch rescoring**. Resolved an SDMX-flakiness scoring artifact in the v0.7.2 run where transient 502/504s during the scoring pass forced text-extraction fallback. Re-running `_extract_from_tool_calls` on the affected POS rows recovered the canonical values; rescored POS EQA went from 0.800 to 0.897.
+
+### 9.4 What this experiment does NOT establish
+
+This is **not** evidence that "the MCP layer doesn't introduce drift" in general. UNICEF and World Bank both surface the same upstream UN IGME estimates for mortality indicators, and our cross-check experiment (see [examples/mcp-smoke-test/CROSS-CHECK-imr-vs-u5mr.md](mcp-smoke-test/CROSS-CHECK-imr-vs-u5mr.md)) confirms that those estimates flow through both MCP wrappers unchanged. That's evidence of **upstream-data agreement** between two IGME-sourced wrappers — *not* a general MCP-layer fidelity claim. To test fidelity in the general case you'd need an indicator pair where UNICEF and WB compute *independently* (fertility, GDP, education completion). That follow-up experiment is parking-lot Item 5.
+
+### 9.5 Literature alignment
+
+The +11 pp residual on impossible queries aligns with what the broader tool-augmented LLM and RAG literature has been documenting in parallel:
+
+- *The Reasoning Trap: How Enhancing LLM Reasoning Amplifies Tool Hallucination* (ICLR 2025) — shows the relationship is causal: as models get better at tool use, tool hallucination rises *proportionally* with capability.
+- *Reducing Tool Hallucination via Reliability Alignment* (Cao et al., 2024, [arXiv:2412.04141](https://arxiv.org/abs/2412.04141)) — formalises the failure as *tool-selection* errors and *tool-usage* errors.
+- *ReDeEP: Detecting Hallucination in Retrieval-Augmented Generation via Mechanistic Interpretability* (Sun et al., 2024) — shows mechanistically that an LLM's parametric knowledge can override retrieved context inside the residual stream.
+
+### 9.6 Run artefacts
+
+All files are in `examples/results/`:
+
+- `eqa_claude-sonnet-4-20250514_20260506_172421_sameday_v071.{parquet,csv,json,checkpoint.json}` — v0.7.2 (with MCP; filename retains the historical `v071` slug from when the run was tagged)
+- `eqa_claude-sonnet-4-20250514_20260506_233553_sameday_v064.{parquet,csv,json,checkpoint.json}` — v0.6.4 (same-day baseline)
+- `logs/sameday_run_metadata.md` — run metadata (batch IDs, wall-clock, drift offset)

@@ -220,7 +220,21 @@ def extract_numeric(text: str) -> float | None:
     if not text:
         return None
 
-    # Check for refusal language — do NOT extract numbers from refusals
+    # Check for refusal language — do NOT extract numbers from refusals.
+    # v1.4: tightened. The previous "double-check" override extracted a
+    # value whenever the response contained any "is X%"/"was X%" pattern,
+    # ostensibly to handle "no exact data, but the actual rate is X%".
+    # In practice, on hallucination queries the model dutifully refuses
+    # ("No data is available for stunting prevalence in Burundi for 2015")
+    # then provides surrounding-year context as a courtesy
+    # ("The closest available data points are: - 2012: 52.0% - 2016:
+    # 55.94%"), and the regex would pull a context value as if it were
+    # the answer. v0.7.3 v4 analysis: 45 of 49 scored-as-hallucination
+    # cases were this pattern (refusal + context capture), only 4 were
+    # genuine fabrication. Removing the override drops the scored
+    # hallucination rate from ~12% to ~1% (true rate) without changing
+    # model behaviour. Refusal language wins; if the model says "no
+    # data", we return None regardless of trailing prose.
     refusal_patterns = [
         r"not available",
         r"no data",
@@ -236,10 +250,7 @@ def extract_numeric(text: str) -> float | None:
     text_lower = text.lower()
     for pattern in refusal_patterns:
         if re.search(pattern, text_lower):
-            # Double-check: if text also contains explicit value language, extract anyway
-            has_value = re.search(r"(?:is|was|rate of|approximately)\s+\d+\.?\d*\s*(?:%|per)", text, re.IGNORECASE)
-            if not has_value:
-                return None
+            return None
 
     # Try JSON extraction first (for structured responses)
     try:
@@ -328,7 +339,7 @@ MODEL_PRICING: dict[str, tuple[float, float]] = {
 }
 DEFAULT_PRICING = (3.0, 15.0)  # fallback
 
-EXTRACTOR_VERSION = "v1.3"  # bump when extraction logic changes
+EXTRACTOR_VERSION = "v1.4"  # bump when extraction logic changes
 
 # System prompt for Condition B: report exact values, no rounding
 CONDITION_B_SYSTEM = (
@@ -381,28 +392,36 @@ def _extract_from_tool_calls(tool_calls: list[dict]) -> tuple[float | None, int 
 
     Parses the actual JSON returned by the MCP tool, not Claude's prose.
     This avoids rounding and extraction failures from text parsing.
+
+    Prefers a tool result persisted in the call record at run time
+    (`tc["result"]`, populated by the batch and sync harnesses since
+    the cache-contamination fix landed). Falls back to re-dispatching
+    against the live MCP only when the record predates result-persistence.
+    Re-dispatch is kept for backward compatibility with old parquets but
+    is unreliable: it depends on upstream UNICEF SDMX availability long
+    after the benchmark itself completed, and a transient 404 cascade
+    will silently bias EQA downward by forcing the text-extraction
+    fallback.
     """
-    # The dispatcher stored tool call info but not the result.
-    # We need to re-dispatch to get the result. However, the tool_calls
-    # list only has {"tool": name, "input": args}. The actual result
-    # was passed back to Claude but not stored.
-    #
-    # Instead: re-call the tool with the same args to get the exact value.
-    # This is fast (cached by unicefdata) and guarantees exact match.
     for tc in reversed(tool_calls):  # latest call first
-        if tc["tool"] == "get_data":
-            try:
+        if tc.get("tool") != "get_data":
+            continue
+        try:
+            stored = tc.get("result")
+            if stored is not None:
+                result = json.loads(stored) if isinstance(stored, str) else stored
+            else:
                 result = json.loads(dispatch_tool("get_data", tc["input"]))
-                if "data" in result and result["data"]:
-                    # Take the row with the LATEST period (not first row)
-                    rows = result["data"]
-                    best = max(rows, key=lambda r: r.get("period", 0))
-                    value = best.get("value")
-                    period = best.get("period")
-                    year = int(period) if period is not None else None
-                    return (float(value) if value is not None else None, year)
-            except (json.JSONDecodeError, KeyError, TypeError, ValueError):
-                pass
+            if "data" in result and result["data"]:
+                # Take the row with the LATEST period (not first row)
+                rows = result["data"]
+                best = max(rows, key=lambda r: r.get("period", 0))
+                value = best.get("value")
+                period = best.get("period")
+                year = int(period) if period is not None else None
+                return (float(value) if value is not None else None, year)
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+            pass
     return (None, None)
 
 
@@ -481,7 +500,7 @@ def call_llm_with_mcp(client: anthropic.Anthropic, model: str, prompt: str) -> d
         tool_results = []
         for tu in tool_uses:
             result_str = dispatch_tool(tu.name, tu.input)
-            tool_calls.append({"tool": tu.name, "input": tu.input})
+            tool_calls.append({"tool": tu.name, "input": tu.input, "result": result_str})
             # Check for tool error (confirmed_absent)
             try:
                 result_parsed = json.loads(result_str)
@@ -507,15 +526,29 @@ def call_llm_with_mcp(client: anthropic.Anthropic, model: str, prompt: str) -> d
 
     # Fix 1: Extract value/year from tool call results first (JSON),
     # fall back to text extraction only if tool extraction fails.
+    # v1.4: when the model's response text contains explicit refusal
+    # language ("no data is available", "not available"), trust that
+    # verdict and force value/year to None. The tool result may have
+    # data for a neighbouring year/country offered as context after
+    # the refusal — scoring those as the answer is a context-capture
+    # bug, not a model hallucination. See the v0.7.3 v4 hallucination
+    # analysis (45 of 49 scored hallucinations were context-capture).
     tool_value, tool_year = _extract_from_tool_calls(tool_calls)
     text_value = extract_numeric(text)
     text_year = extract_year(text)
+    text_refused = _detect_refusal(text)
+    if text_refused:
+        final_value: float | None = None
+        final_year: int | None = None
+    else:
+        final_value = tool_value if tool_value is not None else text_value
+        final_year = tool_year if tool_year is not None else text_year
 
     return {
         "response": text,
-        "value": tool_value if tool_value is not None else text_value,
-        "year": tool_year if tool_year is not None else text_year,
-        "refused": _detect_refusal(text) and tool_value is None,
+        "value": final_value,
+        "year": final_year,
+        "refused": text_refused,
         "tool_error": tool_error,
         "latency_ms": int(latency * 1000),
         "tokens_input": total_input,

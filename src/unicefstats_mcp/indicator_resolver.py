@@ -92,6 +92,32 @@ _SYNONYMS: dict[str, str] = {
     "skilled birth attendance": "MNCH_SAB",
     "skilled attendance at birth": "MNCH_SAB",
     "sab": "MNCH_SAB",
+    # ── Early childbearing — issue #64. Resolves the variants of
+    #    "births to women under 18" / "early childbearing" that the
+    #    model commonly emits when passing the indicator name to
+    #    get_data. Without these synonyms, the model falls back to
+    #    search_indicators(...), which historically returned
+    #    Adolescent birth rate (MNCH_ABR — population 15–19) as the
+    #    top match for "births under 18" queries.
+    "early childbearing": "MNCH_BIRTH18",
+    "early child bearing": "MNCH_BIRTH18",
+    "births before age 18": "MNCH_BIRTH18",
+    "births to women under 18": "MNCH_BIRTH18",
+    "births under 18": "MNCH_BIRTH18",
+    "births under age 18": "MNCH_BIRTH18",
+    "first birth before age 18": "MNCH_BIRTH18",
+    # ── Mortality variants — issue #64. Resolves age-specific
+    #    phrasings of the CME_MR* family so the resolver picks the
+    #    correct age bracket instead of letting substring matching
+    #    in search_indicators bias toward Under-five.
+    "child mortality 1-4": "CME_MRY1T4",
+    "child mortality 1 to 4": "CME_MRY1T4",
+    "child mortality aged 1-4": "CME_MRY1T4",
+    "child mortality aged 1-4 years": "CME_MRY1T4",
+    "child mortality rate 1-4": "CME_MRY1T4",
+    "child mortality rate aged 1-4 years": "CME_MRY1T4",
+    "mortality rate aged 1-4": "CME_MRY1T4",
+    "mortality rate 1-4": "CME_MRY1T4",
     # ── Child protection ─────────────────────────────────────────────
     "fgm prevalence": "PT_F_15-49_FGM",
     "female genital mutilation": "PT_F_15-49_FGM",
@@ -108,8 +134,121 @@ _AMBIGUOUS: dict[str, list[str]] = {
     "vaccination coverage": ["IM_BCG", "IM_DTP1", "IM_DTP3", "IM_MCV1", "IM_MCV2"],
     "vaccination": ["IM_BCG", "IM_DTP1", "IM_DTP3", "IM_MCV1", "IM_MCV2"],
     "immunization coverage": ["IM_BCG", "IM_DTP1", "IM_DTP3", "IM_MCV1", "IM_MCV2"],
-    "child marriage": ["PT_F_15-19_MRD", "PT_F_18-19_MRD", "PT_F_15-49_MRD_18"],
+    # v1.0.0: realigned with the current unicefdata YAML (PT_F_18-19_MRD
+    # and PT_F_15-49_MRD_18 don't exist in the live registry; the
+    # canonical 20-24 family does). PT_F_20-24_MRD_U18 is the SDG 5.3.1
+    # headline (% of women 20-24 first married before age 18).
+    "child marriage": ["PT_F_15-19_MRD", "PT_F_20-24_MRD_U15", "PT_F_20-24_MRD_U18"],
 }
+
+
+# Plain-English disambiguation tips embedded in search_indicators tool
+# results when the query matches an _AMBIGUOUS key. Pattern adopted from
+# World Bank's data360-mcp anti-hallucination templates: educate the
+# model without forcing refusal. The model still gets ranked results;
+# the tip explains which candidate matches UNICEF's headline / SDG
+# convention and how to disambiguate before calling get_data.
+#
+# Sources for the editorial recommendations:
+#   - SDG 3.2.1: Under-five mortality rate (CME_MRY0T4)
+#   - SDG 3.b.1: DTP3 coverage as headline immunization indicator
+#   - SDG 5.3.1: PT_F_15-49_MRD_18 (women 20-24 married before 18)
+#   - UNICEF Data Warehouse headline framing for the mortality family
+_DISAMBIGUATION_TIPS: dict[str, str] = {
+    "child mortality": (
+        "Ambiguous query. UNICEF's headline figure is under-five "
+        "mortality (CME_MRY0T4, SDG 3.2.1 indicator). If the user meant "
+        "the 1-4 age bracket specifically, use CME_MRY1T4. Other "
+        "variants: CME_MRM0 (neonatal, first 28 days), CME_MRY0 "
+        "(infant, 0-1 year). Verify which age bracket the user wants "
+        "before calling get_data."
+    ),
+    "child mortality rate": (
+        "Ambiguous query. UNICEF's headline figure is under-five "
+        "mortality rate (CME_MRY0T4, SDG 3.2.1). For the 1-4 age "
+        "bracket specifically, use CME_MRY1T4. Verify which age "
+        "bracket the user wants before calling get_data."
+    ),
+    "mortality rate": (
+        "Ambiguous query. Mortality rate has multiple age-bracket "
+        "variants: CME_MRM0 (neonatal, 0-28 days), CME_MRY0 (infant, "
+        "0-1 year), CME_MRY0T4 (under-five, 0-5 years — SDG 3.2.1 "
+        "headline), CME_MRY1T4 (childhood, 1-4 years). Confirm which "
+        "age bracket the user wants before calling get_data."
+    ),
+    "vaccination coverage": (
+        "Ambiguous query. Specify the vaccine: IM_BCG (tuberculosis, "
+        "neonatal), IM_DTP1 / IM_DTP3 (diphtheria-tetanus-pertussis, "
+        "1st / 3rd dose — DTP3 is the SDG 3.b.1 headline immunization "
+        "indicator), IM_MCV1 / IM_MCV2 (measles 1st / 2nd dose). Ask "
+        "the user which vaccine before calling get_data."
+    ),
+    "vaccination": (
+        "Ambiguous query. See vaccination coverage indicators above. "
+        "DTP3 (IM_DTP3) is commonly used as the headline immunization "
+        "metric (SDG 3.b.1). Ask the user which vaccine before "
+        "calling get_data."
+    ),
+    "immunization coverage": (
+        "Ambiguous query. See vaccination coverage indicators above. "
+        "DTP3 (IM_DTP3) is the SDG 3.b.1 headline immunization "
+        "indicator. Ask the user which vaccine before calling get_data."
+    ),
+    "child marriage": (
+        "Ambiguous query. UNICEF's headline child-marriage indicator "
+        "is PT_F_20-24_MRD_U18 (% of women 20-24 who were first married "
+        "or in union before age 18, SDG 5.3.1). Other variants: "
+        "PT_F_20-24_MRD_U15 (% married before age 15, women 20-24), "
+        "PT_F_15-19_MRD (% currently married, girls 15-19). Confirm "
+        "which framing the user wants before calling get_data."
+    ),
+}
+
+
+def get_disambiguation_tip(query: str) -> str | None:
+    """Return a curated disambiguation tip if `query` is known-ambiguous.
+
+    Substring-match against `_DISAMBIGUATION_TIPS` keys after
+    normalisation (so "what is the child mortality rate in Brazil"
+    matches the "child mortality rate" key).
+
+    Returns None when:
+      - the query is empty or non-string
+      - no `_DISAMBIGUATION_TIPS` key is a substring of the normalised query
+      - the query *also* contains a `_SYNONYMS` key that resolves
+        unambiguously to one indicator (e.g., "under-five mortality
+        rate" trivially substring-matches "mortality rate" but is
+        already specific — no tip needed)
+
+    Called by `server.search_indicators` to attach a `disambiguation_tip`
+    field to the tool result, in the data360-mcp anti-hallucination-
+    template style: educate the model with plain-English guidance about
+    which canonical indicator matches the user's likely intent, without
+    forcing refusal. The model still gets the ranked candidate list.
+    """
+    if not isinstance(query, str) or not query.strip():
+        return None
+    normalized = _normalize(query)
+    if not normalized:
+        return None
+
+    # Specificity check first: if the query already contains a phrase
+    # that resolves unambiguously, the search is going to land on the
+    # right indicator regardless. Surfacing the ambiguous-term tip
+    # would be noise (e.g., "under-five mortality rate" trivially
+    # substring-matches the "mortality rate" key). Iterate _SYNONYMS
+    # longest-first so the most specific synonym wins the match check.
+    for synonym in sorted(_SYNONYMS.keys(), key=len, reverse=True):
+        if synonym in normalized:
+            return None
+
+    # Iterate disambiguation keys longest-first so that
+    # "child mortality rate" wins over "child mortality" when both
+    # substrings are present.
+    for key in sorted(_DISAMBIGUATION_TIPS.keys(), key=len, reverse=True):
+        if key in normalized:
+            return _DISAMBIGUATION_TIPS[key]
+    return None
 
 
 def _normalize(s: str) -> str:
