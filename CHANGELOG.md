@@ -6,6 +6,30 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [1.2.3] — 2026-06-01
+
+### Added
+
+- **Pagination metadata on the three list-returning tools** (`search_indicators`, `list_categories`, `list_countries`) per the MCP best-practices rubric. Every paginated response now carries:
+  - `total_count` — the full match count before slicing.
+  - `count` — the number of items in this page.
+  - `offset` — the current pagination offset.
+  - `has_more` — whether more pages remain.
+  - `next_offset` — the offset to pass on the next request, or `null` when exhausted.
+- **`offset` parameter** added to `search_indicators` (default 0) and to the two `list_*` tools (default 0). Existing callers that never pass `offset` get unchanged behavior. The `limit` ceilings are unchanged on `search_indicators` (`le=100`); `list_categories` and `list_countries` gain explicit `limit` params with sensible defaults (100 and 500 respectively — both cover their full universe in one page) capped at 200 / 1000.
+- **`tests/test_v123_pagination.py`** — 10 new tests pinning the pagination envelope, the back-compat aliases, the `offset >= total_count` empty-page invariant, and the region-filter-then-paginate ordering. (Closes Copilot PR #91 finding #2 — "no tests for the new pagination fields".)
+
+### Fixed
+
+- **`search_indicators` no-match check used `results` instead of `matches`** — when the caller paged past the last page (`offset >= total_count`), the tool returned a no-data error claiming there were no matches at all, instead of a valid empty-page envelope. The check now uses the full `matches` list; the empty-page case returns the standard pagination envelope with `count=0`, `has_more=False`, and a tip pointing back to `offset=0`. (Closes Copilot PR #91 finding #1 — surfaced by adding the pagination tests.)
+- **`_get_countries()` returned a `set`, not a `dict`** — annotated as `dict[str, str]` but actually returned upstream `unicefdata.load_country_codes()`'s set of ISO3 codes verbatim. `list_countries()`'s `country_map.items()` raised `AttributeError` at runtime, silently broken since the upstream signature changed. Pre-v1.2.3 the bug went undetected because no test called `list_countries()` directly. Now sources the dict via `country_resolver._load_country_index()` which reads `_unicefdata_countries.yaml`. Latent for an unknown number of releases; closed.
+
+### Notes
+
+- **v1.1.x-compat aliases preserved**: `search_indicators` still returns `total_matches` and `showing` alongside the new `total_count` / `count`. `list_categories` still returns `total_categories` and `total_indicators`. `list_countries` still returns `total`. Strict v1.1.x consumers don't break; v1.2.3-aware consumers get the standard pagination shape.
+- 468 tests pass (was 458 at v1.2.2; +10 from `test_v123_pagination.py`). ruff + mypy clean.
+- The pagination metadata is documented in `LLM_INSTRUCTIONS` envelope-fields section as part of the v1.2.0 envelope (no further LLM_INSTRUCTIONS change needed).
+
 ## [1.2.2] — 2026-06-01
 
 ### Added

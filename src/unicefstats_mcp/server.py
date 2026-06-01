@@ -171,11 +171,26 @@ def _get_indicators() -> dict[str, dict[str, Any]]:
 
 
 def _get_countries() -> dict[str, str]:
-    """Load and cache country code → name mapping."""
+    """Load and cache country code → name mapping.
+
+    Upstream ``unicefdata.load_country_codes()`` returns a *set* of ISO3
+    codes (no names). The MCP needs ``{ISO3: country_name}`` for
+    ``list_countries()`` and similar surfaces, so we source the dict via
+    ``country_resolver._load_country_index()`` which reads the
+    ``_unicefdata_countries.yaml`` shipped alongside the package.
+
+    Pre-v1.2.3 this function was annotated as ``dict[str, str]`` but
+    returned the upstream set verbatim, which silently broke
+    ``list_countries()`` (the ``country_map.items()`` call raised
+    ``AttributeError``). Closes the latent bug exposed by the v1.2.3
+    pagination tests.
+    """
     global _countries_cache
     if _countries_cache is None:
-        ud = _get_ud()
-        _countries_cache = ud.load_country_codes()
+        from unicefstats_mcp.country_resolver import _load_country_index
+
+        valid_codes, _ = _load_country_index()
+        _countries_cache = valid_codes
     return _countries_cache
 
 
@@ -455,6 +470,20 @@ def search_indicators(
             le=100,
         ),
     ] = 20,
+    offset: Annotated[
+        int,
+        Field(
+            description=(
+                "Pagination offset — skip this many top-ranked matches before "
+                "returning. Use with `limit` to page through long match lists "
+                "(e.g. limit=20, offset=0 for page 1; offset=20 for page 2). "
+                "The response envelope carries `has_more` and `next_offset` so "
+                "the LLM can decide whether to keep paging."
+            ),
+            ge=0,
+            le=10000,
+        ),
+    ] = 0,
 ) -> dict[str, Any]:
     """Search UNICEF child development indicators by keyword.
 
@@ -606,7 +635,9 @@ def search_indicators(
 
     # Sort by relevance descending, then alphabetically
     matches.sort(key=lambda m: (-m["relevance"], m["code"]))
-    results = matches[:limit]
+    # v1.2.3 — paginate with offset + limit (default offset=0 preserves
+    # the v1.2.2 behavior for callers that never pass offset).
+    results = matches[offset : offset + limit]
 
     # v0.9.0: keep relevance in the output. The v9 benchmark diagnosis
     # showed 96.3% of stuck queries looped on search_indicators because
@@ -623,9 +654,13 @@ def search_indicators(
     # so the model can verify with the user before calling get_data
     # against the wrong variant. Closes the semantic half of issue #64.
     from .indicator_resolver import get_disambiguation_tip, resolve_indicator
-    disambiguation_tip = get_disambiguation_tip(query) if results else None
+    disambiguation_tip = get_disambiguation_tip(query) if matches else None
 
-    if not results:
+    # v1.2.3 fix (Copilot #91 L652): distinguish "no matches at all" from
+    # "valid pagination past last page". Pre-fix, `if not results` fired
+    # for both cases and incorrectly returned a no-data error when the
+    # caller paged past the end of a non-empty match list.
+    if not matches:
         return error(
             f"No indicators match '{query}'.",
             tip="Try broader terms like 'health', 'education', 'nutrition', "
@@ -633,15 +668,35 @@ def search_indicators(
             no_data=True,
         )
 
-    payload: dict[str, Any] = {
-        "query": query,
-        "total_matches": len(matches),
-        "showing": len(results),
-        "results": results,
-        "tip": (
+    # v1.2.3 pagination metadata. `total_matches` + `showing` are kept for
+    # back-compat with v1.1.x/v1.2.x consumers; `total_count` + `count` are
+    # the standard pagination names from mcp_best_practices.md.
+    total_count = len(matches)
+    has_more = offset + len(results) < total_count
+    # v1.2.3 fix (Copilot #91 L652 follow-up): when paging past last page,
+    # results is empty but matches isn't. The tip's "results[0]" index
+    # would error; point the caller back at offset=0 instead.
+    if results:
+        tip = (
             f"Use get_indicator_info('{results[0]['code']}') for full details "
             "including available disaggregations."
-        ),
+        )
+    else:
+        tip = (
+            f"Offset {offset} is past the last page "
+            f"(total_count={total_count}). Re-call with offset=0 to start over."
+        )
+    payload: dict[str, Any] = {
+        "query": query,
+        "total_matches": total_count,  # v1.1.x-compat alias for total_count
+        "showing": len(results),  # v1.1.x-compat alias for count
+        "total_count": total_count,
+        "count": len(results),
+        "offset": offset,
+        "has_more": has_more,
+        "next_offset": offset + len(results) if has_more else None,
+        "results": results,
+        "tip": tip,
     }
     if disambiguation_tip:
         payload["disambiguation_tip"] = disambiguation_tip
@@ -846,7 +901,29 @@ def search_indicators(
         "openWorldHint": False,
     },
 )
-def list_categories() -> dict[str, Any]:
+def list_categories(
+    limit: Annotated[
+        int,
+        Field(
+            description="Maximum number of categories to return per page.",
+            ge=1,
+            le=200,
+        ),
+    ] = 100,
+    offset: Annotated[
+        int,
+        Field(
+            description=(
+                "Pagination offset — skip this many categories before returning. "
+                "The envelope carries `has_more` and `next_offset` so the LLM can "
+                "page through. UNICEF has ~25-40 categories so a single page is "
+                "almost always enough."
+            ),
+            ge=0,
+            le=10000,
+        ),
+    ] = 0,
+) -> dict[str, Any]:
     """List all UNICEF indicator categories (thematic groups).
 
     Categories correspond to SDMX dataflows: CME (child mortality), NUTRITION,
@@ -864,15 +941,26 @@ def list_categories() -> dict[str, Any]:
         cat = meta.get("category", "Uncategorized")
         categories[cat] = categories.get(cat, 0) + 1
 
-    cat_list = [
+    full_cat_list = [
         {"name": name, "indicator_count": count}
         for name, count in sorted(categories.items())
     ]
+    # v1.2.3 pagination
+    total_count = len(full_cat_list)
+    cat_list = full_cat_list[offset : offset + limit]
+    has_more = offset + len(cat_list) < total_count
 
     return ok(
         {
-            "total_categories": len(cat_list),
-            "total_indicators": sum(c["indicator_count"] for c in cat_list),
+            # v1.1.x-compat aliases
+            "total_categories": total_count,
+            "total_indicators": sum(c["indicator_count"] for c in full_cat_list),
+            # v1.2.3 pagination metadata
+            "total_count": total_count,
+            "count": len(cat_list),
+            "offset": offset,
+            "has_more": has_more,
+            "next_offset": offset + len(cat_list) if has_more else None,
             "categories": cat_list,
             "tip": (
                 "Use search_indicators(query='mortality', limit=10)"
@@ -904,6 +992,27 @@ def list_countries(
             max_length=50,
         ),
     ] = None,
+    limit: Annotated[
+        int,
+        Field(
+            description="Maximum number of countries to return per page.",
+            ge=1,
+            le=1000,
+        ),
+    ] = 500,
+    offset: Annotated[
+        int,
+        Field(
+            description=(
+                "Pagination offset — skip this many countries before returning. "
+                "Use with `limit` to page through. UNICEF's country list has "
+                "~450 entries (member states + dependent territories + regional "
+                "aggregates), so the default limit returns everything in one page."
+            ),
+            ge=0,
+            le=10000,
+        ),
+    ] = 0,
 ) -> dict[str, Any]:
     """List countries available in the UNICEF database with ISO3 codes.
 
@@ -925,11 +1034,23 @@ def list_countries(
         region_lower = region.lower()
         countries = [c for c in countries if region_lower in c["name"].lower()]
 
+    # v1.2.3 pagination — slice the (possibly region-filtered) list.
+    total_count = len(countries)
+    page = countries[offset : offset + limit]
+    has_more = offset + len(page) < total_count
+
     return ok(
         {
-            "total": len(countries),
+            # v1.1.x-compat alias
+            "total": total_count,
+            # v1.2.3 pagination metadata
+            "total_count": total_count,
+            "count": len(page),
+            "offset": offset,
+            "has_more": has_more,
+            "next_offset": offset + len(page) if has_more else None,
             "region_filter": region,
-            "countries": countries,
+            "countries": page,
         }
     )
 
