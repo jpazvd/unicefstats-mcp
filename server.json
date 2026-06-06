@@ -3,7 +3,7 @@
   "name": "io.github.jpazvd/unicefstats-mcp",
   "title": "UNICEF Stats MCP",
   "description": "UNICEF child development statistics: 790+ indicators, 200+ countries, SDMX-sourced. No API key.",
-  "version": "1.2.4",
+  "version": "1.5.1",
   "author": {
     "name": "Joao Pedro Azevedo",
     "github": "jpazvd"
@@ -17,7 +17,7 @@
     {
       "registryType": "pypi",
       "identifier": "unicefstats-mcp",
-      "version": "1.2.4",
+      "version": "1.5.1",
       "transport": {
         "type": "stdio"
       },

@@ -114,14 +114,31 @@ class TestRelevanceBasedHeuristic:
         than fail."""
         result = search_indicators("developmentally on track", limit=10)
         non_derived = [
-            r for r in result.get("results", [])
-            if not r["code"].startswith("TRGT_")
+            r for r in result.get("results", []) if not r["code"].startswith("TRGT_")
         ]
         if len(non_derived) < 3:
             pytest.skip(
                 f"Registry vintage exposes only {len(non_derived)} non-derived "
                 "ECD_CHLD_LMPSL variants; heuristic precondition cannot hold."
             )
+
+        # v1.5.0 — the Tier 1 single-dataflow guard suppresses heuristic
+        # ambiguity_flag when every candidate shares one primary dataflow.
+        # If the ECD_CHLD_LMPSL family is single-dataflow, the v1.5.0
+        # contract is "guard suppresses", not "heuristic fires" — skip
+        # rather than fail in that case.
+        from unicefstats_mcp import dimensions as _dims
+
+        non_derived_dataflows = {
+            _dims.primary_dataflow(r["code"]) for r in non_derived[:5]
+        }
+        non_derived_dataflows.discard(None)
+        if len(non_derived_dataflows) <= 1:
+            pytest.skip(
+                f"v1.5.0 single-dataflow guard suppresses heuristic on this "
+                f"family (shared dataflow={non_derived_dataflows!r})."
+            )
+
         assert result.get("ambiguity_flag") is True
         assert result.get("ambiguity_source") == "heuristic"
         candidates = result.get("candidates", [])
@@ -212,17 +229,18 @@ class TestLookupByCodeStrictCanonical:
         result = lookup_by_code("")
         assert result.get("status") == "error"
 
-    @pytest.mark.parametrize("code,expected_name_fragment", [
-        ("CME_MRY0T4", "Under-five mortality"),
-        ("CME_MRM0", "Neonatal mortality"),
-        ("IM_DTP3", "DTP"),
-        ("NT_BW_LBW", "Low birth"),
-    ])
+    @pytest.mark.parametrize(
+        "code,expected_name_fragment",
+        [
+            ("CME_MRY0T4", "Under-five mortality"),
+            ("CME_MRM0", "Neonatal mortality"),
+            ("IM_DTP3", "DTP"),
+            ("NT_BW_LBW", "Low birth"),
+        ],
+    )
     def test_known_canonical_codes_resolve(self, code, expected_name_fragment):
         result = lookup_by_code(code)
-        assert result.get("status") == "ok", (
-            f"Expected ok for {code}, got {result}"
-        )
+        assert result.get("status") == "ok", f"Expected ok for {code}, got {result}"
         assert expected_name_fragment.lower() in result["name"].lower()
 
 

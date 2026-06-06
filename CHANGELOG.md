@@ -6,6 +6,137 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 ## [Unreleased]
 
+## [1.5.1] — 2026-06-06
+
+### Background
+
+The v1.5.0 paired re-validation against the v1.2.4 Jun 1 baseline aborted mid-Wave-3 to a UNICEF SDMX 403 burst, but the partial Wave 1+2 Anthropic responses (1484 cells of clean first-wave LLM behaviour) were enough for a search-layer-only diff against the v1.4.0 batch. That diff showed:
+
+- **+363 cells (−24.4pp) reduction in false `ambiguity_flag` rate** (v1.4.0 38.9% → v1.5.0 14.5%). Tier 1 single-dataflow guard + Tier 2a all-matches accumulation working as designed.
+- **0 cells WORSE** — no v1.5.0 cell newly fired `ambiguity_flag` on a clean v1.4.0 path.
+- **11 cells with v1.5.0 misroutes** — Tier 2c scorer routed `unimproved drinking water` (8 cells) to `WS_PPL_W-ALB` instead of `WS_PPL_W-UI`, and `antenatal care 4+ visits` (3 cells) to `MNCH_ANC1` instead of `MNCH_ANC4`.
+
+v1.5.1 closes the 11-cell misroute class.
+
+### Fixed
+
+- **Bump `_SYNONYM_SCORE_THRESHOLD` from 70 → 75** (`indicator_resolver.py`). The v1.5.0 Jaccard tier resolved `unimproved drinking water` against `_SYNONYMS["basic drinking water"]` at jaccard=0.5 exactly (score 70 — at the threshold). Both `basic drinking water` and `drinking water access` map to the same `WS_PPL_W-ALB` code, so the multi-code tie safety net silently bypassed. v1.5.1 raises the floor so Jaccard requires ≥0.68 token overlap (score ≥75), eliminating the antonym-misroute class while preserving genuine paraphrase matches.
+
+- **Substring tier length-ratio guard** (`indicator_resolver.py`, new `_SUBSTRING_LENGTH_RATIO_CAP = 1.5`). v1.5.0's substring tier fired score 85 when a SHORT synonym key was contained in a much LONGER query, ignoring the query's extra qualifier tokens. `antenatal care 4 visits` (4 tokens, after `_normalize` strips `+`) substring-matched `antenatal care` (2 tokens) → routed to `MNCH_ANC1` (one visit), dropping the `4 visits` qualifier. v1.5.1 rejects substring tier when `max(query_tokens, key_tokens) / min(...) > 1.5`.
+
+- **Add `WS_PPL_W-UI` synonyms** (`indicator_resolver.py`): `unimproved drinking water`, `unimproved water`. Closes the 8-cell antonym misroute.
+
+- **Add `MNCH_ANC4` synonyms** (`indicator_resolver.py`): `antenatal care 4 visits`, `antenatal care 4 or more visits`, `anc4`, `anc 4`. Closes the 3-cell qualifier misroute.
+
+### Tests
+
+- New `tests/test_v151_tier2c_misroute_fix.py` (10 tests pinning every fix).
+- 2 v1.5.0 scorer tests updated to reflect the tightened threshold + length-ratio contract.
+
+Full suite: **537 passed, 4 skipped, 0 failures**.
+
+## [1.5.0] — 2026-06-05
+
+### Background
+
+The v1.4.0 1484-cell paired re-validation against the v1.2.4 Jun 1 baseline produced a real +2.3pp full-sample EQA lift (p=0.0003) and rescued 55 FIRE_RECOVERABLE cells at +0.95 EQA each — but flagged 9 NON_ELIGIBLE single-dataflow cells as NEW regressions (clean→broken). The post-v1.4.0 forensic pinned the regression to v1.4.0 change #3 (query-aware differentiator: tier-keyword promotion + token-level common-prefix), specifically the first-match-wins loop in `_query_match_hint` and the empty-prefix fallback in `_token_common_prefix` for disjoint families.
+
+v1.5.0 implements the immediate + medium-term fixes from the workflow synthesis, borrowing patterns from sister official-stats MCPs (data360-mcp, sdmx-mcp, faostat-mcp).
+
+### Changed
+
+- **Tier 1 — single-dataflow guard at heuristic Path B gate** (`server.py:785-839`). When every candidate in the `similar` set resolves to the SAME primary dataflow, heuristic `ambiguity_flag` is now suppressed and a structured `ambiguity_flag SUPPRESSED` log record is emitted. Addresses the 9-cell NON_ELIGIBLE regression directly: clusters of single-dataflow indicators (`EIP_NEET_SEX_AGE_RT`, `ED_CR_L1_UIS_MOD`, `HVA_EPI_INF_RT_15-19`) are structurally not ambiguous at the dataflow level.
+
+- **Tier 2a — all-matches accumulation in `_query_match_hint`** (`differentiator.py`). Replaces the v1.4.0 first-match-wins loop with all-matches accumulation. The hint now fires ONLY for candidates whose suffix tokens cover EVERY tier keyword matched in the query. Position-overlap tracking preserves the multi-word-keyword precedence (`lower secondary` still claims its span so the substring `secondary` doesn't double-count). Closes the smoking-gun ED_CR_L1_UIS_MOD case: query `completion rate primary school age modeled` now uniquely promotes ED_CR_L1_UIS_MOD (suffix [L1, UIS, MOD] covers both `primary` and `modeled`), leaving ED_CR_L1 and ED_ANAR_L1 hint-free instead of falsely tied.
+
+- **Tier 2b — `_token_common_prefix` char-prefix fallback** (`differentiator.py`). When token-level common prefix is empty (disjoint families like [HVA_ADOL_*, HVA_EPI_*, MNCH_*]), v1.5.0 falls back to `os.path.commonprefix` so the suffix is "extra detail beyond the shared prefix" rather than the full code. When even char-level prefix is empty, the differentiator returns the query-aware hint without the misleading `variant suffix: _<full_code>` prefix.
+
+- **Tier 2c — tiered fuzzy synonym scorer** (`indicator_resolver.py`, ported from data360-mcp's `CodelistResolver._search_global`). Runs LAST in the resolver flow (after `_AMBIGUOUS`, `_SYNONYMS`, `_SYNONYMS_SORTED`, and name-index lookups). Tiered scoring: 100 exact / 95 no-space / 90 sorted-tokens / 85 bidirectional substring / 70-84 Jaccard. Handles token-DROP variants (`deaths aged 15 to 24` → `deaths 15 24`) and token-ADD variants (`Hib third dose` → `Hib vaccine third dose`) that the v1.4.0 `_SYNONYMS_SORTED` mirror cannot catch. Multi-code ties at the same best score are rejected (no silent misroute).
+
+- **Tier 2d — cooperative-disambiguation `abstain_instruction`** (`server.py`, faostat-mcp pattern). The v1.4.0 instruction said `STOP — emit a final response listing the candidates` which caused the LLM to abstain even when ONE candidate's `differentiator` field unambiguously matched the query. v1.5.0 explicitly invites the LLM to proceed when ONE candidate's differentiator uniquely matches, and only halt when two or more candidates are equally plausible.
+
+### Deferred to a separate PR
+
+- **Tier 3 — hybrid BM25 + dense retrieval with Reciprocal Rank Fusion**. The workflow synthesis identified this as the long-term architectural direction (borrowed from Weaviate / ParadeDB / StackOne / Anthropic Tool Search Tool). Requires `rank_bm25` (or similar) dependency + an indicator-name index + optional embedding model + a unifying score channel that replaces the current 4 independent scoring channels. Scope is multi-week and warrants its own design discussion.
+
+### Tests
+
+- `tests/test_v150_single_dataflow_guard.py` — 5 tests pinning the Tier 1 contract on the 4 v140 regression families.
+- `tests/test_v150_all_matches_differentiator.py` — 6 tests pinning the Tier 2a multi-keyword behaviour + the disjoint-family Tier 2b fallback.
+- `tests/test_v150_tiered_synonym_scorer.py` — 9 tests pinning every tier of the Tier 2c scorer + integration through `resolve_indicator`.
+- 2 v0.9 / v1.1 tests updated to recognise the new "single-dataflow guard suppresses heuristic" contract via the existing skip-when-precondition-fails mechanism.
+
+Full suite: **521 passed, 4 skipped, 0 failures**.
+
+### Related
+
+- v140-residual-failure-investigation workflow (2026-06-05): forensic on 9 cells + web search (DiaForge / hybrid BM25+dense+RRF / MADAM-RAG / Abstain-and-Validate) + comparative reading of sister official-stats MCPs + synthesis.
+- v1.4.0 paired re-validation: mean EQA 0.481 vs 0.458 baseline, +2.3pp, p=0.0003. v1.5.0 targets the residual 9-cell + 14-cell regression classes.
+
+## [1.4.0] — 2026-06-04
+
+### Added
+
+- **Paraphrase-stable resolver fallback** (`indicator_resolver.py`). When the order-sensitive `_SYNONYMS` lookup misses, the resolver retries with the sorted-token form against a new `_SYNONYMS_SORTED` mirror (built lazily at first lookup, with token-bag collisions dropped). Closes [#100](https://github.com/jpazvd/unicefstats-mcp-dev/issues/100) for the `_SYNONYMS`-table portion of the failure surface — e.g. `"primary school completion rate"` (was in `_SYNONYMS`) and `"completion rate primary school"` (the v130 phrasing that missed) now both resolve to `ED_CR_L1` with `status='synonym_match'`.
+
+- **Query-aware differentiator hints** (`differentiator.py`). `explain_difference` accepts an optional `query` parameter; when supplied, the differentiator scans the lowercased query for tier keywords (`primary`/`lower secondary`/`urban`/`modelled`/…) and appends a trailing `— best match for 'X' in query` clause to the candidate whose suffix tokens match. Keyword matching uses word boundaries so `urban` does not match `suburban`, `male` does not match `female`. Multi-word keywords win over substrings deterministically (`lower secondary` outranks `secondary`). Lets the LLM resume on the semantically-closest candidate instead of abstaining on L1/L2/L3-style sibling clusters where the query already specifies the tier.
+
+- **Token-level common-prefix extraction** in `differentiator.explain_difference`. The v1.3.x `os.path.commonprefix` was character-level and produced suffix `"1"` (not `"L1"`) for sibling groups like `[ED_CR_L1, ED_CR_L2, ED_CR_L3]`, causing `_SUFFIX_MEANINGS` lookups to miss. The new `_token_common_prefix` splits on `_` so the suffix correctly resolves to `L1`/`L2`/`L3`.
+
+- **Structured telemetry on ambiguity_flag fires** (`server.py`). Both Path A (curated) and Path B (heuristic) emit an INFO-level log record on the `unicefstats_mcp.server` logger with `extra={ambiguity_source, query, candidate_codes, candidate_count, top_relevance, …}`. Operators can route the channel to JSONL via standard Python logging config; the extras carry the diagnostic data the post-#100 forensic had to recompute from parquet artefacts.
+
+### Changed
+
+- **Heuristic Path B is short-circuited when the curated catalog has a clear answer** (`server.py:785-819`). If `lookup_preferred(query)` returns non-None, Path B no longer sets `ambiguity_flag=True`. This eliminates the contradictory-signal pattern where the first pass would mark a query as heuristically-ambiguous while the second pass (at `:845`) would simultaneously set `requires_confirmation=False` via the curated catalog. The catalog now wins at the gate, not in the second pass.
+
+### Tests
+
+- `tests/test_v140_paraphrase_stable_resolver.py` — 12 tests pinning the sorted-token fallback contract, the issue #100 reproducer, the collision-drop safety net, and the v124 canonical-phrasing back-compat.
+- `tests/test_v140_query_aware_differentiator.py` — 9 tests pinning the query-aware hint logic, the multi-word-keyword precedence, and the back-compat with v1.3.x two-arg `explain_difference` calls.
+- `tests/test_v140_ambiguity_telemetry.py` — 3 tests pinning the structured-log shape for Path A, Path B, and the no-fire case.
+
+### Related
+
+- Issue [#100](https://github.com/jpazvd/unicefstats-mcp-dev/issues/100) — search_indicators paraphrase-sensitivity in `_normalize` + `_SYNONYMS` lookup. This release addresses the `_SYNONYMS`-table portion (option (d) in the [review comment](https://github.com/jpazvd/unicefstats-mcp-dev/issues/100#issuecomment-4623378056)). The full MCP-version-prefix-delta channel that surfaces under temperature=0 greedy sampling is documented as a residual confound; a follow-up validation batch is gated on the falsification test.
+
+## [1.3.1] — 2026-06-04
+
+### Changed (reverts v1.3.0 default behavior)
+
+- **Reverted v1.3.0's automatic `cascade_on_empty` enable.** The kwarg is now caller opt-in: `get_data(...)` no longer passes `cascade_on_empty=True` to upstream `unicefData()` by default, even on multi-dataflow indicators with a year/country filter. The v1.2.4 deterministic topic-first routing is the default contract again.
+
+  **Why**: the v9 Arm B validation (HOLD verdict on 2026-06-03; see `unicef-sdg-llm-benchmark-dev/scripts/v9/02_batch/decide_v280_publish.py`) showed v1.3.0's auto-enable produced bidirectional EQA changes — +0.94 EQA on n=25 FIRE_RECOVERABLE cells (cells v1.2.4 returned no data for) versus −0.79 EQA on n=28 FIRE_ALREADY_WORKING cells (cells v1.2.4 already returned correctly). The follow-up deep-dive ([#100](https://github.com/jpazvd/unicefstats-mcp-dev/issues/100), 2026-06-04) attributed BOTH directions to LLM-query paraphrase variance interacting with the MCP's heuristic ambiguity gate in `search_indicators` (`server.py:785-819`), NOT to `cascade_on_empty` itself — 0/25 regressions show a `get_data` call whose `dataflow_used` differs between versions. Shipping the v1.3.0 auto-enable would have carried a misleading "+0.94 lift" framing over a bidirectional null signal. Reverting to caller opt-in restores deterministic v1.2.4 routing as the default contract.
+
+- **New `get_data(...)` parameter `cascade_on_empty: bool = False`** — explicit per-call control. When True AND the indicator has ≥2 dataflows in metadata AND a year or country filter is set AND the installed `unicefdata` supports the kwarg (≥2.8), the MCP passes through to upstream. Otherwise: byte-identical to v1.2.4. The Field description documents the cost (+1 to +N SDMX round-trips) / benefit (recovers data on multi-dataflow indicators with empty primary responses) / caveat (walked dataflow may use different methodology — inspect `dataflow_used` in the response).
+
+### Related issues
+
+- [#99](https://github.com/jpazvd/unicefstats-mcp-dev/issues/99) — cascade auto-enable was the original scope; addressed here by removing the auto-enable. The actual root cause of the v9 Arm B HOLD is filed separately as [#100](https://github.com/jpazvd/unicefstats-mcp-dev/issues/100).
+- [#100](https://github.com/jpazvd/unicefstats-mcp-dev/issues/100) — paraphrase variance × `search_indicators` ambiguity gate (the real fix, planned for a future version).
+
+### Tests
+
+- `tests/test_v131_no_auto_cascade.py` — asserts `cascade_on_empty` is NOT passed to `ud_kwargs` when the caller does not request it (the v1.3.1 contract).
+- `tests/test_v130_cascade_on_empty.py` — rewritten to assert opt-in flow-through: kwarg passes through ONLY when caller explicitly sets `cascade_on_empty=True` AND the gating invariants hold.
+
+## [1.3.0] — 2026-06-02
+
+### Added
+
+- **Cascade-on-empty dataflow fallback** for multi-dataflow indicators. When `get_data` is called with a year or country filter against an indicator whose `INDICATORS_METADATA` declares ≥2 dataflows, the MCP passes `cascade_on_empty=True` to the upstream `unicefdata` call. The upstream walks the fallback cascade even on year/country-filtered empties, closing the 180-query regression (~12.1% of the Arm B subset) surfaced in the v1.2.4 Arm B re-run vs the published v0.8.0 canonical (see `unicef-sdg-llm-benchmark-dev/results/v9/analysis/arm_b_v124_n1484_addendum.md`).
+- **New helper** `unicefstats_mcp.dimensions.should_cascade_on_empty(code)` — returns True iff the indicator has ≥2 dataflows in `INDICATORS_METADATA`. Used to gate the cascade kwarg so single-dataflow indicators (where the cascade would walk uselessly) don't pay the +1 to +N SDMX round-trip cost.
+- **Runtime detection** `unicefstats_mcp.server._upstream_supports_cascade_on_empty()` — introspects the installed `unicefdata.unicefData` signature once at module load to detect whether the `cascade_on_empty` kwarg is supported (added upstream in `unicefdata>=2.8.0`). Until the pin bumps to `>=2.8,<3` in the Phase 4 release commit, the detector returns False on the older pinned-floor PyPI install, the MCP silently falls back to v1.2.4 behavior, and CI stays green throughout the deferred-PyPI workflow.
+
+### Changed
+
+- Aggregate ΔEQA on the 1,484-cell Arm B subset (paired vs v0.8.0 canonical): projected **+0.094pp on top of v1.2.4** (from 2.06× aggregate lift → ~2.48×). Driven by recovering ~153 of the 180 worse-EQA queries where the GLOBAL_DATAFLOW fallback would serve the data. Validated by the v9 Arm B subset re-run in Phase 3 of the cascade-on-empty plan (`unicef-sdg-llm-benchmark-dev/internal/plan-cascade-on-empty-2026-06-02.md`).
+
+### Notes
+
+- **`unicefdata` pin DEFERRED** for now (`>=2.4,<3` unchanged). Final release will bump to `>=2.8,<3` once `unicefdata 2.8.0` publishes to PyPI (Phase 4.1 of the cascade-on-empty plan).
+- v1.3.0's behavior is fully transparent: clients connecting to the MCP see the same envelope shapes as v1.2.4. The new data simply appears in `get_data` responses that would previously have been empty.
+- 5 mock-tier tests in `tests/test_v130_cascade_on_empty.py` + 1 live-SDMX integration test (network-gated via `RUN_LIVE_TESTS=1`). 473 tests pass (was 468 at v1.2.4).
+
 ## [1.2.4] — 2026-06-01
 
 ### Added

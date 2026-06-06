@@ -71,6 +71,13 @@ _SYNONYMS: dict[str, str] = {
     "youth literacy": "ED_15-24_LR",
     "literacy rate 15-24": "ED_15-24_LR",
     # ── WASH ─────────────────────────────────────────────────────────
+    # v1.5.1 — WS_PPL_W-UI ("unimproved drinking water") needs explicit
+    # synonyms because the v1.5.0 Tier 2c Jaccard tier matched 'unimproved
+    # drinking water' against 'basic drinking water' (overlap 2/4) at
+    # score 70 and routed the semantic antonym to WS_PPL_W-ALB. Listed
+    # before the WS_PPL_W-ALB keys so the antonym class is unambiguous.
+    "unimproved drinking water": "WS_PPL_W-UI",
+    "unimproved water": "WS_PPL_W-UI",
     "basic drinking water": "WS_PPL_W-ALB",
     "drinking water access": "WS_PPL_W-ALB",
     "safely managed drinking water": "WS_PPL_W-SM",
@@ -85,6 +92,16 @@ _SYNONYMS: dict[str, str] = {
     "antenatal care": "MNCH_ANC1",
     "antenatal care 1": "MNCH_ANC1",
     "anc1": "MNCH_ANC1",
+    # v1.5.1 — explicit MNCH_ANC4 synonyms. Without these, the v1.5.0
+    # Tier 2c substring tier matched 'antenatal care 4 visits' (with '+'
+    # stripped by _normalize) against synonym 'antenatal care' at score
+    # 85, dropping the '4 visits' qualifier and resolving to MNCH_ANC1
+    # (one visit). The v1.5.1 substring length-ratio guard plus these
+    # synonyms together eliminate the misroute.
+    "antenatal care 4 visits": "MNCH_ANC4",
+    "antenatal care 4 or more visits": "MNCH_ANC4",
+    "anc4": "MNCH_ANC4",
+    "anc 4": "MNCH_ANC4",
     "anc 1": "MNCH_ANC1",
     # Note: do NOT add "anc 1+" here — `_normalize` strips '+' as a separator,
     # so the lookup key would never match. Use the post-normalize form above.
@@ -255,7 +272,10 @@ def _normalize(s: str) -> str:
     """Lowercase, strip diacritics, drop punctuation, collapse whitespace.
 
     Keeps hyphens (e.g., `ED_15-24_LR`) so they survive the round-trip
-    when callers pass codes verbatim.
+    when callers pass codes verbatim. Does NOT sort tokens — the order-
+    sensitive form is the primary lookup key. Paraphrase-stable lookup
+    uses the companion `_sort_tokens()` helper against
+    `_SYNONYMS_SORTED` as a strict fallback (v1.4.0, issue #100).
 
     Examples:
       "Under-Five Mortality Rate" → "under-five mortality rate"
@@ -279,6 +299,148 @@ def _normalize(s: str) -> str:
                 prev_space = True
         # else: drop apostrophes, quotes, brackets, etc.
     return "".join(out).strip()
+
+
+def _sort_tokens(normalized: str) -> str:
+    """Sort tokens within a normalised string for word-order-insensitive lookup.
+
+    Used by the v1.4.0 paraphrase-stable fallback against
+    ``_SYNONYMS_SORTED``. Tokens are split on whitespace, sorted
+    alphabetically, and re-joined with single spaces. Does not change
+    diacritic/case/punctuation handling — pure tokenwise reordering.
+
+    Examples:
+      "primary school completion rate"   → "completion primary rate school"
+      "completion rate primary school"   → "completion primary rate school"
+    """
+    return " ".join(sorted(normalized.split()))
+
+
+# v1.4.0 — sorted-token mirror of ``_SYNONYMS``, lazily built on first use.
+# Lets the resolver hit the same synonym for any token permutation of the
+# key. Token-bag collisions (two distinct synonym keys whose sorted-token
+# form matches a different code) are skipped so the fallback never
+# silently misroutes a query. See issue #100 (paraphrase × ambiguity gate)
+# for the empirical motivation.
+_SYNONYMS_SORTED: dict[str, str] = {}
+
+# v1.5.0 — tiered fuzzy-score threshold for ``_score_synonyms``. data360-mcp
+# uses 70 as the floor for fuzzy similarity; the v1.5.0 partial-batch diff
+# (1484 cells) flagged 8 cells where 'unimproved drinking water' Jaccard-tied
+# at exactly 0.5 overlap with 'basic drinking water' (score 70) and routed
+# to the semantic-antonym WS_PPL_W-ALB. v1.5.1 bumps the floor to 75 so the
+# Jaccard tier requires >2/3 token overlap before resolving — eliminates the
+# antonym-misroute class while preserving genuine paraphrase matches.
+_SYNONYM_SCORE_THRESHOLD: int = 75
+
+# v1.5.1 — substring tier length-ratio guard. The substring tier (score 85)
+# fired when a SHORT synonym key was contained in a much LONGER query,
+# ignoring the query's extra qualifier tokens. Example failure: query
+# 'antenatal care 4 visits' substring-matched synonym 'antenatal care' →
+# resolved to MNCH_ANC1 (one visit), dropping the '4 visits' qualifier
+# that meant MNCH_ANC4. Reject substring tier when the longer side has
+# >1.5× the shorter side's token count.
+_SUBSTRING_LENGTH_RATIO_CAP: float = 1.5
+
+
+def _score_synonyms(query_normalized: str) -> tuple[int, set[str]]:
+    """Tiered scoring against every key in ``_SYNONYMS``.
+
+    Borrowed from the data360-mcp ``CodelistResolver``'s
+    ``_search_global`` / ``_search_static`` cascade. Tiers:
+
+      score 100: exact normalised match (already caught by the primary
+                 ``_SYNONYMS`` lookup; included here for completeness).
+      score  95: exact no-space match (handles "viet nam" vs "vietnam"
+                 style space-joining).
+      score  90: sorted-token match (handles word-order permutations
+                 the primary lookup misses).
+      score  85: bidirectional substring match (handles token-drop
+                 variants like "deaths aged 15 to 24" → "deaths 15 24").
+      score  70-84: token-set Jaccard similarity (handles loose paraphrases
+                 like "Hib third dose" → "Hib vaccine third dose").
+
+    Returns ``(best_score, {codes at best_score})``. When multiple
+    synonym keys map to DIFFERENT codes at the same best score, the set
+    has ``len > 1`` and the caller must NOT pick a winner — let the
+    remaining resolver paths handle it (no silent misroute).
+    """
+    if not query_normalized:
+        return 0, set()
+    query_no_spaces = query_normalized.replace(" ", "")
+    query_tokens = set(query_normalized.split())
+    query_sorted = _sort_tokens(query_normalized)
+    best_score = 0
+    best_codes: set[str] = set()
+
+    for key, code in _SYNONYMS.items():
+        key_normalized = _normalize(key)
+        if not key_normalized:
+            continue
+        key_no_spaces = key_normalized.replace(" ", "")
+        key_tokens = set(key_normalized.split())
+        score = 0
+
+        if query_normalized == key_normalized:
+            score = 100
+        elif query_no_spaces == key_no_spaces:
+            score = 95
+        elif query_sorted and query_sorted == _sort_tokens(key_normalized):
+            score = 90
+        elif query_normalized in key_normalized or key_normalized in query_normalized:
+            # v1.5.1 — guard against extra-qualifier misroutes. If the
+            # query carries substantially more tokens than the matched
+            # synonym key (or vice versa), the extra tokens probably
+            # change the meaning ('antenatal care' → 'antenatal care 4
+            # visits' = MNCH_ANC4 ≠ MNCH_ANC1). Reject substring tier
+            # when the token-count ratio exceeds the cap.
+            q_n = len(query_tokens)
+            k_n = len(key_tokens)
+            if q_n and k_n:
+                ratio = max(q_n, k_n) / min(q_n, k_n)
+                if ratio <= _SUBSTRING_LENGTH_RATIO_CAP:
+                    score = 85
+        elif query_tokens and key_tokens:
+            overlap = query_tokens & key_tokens
+            union = query_tokens | key_tokens
+            if overlap and union:
+                jaccard = len(overlap) / len(union)
+                if jaccard >= 0.5:
+                    score = int(70 + 14 * (jaccard - 0.5) / 0.5)
+
+        if score > best_score:
+            best_score = score
+            best_codes = {code}
+        elif score == best_score and score > 0:
+            best_codes.add(code)
+
+    return best_score, best_codes
+
+
+def _ensure_synonyms_sorted_built() -> None:
+    """Build ``_SYNONYMS_SORTED`` lazily on first lookup.
+
+    Empty until the first ``resolve_indicator`` call needs it. Idempotent:
+    if already populated, no-ops. Collisions (sorted-token form maps to
+    multiple distinct codes) are dropped to keep the fallback safe.
+    """
+    if _SYNONYMS_SORTED:
+        return
+    collisions: set[str] = set()
+    for key, code in _SYNONYMS.items():
+        sorted_key = _sort_tokens(_normalize(key))
+        if not sorted_key or sorted_key in collisions:
+            continue
+        existing = _SYNONYMS_SORTED.get(sorted_key)
+        if existing is not None and existing != code:
+            # Two synonym keys with different word orders map to
+            # different codes once their tokens are sorted — drop the
+            # ambiguous entry. The original word-order-sensitive lookup
+            # remains authoritative for these queries.
+            _SYNONYMS_SORTED.pop(sorted_key, None)
+            collisions.add(sorted_key)
+            continue
+        _SYNONYMS_SORTED[sorted_key] = code
 
 
 @dataclass(frozen=True)
@@ -315,7 +477,9 @@ def _load_indicator_index() -> tuple[dict[str, str], dict[str, list[str]]]:
 
     yaml_path = os.path.join(
         os.path.dirname(unicefdata.__file__),
-        "metadata", "current", "_unicefdata_indicators_metadata.yaml",
+        "metadata",
+        "current",
+        "_unicefdata_indicators_metadata.yaml",
     )
     if not os.path.exists(yaml_path):
         return {}, {}
@@ -385,6 +549,25 @@ def resolve_indicator(input_str: str) -> IndicatorResolution:
                 original_input=input_str,
             )
 
+    # v1.4.0 — paraphrase-stable fallback. If the word-order-sensitive
+    # _SYNONYMS lookup missed, retry with the sorted-token form against
+    # _SYNONYMS_SORTED (built lazily at first lookup, with token-bag
+    # collisions skipped so this fallback can never silently misroute).
+    # Closes issue #100: "primary school completion rate" (in _SYNONYMS)
+    # and "completion rate primary school" (the v130 paraphrase that
+    # missed) now both resolve to ED_CR_L1 with status='synonym_match'.
+    _ensure_synonyms_sorted_built()
+    sorted_normalized = _sort_tokens(normalized)
+    if sorted_normalized and sorted_normalized in _SYNONYMS_SORTED:
+        code = _SYNONYMS_SORTED[sorted_normalized]
+        if code in code_to_name:
+            return IndicatorResolution(
+                status="synonym_match",
+                code=code,
+                name=code_to_name.get(code),
+                original_input=input_str,
+            )
+
     # Curated ambiguous phrases: refuse with disambiguation list.
     if normalized in _AMBIGUOUS:
         candidate_codes = [c for c in _AMBIGUOUS[normalized] if c in code_to_name]
@@ -401,9 +584,7 @@ def resolve_indicator(input_str: str) -> IndicatorResolution:
         if len(candidate_codes) > 1:
             return IndicatorResolution(
                 status="ambiguous",
-                candidates=tuple(
-                    (c, code_to_name.get(c, "")) for c in candidate_codes
-                ),
+                candidates=tuple((c, code_to_name.get(c, "")) for c in candidate_codes),
                 original_input=input_str,
             )
 
@@ -422,6 +603,24 @@ def resolve_indicator(input_str: str) -> IndicatorResolution:
             candidates=tuple((c, code_to_name.get(c, "")) for c in codes),
             original_input=input_str,
         )
+
+    # v1.5.0 — tiered fuzzy scorer (data360-mcp `CodelistResolver` pattern).
+    # Runs LAST so curated _AMBIGUOUS, _SYNONYMS, and name-index lookups all
+    # get priority. The scorer is the safety net for token-drop / token-add
+    # paraphrases ("deaths aged 15 to 24" → "deaths 15 24", "Hib third dose"
+    # → "Hib vaccine third dose") that the v1.4.0 _SYNONYMS_SORTED mirror
+    # cannot catch. Best-score ties across DIFFERENT codes are rejected
+    # (no silent misroute); unique winners above the threshold resolve.
+    best_score, best_codes = _score_synonyms(normalized)
+    if best_score >= _SYNONYM_SCORE_THRESHOLD and len(best_codes) == 1:
+        code = next(iter(best_codes))
+        if code in code_to_name:
+            return IndicatorResolution(
+                status="synonym_match",
+                code=code,
+                name=code_to_name.get(code),
+                original_input=input_str,
+            )
 
     return IndicatorResolution(status="unknown", original_input=input_str)
 
@@ -443,7 +642,8 @@ def resolve_indicators(
     """
     resolutions = [resolve_indicator(s) for s in inputs]
     resolved_codes = [
-        r.code for r in resolutions
+        r.code
+        for r in resolutions
         if r.status in ("code_passthrough", "synonym_match", "name_index_hit")
         and r.code is not None
     ]

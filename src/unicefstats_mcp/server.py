@@ -88,6 +88,7 @@ def _is_client_error(exc: BaseException) -> bool:
     # Fallback: word-bounded substring match. Match HTTP status as a standalone
     # token, not a substring (so "4040" / "404 Not Found" are handled correctly).
     import re as _re
+
     text = str(exc)
     if _re.search(r"\b(?:400|401|403|404|405|409|410|422)\b", text):
         return True
@@ -118,17 +119,21 @@ def _retry(
             if _is_client_error(exc):
                 raise
             if attempt < max_attempts - 1:
-                delay = min(base_delay * (2 ** attempt), max_delay)
+                delay = min(base_delay * (2**attempt), max_delay)
                 # Sanitize: strip embedded newlines/control chars from the
                 # exception message before it lands in a log line.
                 exc_safe = str(exc).replace("\n", " ").replace("\r", " ")
                 logger.info(
                     "Retry %d/%d after %.1fs: %s",
-                    attempt + 1, max_attempts, delay, exc_safe,
+                    attempt + 1,
+                    max_attempts,
+                    delay,
+                    exc_safe,
                 )
                 _time.sleep(delay)
     assert last_exc is not None  # loop ran at least once (max_attempts >= 1)
     raise last_exc
+
 
 mcp = FastMCP(
     name="unicefstats-mcp",
@@ -159,6 +164,40 @@ def _get_ud() -> types.ModuleType:
 
         _ud = ud
     return _ud
+
+
+_cascade_supported_cache: bool | None = None
+
+
+def _upstream_supports_cascade_on_empty() -> bool:
+    """Return True iff the installed ``unicefdata`` accepts the
+    ``cascade_on_empty`` kwarg on ``unicefData()`` — added in upstream
+    v2.8.0.
+
+    Detected by introspecting the function signature on first call (cached
+    process-wide). The pin floor in ``pyproject.toml`` stays at
+    ``unicefdata>=2.4,<3`` until the deferred-PyPI publish in Phase 4, so
+    CI installing the latest 2.4.x from PyPI returns False here and the
+    MCP transparently falls back to v1.2.4 behavior — no TypeError, no
+    silent failure mode. Once the pin bumps to ``>=2.8,<3`` and PyPI
+    serves 2.8.0+, this returns True and the kwarg flows through.
+    """
+    global _cascade_supported_cache
+    if _cascade_supported_cache is None:
+        try:
+            # Import directly (NOT via _get_ud) so this detector remains
+            # accurate when tests mock _get_ud — the kwarg-availability
+            # check must reflect the REAL installed unicefdata, not the
+            # mock.
+            import inspect
+
+            import unicefdata as _real_ud
+
+            sig = inspect.signature(_real_ud.unicefData)
+            _cascade_supported_cache = "cascade_on_empty" in sig.parameters
+        except Exception:
+            _cascade_supported_cache = False
+    return _cascade_supported_cache
 
 
 def _get_indicators() -> dict[str, dict[str, Any]]:
@@ -266,10 +305,10 @@ def _expand_synonyms(query: str) -> str:
 # All three label DERIVED metrics that share a stem with a canonical
 # indicator (e.g. CME_ARR_U5MR vs CME_MRY0T4), so we deprioritise them.
 _DERIVED_METRIC_CODE_PATTERNS: tuple[str, ...] = (
-    "TRGT_",       # TRGT = target — national target indicators (e.g. TRGT_2030_IM_DTP3)
-    "_ARR_",       # ARR = Annual Rate of Reduction (e.g. CME_ARR_U5MR)
-    "_ARR",        # ARR = Annual Rate of Reduction (trailing form)
-    "_PRJ",        # PRJ = projected variant (forecast/extrapolation)
+    "TRGT_",  # TRGT = target — national target indicators (e.g. TRGT_2030_IM_DTP3)
+    "_ARR_",  # ARR = Annual Rate of Reduction (e.g. CME_ARR_U5MR)
+    "_ARR",  # ARR = Annual Rate of Reduction (trailing form)
+    "_PRJ",  # PRJ = projected variant (forecast/extrapolation)
 )
 
 # NAME-level mirrors of the code-level grammar above. Same semantics,
@@ -321,8 +360,18 @@ def _is_derived_metric(code: str, name: str) -> bool:
 # _DERIVED_METRIC_CODE_PATTERNS above: TRGT = target, and these are
 # the English words a user might type for the same concept.
 _TARGET_QUERY_TOKENS: frozenset[str] = frozenset(
-    {"target", "targets", "goal", "goals", "objective", "objectives",
-     "aspiration", "aspirations", "milestone", "milestones"}
+    {
+        "target",
+        "targets",
+        "goal",
+        "goals",
+        "objective",
+        "objectives",
+        "aspiration",
+        "aspirations",
+        "milestone",
+        "milestones",
+    }
 )
 
 # v1.1.1 NOTE (FIX 2): _DIM_NAME_PATTERNS was REMOVED. Earlier drafts
@@ -594,8 +643,7 @@ def search_indicators(
         # truly off-topic regardless of query intent.
         if score > 0 and _is_derived_metric(code, name):
             is_trgt_like = (
-                code.upper().startswith("TRGT_")
-                or "national target" in name.lower()
+                code.upper().startswith("TRGT_") or "national target" in name.lower()
             )
             if not (is_trgt_like and seeks_target):
                 score -= 35
@@ -654,6 +702,7 @@ def search_indicators(
     # so the model can verify with the user before calling get_data
     # against the wrong variant. Closes the semantic half of issue #64.
     from .indicator_resolver import get_disambiguation_tip, resolve_indicator
+
     disambiguation_tip = get_disambiguation_tip(query) if matches else None
 
     # v1.2.3 fix (Copilot #91 L652): distinguish "no matches at all" from
@@ -729,14 +778,32 @@ def search_indicators(
     if resolution.status == "ambiguous" and resolution.candidates:
         # Path A — curated
         from .differentiator import explain_difference
+
         curated_codes = [c for c, _ in resolution.candidates]
+        # v1.4.0 — structured telemetry on every ambiguity_flag fire.
+        # Records are emitted on the `unicefstats_mcp.server` logger (this
+        # module's `__name__`). Operators can route that logger to JSONL via
+        # standard Python logging config (a JSONFormatter on a FileHandler
+        # attached to that logger name). The extras carry the diagnostic
+        # data the post-#100 forensic needed but had to recompute from
+        # parquet artefacts. No PII; query is the literal search string.
+        logger.info(
+            "ambiguity_flag fired (curated)",
+            extra={
+                "ambiguity_source": "curated",
+                "query": query,
+                "candidate_codes": curated_codes,
+                "candidate_count": len(curated_codes),
+                "top_relevance": None,
+            },
+        )
         payload["ambiguity_flag"] = True
         payload["ambiguity_source"] = "curated"
         payload["candidates"] = [
             {
                 "code": code,
                 "name": name,
-                "differentiator": explain_difference(code, curated_codes),
+                "differentiator": explain_difference(code, curated_codes, query=query),
             }
             for code, name in resolution.candidates
         ]
@@ -754,34 +821,111 @@ def search_indicators(
         # If the resolver returned name_index_hit / synonym_match /
         # code_passthrough it already picked a canonical winner and we
         # do NOT second-guess it.
+        #
+        # v1.4.0 — short-circuit Path B if the curated catalog has a
+        # clear answer. Issue #100's deep-dive found the heuristic was
+        # firing contradictorily on cells where lookup_preferred could
+        # resolve cleanly: the second-pass at line ~845 would then
+        # surface requires_confirmation=False alongside the heuristic's
+        # ambiguity_flag=True in the same payload — mixed signals to
+        # the LLM. Letting the curated path win at the gate is strictly
+        # safer than fighting it in the second pass.
+        from .curated import lookup_preferred as _early_curated_check
+
+        _curated_hit_pre_heuristic = _early_curated_check(query)
         top_relevance = results[0].get("relevance", 0)
-        if top_relevance < CANONICAL_RELEVANCE_THRESHOLD:
+        if (
+            _curated_hit_pre_heuristic is None
+            and top_relevance < CANONICAL_RELEVANCE_THRESHOLD
+        ):
             similar = [
-                r for r in results
+                r
+                for r in results
                 if r.get("relevance", 0) >= top_relevance - SIMILAR_RELEVANCE_WINDOW
             ]
-            if len(similar) >= MIN_SIMILAR_CANDIDATES:
+            # v1.5.0 — single-dataflow guard. If every candidate in `similar`
+            # resolves to the SAME primary dataflow, there is no dataflow-level
+            # ambiguity left to disambiguate (the LLM picking any of them
+            # would call the same SDMX endpoint). The v1.4.0 9-cell NON_ELIGIBLE
+            # regression (EIP_NEET_SEX_AGE_RT / ED_CR_*_UIS_MOD / HVA_EPI_INF_RT_*
+            # / EIP_2EET_SEX_RT) was driven by Path B firing on candidate clusters
+            # where every candidate shared a single dataflow — flagging those as
+            # ambiguous gives the LLM a misleading abstain signal. See the
+            # v140-residual-failure-investigation workflow synthesis.
+            _candidate_dataflows = {
+                _dims.primary_dataflow(r["code"]) for r in similar if r.get("code")
+            }
+            _candidate_dataflows.discard(None)
+            if (
+                len(similar) >= MIN_SIMILAR_CANDIDATES
+                and len(_candidate_dataflows) <= 1
+            ):
+                logger.info(
+                    "ambiguity_flag SUPPRESSED — single-dataflow cluster",
+                    extra={
+                        "query": query,
+                        "candidate_codes": [
+                            r["code"] for r in similar[:HEURISTIC_CANDIDATE_CAP]
+                        ],
+                        "shared_dataflow": next(iter(_candidate_dataflows), None),
+                    },
+                )
+            elif len(similar) >= MIN_SIMILAR_CANDIDATES:
                 from .differentiator import explain_difference
+
                 similar_capped = similar[:HEURISTIC_CANDIDATE_CAP]
                 heuristic_codes = [r["code"] for r in similar_capped]
+                # v1.4.0 — structured telemetry, same shape as Path A.
+                logger.info(
+                    "ambiguity_flag fired (heuristic)",
+                    extra={
+                        "ambiguity_source": "heuristic",
+                        "query": query,
+                        "candidate_codes": heuristic_codes,
+                        "candidate_count": len(heuristic_codes),
+                        "top_relevance": top_relevance,
+                        "similar_window_size": SIMILAR_RELEVANCE_WINDOW,
+                        "min_similar_candidates": MIN_SIMILAR_CANDIDATES,
+                    },
+                )
                 payload["ambiguity_flag"] = True
                 payload["ambiguity_source"] = "heuristic"
                 payload["candidates"] = [
                     {
                         "code": r["code"],
                         "name": r["name"],
-                        "differentiator": explain_difference(r["code"], heuristic_codes),
+                        "differentiator": explain_difference(
+                            r["code"], heuristic_codes, query=query
+                        ),
                     }
                     for r in similar_capped
                 ]
+                # v1.5.0 — cooperative-disambiguation instruction (faostat-mcp
+                # pattern: the FAOSTAT MCP's search_codes tool surfaces an
+                # explicit requires_confirmation contract that lets the LLM
+                # proceed when the candidate set has a clear winner).
+                # The v1.4.0 instruction said "STOP — emit a final response
+                # listing the candidates above" which caused the LLM to
+                # abstain even when ONE candidate uniquely matched the
+                # query's tier hints (e.g., "completion rate primary"
+                # against L1/L2/L3 siblings — the LLM has enough info
+                # to pick L1 cleanly but was forced to halt). The v1.5.0
+                # instruction lets the LLM proceed when a candidate's
+                # `differentiator` field unambiguously matches the query,
+                # and only halt when no candidate is clearly preferred.
                 payload["abstain_instruction"] = (
                     "Search returned multiple candidates with similar "
-                    "relevance and no canonical match. STOP — emit a "
-                    "final response listing the candidates above and "
-                    "ask the requester to specify a code, OR abstain. "
-                    "Do NOT call search_indicators again with a different "
-                    "keyword — none of the candidates is canonical for "
-                    "this query."
+                    "relevance. Each candidate carries a `differentiator` "
+                    "field summarising what makes it distinct. If ONE "
+                    "candidate's differentiator unambiguously matches the "
+                    "user query (e.g., the query specifies 'primary' and "
+                    "exactly one candidate's differentiator names L1 / "
+                    "primary), call get_indicator_info on that candidate "
+                    "and proceed. Otherwise — when two or more candidates "
+                    "are equally plausible given the differentiators — "
+                    "STOP, list the candidates above, and ask the requester "
+                    "to specify a code. Do NOT call search_indicators again "
+                    "with the same query — the result will be identical."
                 )
 
     # v1.1.1 Decision order (REORDERED — curated takes precedence over
@@ -1060,9 +1204,7 @@ def list_countries(
 # ---------------------------------------------------------------------------
 
 
-def _build_indicator_envelope(
-    code: str, info: dict[str, Any]
-) -> dict[str, Any]:
+def _build_indicator_envelope(code: str, info: dict[str, Any]) -> dict[str, Any]:
     """Shared envelope shape for ``get_indicator_info`` + ``lookup_by_code``.
 
     v1.2.0 single source of truth — pins the v1.1.x copy-paste hazard
@@ -1249,6 +1391,7 @@ def lookup_by_code(
     # the input wasn't a code — redirect to search_indicators instead
     # of silently resolving (which would defeat the two-tool design).
     from .indicator_resolver import resolve_indicator
+
     resolution = resolve_indicator(code)
     if resolution.status != "code_passthrough":
         return error(
@@ -1359,14 +1502,16 @@ def get_temporal_coverage(
     try:
         ud = _get_ud()
         # Fetch a minimal sample: totals only, all countries, to get year range
-        df = _retry(lambda: ud.unicefData(
-            indicator=code,
-            sex="_T",
-            totals=True,
-            tidy=True,
-            country_names=False,
-            simplify=True,
-        ))
+        df = _retry(
+            lambda: ud.unicefData(
+                indicator=code,
+                sex="_T",
+                totals=True,
+                tidy=True,
+                country_names=False,
+                simplify=True,
+            )
+        )
     except Exception as exc:
         return error(
             f"Failed to fetch temporal coverage for '{code}': {exc}",
@@ -1639,6 +1784,31 @@ def get_data(
             deprecated=True,
         ),
     ] = None,
+    # v1.3.1 — caller-opt-in cascade fallback. Replaces v1.3.0's automatic
+    # enable. Default is False so the MCP's v1.2.4 deterministic topic-first
+    # routing is the contract; callers (and LLMs) that want the multi-dataflow
+    # walk request it explicitly per call. See issue #99 + the v9 Arm B HOLD
+    # verdict on the v2.8.0 cascade rollout.
+    cascade_on_empty: Annotated[
+        bool,
+        Field(
+            description=(
+                "Opt into upstream `unicefdata`'s multi-dataflow cascade. "
+                "When True AND the indicator has ≥2 dataflows in metadata "
+                "AND a year or country filter is set, an empty primary-"
+                "dataflow response causes upstream to walk fallback "
+                "dataflows (typically GLOBAL_DATAFLOW) for the same code. "
+                "COST: +1 to +N SDMX round-trips on the unhappy path. "
+                "BENEFIT: recovers data on multi-dataflow indicators where "
+                "the topic-specific dataflow doesn't carry the requested "
+                "country/year. CAVEAT: the walked dataflow may use "
+                "different methodology / aggregation than the primary "
+                "(e.g. GLOBAL_DATAFLOW values can be modelled estimates "
+                "where the primary is observed survey data); inspect "
+                "`dataflow_used` in the response to confirm."
+            ),
+        ),
+    ] = False,
 ) -> dict[str, Any]:
     """Fetch UNICEF data for an indicator and one or more countries.
 
@@ -1747,10 +1917,12 @@ def get_data(
             f"Indicator '{indicator}' is ambiguous — it matches multiple codes. "
             f"Pass one of these specific codes (or a more precise name):\n{candidate_lines}",
             tip="Use search_indicators() if you need to browse further.",
-            extra={"indicator_disambiguation": [
-                {"code": code, "name": name}
-                for code, name in indicator_resolution.candidates
-            ]},
+            extra={
+                "indicator_disambiguation": [
+                    {"code": code, "name": name}
+                    for code, name in indicator_resolution.candidates
+                ]
+            },
         )
     if indicator_resolution.status in (
         "code_passthrough",
@@ -2052,6 +2224,36 @@ def get_data(
     if effective_filters:
         mode = "raw_filtered"
         ud_kwargs["raw"] = True
+    # v1.3.1 — caller-opt-in cascade_on_empty.
+    #
+    # v1.3.0 auto-enabled this kwarg whenever the indicator carried ≥2
+    # dataflows in metadata AND a year/country filter was set. The v9 Arm B
+    # validation (decide_v280_publish.py on 2026-06-03, HOLD verdict) showed
+    # the auto-enable produced bidirectional EQA changes (+0.94 on n=25
+    # FIRE_RECOVERABLE, -0.79 on n=28 FIRE_ALREADY_WORKING). The follow-up
+    # deep-dive (see issue #100) attributed both directions to LLM-query
+    # paraphrase variance interacting with the MCP's heuristic ambiguity
+    # gate, NOT to cascade_on_empty itself — but the net effect of shipping
+    # v1.3.0's auto-enable would still be a misleading "+0.94 lift" framing
+    # over a bidirectional null signal. Reverting to caller opt-in restores
+    # the deterministic v1.2.4 routing as the contract.
+    #
+    # v1.3.1 forwards the kwarg ONLY when the caller explicitly passes
+    # ``cascade_on_empty=True`` AND the gating invariants still hold
+    # (multi-dataflow indicator, year/country filter, upstream supports the
+    # kwarg). Default behavior is byte-identical to v1.2.4.
+    #
+    # The upstream-support check is preserved so that callers passing
+    # ``cascade_on_empty=True`` against an older unicefdata install
+    # silently fall back to v1.2.4 behavior (no TypeError, no surprise
+    # crash) — matching the v1.3.0 deferred-PyPI safety net.
+    if (
+        cascade_on_empty
+        and _dims.should_cascade_on_empty(indicator)
+        and (year_arg is not None or bool(countries))
+        and _upstream_supports_cascade_on_empty()
+    ):
+        ud_kwargs["cascade_on_empty"] = True
 
     try:
         ud = _get_ud()
@@ -2219,7 +2421,9 @@ def get_data(
         filter_tip = ""
         if disagg_summary:
             dims = ", ".join(disagg_summary.keys())
-            filter_tip = f" Data contains disaggregations by {dims} — filter to reduce rows."
+            filter_tip = (
+                f" Data contains disaggregations by {dims} — filter to reduce rows."
+            )
         warnings.append(
             f"Results truncated: showing {len(records)} of {total_rows} rows.{filter_tip}"
             f" Increase limit (max 500) or narrow filters to see all data."
@@ -2239,7 +2443,10 @@ def get_data(
             actual_years = set()
         if actual_years:
             missing_years = expected_years - actual_years
-            if len(missing_years) > len(expected_years) * 0.5 and len(missing_years) > 2:
+            if (
+                len(missing_years) > len(expected_years) * 0.5
+                and len(missing_years) > 2
+            ):
                 warnings.append(
                     "Sparse year coverage — this indicator may be survey-based "
                     "(DHS/MICS, collected every 3-5 years). Year gaps are expected "
@@ -2892,7 +3099,9 @@ def categories_resource() -> str:
         cat = info.get("category", "Uncategorized")
         cats[cat] = cats.get(cat, 0) + 1
     n_cats, n_inds = len(cats), len(indicators)
-    lines = [f"# UNICEF Indicator Categories ({n_cats} categories, {n_inds} indicators)\n"]
+    lines = [
+        f"# UNICEF Indicator Categories ({n_cats} categories, {n_inds} indicators)\n"
+    ]
     for cat in sorted(cats):
         lines.append(f"- {cat}: {cats[cat]} indicators")
     return "\n".join(lines)
@@ -3072,28 +3281,30 @@ def get_server_metadata() -> dict[str, Any]:
     and to inspect its canonical identity, data source, and publisher information.
     No API call — returns local metadata only.
     """
-    return ok({
-        "name": "io.github.jpazvd/unicefstats-mcp",
-        "title": "UNICEF Stats MCP",
-        "version": __version__,
-        "publisher": {
-            "name": "Joao Pedro Azevedo",
-            "github": "jpazvd",
-            "status": "Experimental — not an official UNICEF product",
-        },
-        "canonical_source": "https://github.com/jpazvd/unicefstats-mcp",
-        "pypi_package": "https://pypi.org/project/unicefstats-mcp/",
-        "registry_identity": "io.github.jpazvd/unicefstats-mcp",
-        "data_source": {
-            "name": "UNICEF Data Warehouse",
-            "protocol": "SDMX REST v2.1",
-            "endpoint": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
-            "access": "public",
-            "authentication": "none",
-        },
-        "license": "MIT",
-        "provenance_doc": "https://github.com/jpazvd/unicefstats-mcp/blob/main/PROVENANCE.md",
-    })
+    return ok(
+        {
+            "name": "io.github.jpazvd/unicefstats-mcp",
+            "title": "UNICEF Stats MCP",
+            "version": __version__,
+            "publisher": {
+                "name": "Joao Pedro Azevedo",
+                "github": "jpazvd",
+                "status": "Experimental — not an official UNICEF product",
+            },
+            "canonical_source": "https://github.com/jpazvd/unicefstats-mcp",
+            "pypi_package": "https://pypi.org/project/unicefstats-mcp/",
+            "registry_identity": "io.github.jpazvd/unicefstats-mcp",
+            "data_source": {
+                "name": "UNICEF Data Warehouse",
+                "protocol": "SDMX REST v2.1",
+                "endpoint": "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest",
+                "access": "public",
+                "authentication": "none",
+            },
+            "license": "MIT",
+            "provenance_doc": "https://github.com/jpazvd/unicefstats-mcp/blob/main/PROVENANCE.md",
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -3112,11 +3323,15 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="UNICEF Stats MCP Server")
     parser.add_argument(
-        "--transport", choices=["stdio", "sse"], default="stdio",
+        "--transport",
+        choices=["stdio", "sse"],
+        default="stdio",
         help="Transport protocol (default: stdio)",
     )
     parser.add_argument(
-        "--port", type=int, default=8000,
+        "--port",
+        type=int,
+        default=8000,
         help="Port for SSE transport (default: 8000)",
     )
     args = parser.parse_args()

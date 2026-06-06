@@ -185,6 +185,38 @@ def primary_dataflow(code: str) -> str | None:
     return None
 
 
+def should_cascade_on_empty(code: str) -> bool:
+    """Return True if cascading fallback dataflows on an empty
+    year/country-filtered result is likely to recover data.
+
+    True iff the indicator has >= 2 dataflows in ``INDICATORS_METADATA`` —
+    i.e. the same code lives in a topic-specific dataflow AND in at least
+    one fallback (typically ``GLOBAL_DATAFLOW``). For single-dataflow
+    indicators the cascade would walk uselessly.
+
+    Wired into ``get_data``'s ``unicefData()`` call as one of four gates
+    (v1.3.1): when this returns True AND a year or country filter is set
+    AND the caller explicitly passes ``cascade_on_empty=True`` AND the
+    installed unicefdata supports the kwarg, the MCP forwards
+    ``cascade_on_empty=True`` so the upstream walk continues past an empty
+    topic-specific dataflow.
+
+    v1.3.0 auto-enabled the upstream kwarg on this helper's True return.
+    v1.3.1 reverted the auto-enable after the v9 Arm B validation surfaced
+    bidirectional EQA changes that the follow-up deep-dive (#100)
+    attributed primarily to LLM-query paraphrase variance × the MCP's
+    heuristic ambiguity gate in ``search_indicators``, not to
+    ``cascade_on_empty`` itself. Cascade pass-through is now caller opt-in
+    only. Requires ``unicefdata>=2.8.0`` upstream (the cascade_on_empty
+    kwarg lives there).
+    """
+    meta = load_indicator_metadata().get(code) or {}
+    df = meta.get("dataflows") or []
+    if isinstance(df, str):
+        df = [df]
+    return len([x for x in df if isinstance(x, str)]) >= 2
+
+
 def indicator_disaggregations(code: str) -> list[str]:
     """Return the indicator's own disaggregations list (from metadata YAML).
 
