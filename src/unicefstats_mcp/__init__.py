@@ -1,3 +1,3 @@
 """UNICEF Stats MCP Server — query child development indicators via Model Context Protocol."""
 
-__version__ = "1.5.1"
+__version__ = "1.5.5"

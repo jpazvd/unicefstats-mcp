@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time as _time
 import types
 from collections.abc import Callable
@@ -132,6 +133,113 @@ def _retry(
                 )
                 _time.sleep(delay)
     assert last_exc is not None  # loop ran at least once (max_attempts >= 1)
+    raise last_exc
+
+
+# ---------------------------------------------------------------------------
+# v1.5.5 — opt-in SDMX throttle + retry-on-403 for batch / WAF-burst scenarios
+# ---------------------------------------------------------------------------
+#
+# The v1.5.4 benchmark batches surfaced a recurring failure mode: UNICEF SDMX's
+# WAF / per-IP rate-limiter triggers above a sustained request-volume threshold
+# (~50-100 calls/min) and 403s 60-80% of requests for the next 60-90 min. The
+# bursts re-fire each time a 1484-cell batch starts hammering, regardless of
+# wall-clock recovery windows.
+#
+# v1.5.5 adds two opt-in defences, gated on environment variables so normal
+# (non-batch) MCP server use is unaffected:
+#
+#   UNICEFSTATS_SDMX_THROTTLE_MS  Minimum inter-call delay (ms) between
+#                                 SDMX `unicefData()` calls in this process.
+#                                 Default 0 (no throttle). Recommended 200-500
+#                                 for batch use. Stays below the WAF trigger
+#                                 threshold by capping rate.
+#
+#   UNICEFSTATS_SDMX_RETRY_403=1  When set, SDMXForbiddenError (403) is retried
+#                                 with exponential backoff (30s, 60s, 120s,
+#                                 max 3 attempts) instead of failing
+#                                 immediately. Lets a long-running batch
+#                                 survive transient WAF bursts. Default off
+#                                 because in a non-burst scenario, a 403
+#                                 typically means a real ACL deny and 90+ s
+#                                 of backoff is wasted time.
+
+_THROTTLE_MS_ENV = "UNICEFSTATS_SDMX_THROTTLE_MS"
+_RETRY_403_ENV = "UNICEFSTATS_SDMX_RETRY_403"
+_403_RETRY_DELAYS_S: tuple[float, ...] = (30.0, 60.0, 120.0)
+_last_sdmx_call_ts: list[float] = [0.0]  # mutable singleton for module-level state
+
+
+def _throttle_ms() -> int:
+    """Return the configured inter-call throttle in milliseconds (0 = off)."""
+    raw = os.environ.get(_THROTTLE_MS_ENV, "0")
+    try:
+        v = int(raw)
+        return max(0, v)
+    except ValueError:
+        return 0
+
+
+def _retry_403_enabled() -> bool:
+    return os.environ.get(_RETRY_403_ENV, "0").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
+
+
+def _is_403(exc: Exception) -> bool:
+    """Match the SDMX `Access Denied (403)` exception class without depending
+    on the upstream `unicefdata.exceptions` module being importable here."""
+    name = type(exc).__name__
+    if name == "SDMXForbiddenError":
+        return True
+    msg = str(exc)
+    return "403" in msg and ("Access Denied" in msg or "permission" in msg.lower())
+
+
+def _sleep_to_throttle() -> None:
+    """Honour the inter-call throttle if configured. No-op when set to 0."""
+    throttle_ms = _throttle_ms()
+    if throttle_ms <= 0:
+        return
+    now = _time.monotonic()
+    since = (now - _last_sdmx_call_ts[0]) * 1000.0
+    if since < throttle_ms:
+        _time.sleep((throttle_ms - since) / 1000.0)
+    _last_sdmx_call_ts[0] = _time.monotonic()
+
+
+def _call_sdmx(fn: Callable[[], T]) -> T:
+    """v1.5.5 wrapper around an SDMX-fetching closure.
+
+    Applies the inter-call throttle (if `UNICEFSTATS_SDMX_THROTTLE_MS` > 0),
+    then dispatches via the existing `_retry` (network/5xx backoff). If the
+    closure raises a 403 AND `UNICEFSTATS_SDMX_RETRY_403=1`, retries with
+    long backoff (30s/60s/120s) so a mid-burst batch can survive the WAF
+    window. When the env is off, 403 is re-raised immediately exactly as
+    before (preserves the v1.5.4 behaviour for non-batch use)."""
+    _sleep_to_throttle()
+    if not _retry_403_enabled():
+        return _retry(fn)
+    last_exc: BaseException | None = None
+    for attempt, delay_s in enumerate((0.0, *_403_RETRY_DELAYS_S)):
+        if delay_s > 0:
+            logger.info(
+                "v1.5.5 SDMX 403 backoff attempt %d/%d after %.0fs",
+                attempt,
+                len(_403_RETRY_DELAYS_S),
+                delay_s,
+            )
+            _time.sleep(delay_s)
+        try:
+            return _retry(fn)
+        except Exception as exc:
+            last_exc = exc
+            if not _is_403(exc):
+                raise  # non-403 client error or other failure — preserve current behaviour
+    assert last_exc is not None
     raise last_exc
 
 
@@ -1501,8 +1609,10 @@ def get_temporal_coverage(
     """
     try:
         ud = _get_ud()
-        # Fetch a minimal sample: totals only, all countries, to get year range
-        df = _retry(
+        # Fetch a minimal sample: totals only, all countries, to get year range.
+        # v1.5.5 — routes via _call_sdmx so the opt-in throttle + 403-retry
+        # apply uniformly across all SDMX fetches in the MCP.
+        df = _call_sdmx(
             lambda: ud.unicefData(
                 indicator=code,
                 sex="_T",
@@ -2257,7 +2367,9 @@ def get_data(
 
     try:
         ud = _get_ud()
-        df = _retry(lambda: ud.unicefData(**ud_kwargs))
+        df = _call_sdmx(
+            lambda: ud.unicefData(**ud_kwargs)
+        )  # v1.5.5 — throttle + 403 retry
     except Exception as exc:
         exc_str = str(exc)
         exc_lower = exc_str.lower()
@@ -2325,7 +2437,9 @@ def get_data(
             fallback_kwargs = {k: v for k, v in ud_kwargs.items() if k != "raw"}
             df_totals: Any = None
             try:
-                df_totals = _retry(lambda: ud.unicefData(**fallback_kwargs))
+                df_totals = _call_sdmx(
+                    lambda: ud.unicefData(**fallback_kwargs)
+                )  # v1.5.5
             except Exception:  # noqa: BLE001 — best-effort; falls through to no_data
                 df_totals = None
             if df_totals is None or df_totals.empty:

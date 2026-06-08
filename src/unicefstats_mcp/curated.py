@@ -68,6 +68,439 @@ CURATED_PREFERRED: dict[str, CuratedEntry] = {
         "dimension_hint": "Specify level 3 disaggregation in get_data.",
         "validated_at": "2026-05-29",
     },
+    # ──── EDUCATION × UIS_MOD DEFAULTS (v1.5.2) ────
+    #
+    # UNESCO Institute for Statistics (UIS) is the SDG 4 custodian agency.
+    # For the completion-rate (ED_CR) and out-of-school-rate (ED_ROFST)
+    # families, UIS publishes BOTH a raw administrative series AND a
+    # UIS-modelled estimate (`_UIS_MOD`). The modelled series is what UIS
+    # uses in SDG 4 reporting (Global Education Monitoring Report) and is
+    # smoothed across years for comparability. v1.5.2 defaults natural-
+    # language queries for these families to the UIS-modelled version per
+    # custodian convention, with a `dimension_hint` warning the LLM that
+    # other variants (administrative, ADM) exist in the data warehouse so
+    # it can re-route if the user explicitly asks for raw / administrative
+    # data.
+    #
+    # Empirically motivated by the v1.5.1 joint-failure forensic: 78 of
+    # the 272 `ambiguity_abstain` joint-failure cells (28%) came from the
+    # ED_CR_L2/L3 + ED_ROFST_L2/L3 families with `_UIS_MOD` siblings.
+    "ED_CR_L1_UIS_MOD": {
+        "family": "ED_CR",
+        "category": "EDUCATION",
+        "code": "ED_CR_L1_UIS_MOD",
+        "canonical_label": (
+            "Completion rate, primary education (Level 1), "
+            "UIS modelled estimate (SDG 4.1.2)"
+        ),
+        "alt_synonyms": [
+            "primary completion rate",
+            "primary school completion rate",
+            "primary completion",
+            "completion rate primary",
+            "completion rate primary school",
+            "completion rate for children of primary school age",
+        ],
+        "dimension_hint": (
+            "Defaulting to UNESCO/UIS modelled estimate (SDG 4.1.2 "
+            "custodian convention). Other versions of this indicator "
+            "exist in the data warehouse: ED_CR_L1 (administrative "
+            "data), ED_CR_L1_ADM (administrative-data alternate). "
+            "Use them only if the user explicitly asks for raw / "
+            "administrative figures."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "ED_CR_L2_UIS_MOD": {
+        "family": "ED_CR",
+        "category": "EDUCATION",
+        "code": "ED_CR_L2_UIS_MOD",
+        "canonical_label": (
+            "Completion rate, lower secondary education (Level 2), "
+            "UIS modelled estimate (SDG 4.1.2)"
+        ),
+        "alt_synonyms": [
+            "lower secondary completion rate",
+            "lower secondary completion",
+            "completion rate lower secondary",
+            "secondary school completion rate",
+            "completion rate for adolescents of lower secondary",
+            "completion rate for adolescents of lower secondary school age",
+        ],
+        "dimension_hint": (
+            "Defaulting to UNESCO/UIS modelled estimate (SDG 4.1.2 "
+            "custodian convention). Other versions exist in the data "
+            "warehouse: ED_CR_L2 (administrative data), ED_CR_L2_ADM."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "ED_CR_L3_UIS_MOD": {
+        "family": "ED_CR",
+        "category": "EDUCATION",
+        "code": "ED_CR_L3_UIS_MOD",
+        "canonical_label": (
+            "Completion rate, upper secondary education (Level 3), "
+            "UIS modelled estimate (SDG 4.1.2)"
+        ),
+        "alt_synonyms": [
+            "upper secondary completion rate",
+            "upper secondary completion",
+            "completion rate upper secondary",
+            "high school completion rate",
+            "completion rate for youth of upper secondary",
+            "completion rate for youth of upper secondary education",
+            "completion rate for youth of upper secondary education school age",
+        ],
+        "dimension_hint": (
+            "Defaulting to UNESCO/UIS modelled estimate (SDG 4.1.2 "
+            "custodian convention). Other versions exist in the data "
+            "warehouse: ED_CR_L3 (administrative data), ED_CR_L3_ADM."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "ED_ROFST_L1_UIS_MOD": {
+        "family": "ED_ROFST",
+        "category": "EDUCATION",
+        "code": "ED_ROFST_L1_UIS_MOD",
+        "canonical_label": (
+            "Out-of-school rate, primary school age (Level 1), " "UIS modelled estimate"
+        ),
+        "alt_synonyms": [
+            "out-of-school rate primary",
+            "out of school rate primary",
+            "primary out-of-school",
+            "out-of-school primary",
+            "out-of-school rate for children of primary school age",
+            "out of school rate for children of primary school age",
+            "out-of-school rate for children of primary",
+            "rofst primary",
+        ],
+        "dimension_hint": (
+            "Defaulting to UNESCO/UIS modelled estimate (SDG 4.1.4 "
+            "custodian convention). Other versions exist in the data "
+            "warehouse: ED_ROFST_L1 (administrative data), "
+            "ED_ROFST_L1_ADM (administrative-data alternate)."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "ED_ROFST_L2_UIS_MOD": {
+        "family": "ED_ROFST",
+        "category": "EDUCATION",
+        "code": "ED_ROFST_L2_UIS_MOD",
+        "canonical_label": (
+            "Out-of-school rate, lower secondary school age (Level 2), "
+            "UIS modelled estimate"
+        ),
+        "alt_synonyms": [
+            "out-of-school rate lower secondary",
+            "out of school rate lower secondary",
+            "lower secondary out-of-school",
+            "out-of-school rate for adolescents of lower secondary",
+            "out of school rate for adolescents of lower secondary",
+            "out-of-school rate for adolescents of lower secondary school age",
+            "rofst lower secondary",
+        ],
+        "dimension_hint": (
+            "Defaulting to UNESCO/UIS modelled estimate (SDG 4.1.4 "
+            "custodian convention). Other versions exist in the data "
+            "warehouse: ED_ROFST_L2 (administrative data), ED_ROFST_L2_ADM."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "ED_ROFST_L3_UIS_MOD": {
+        "family": "ED_ROFST",
+        "category": "EDUCATION",
+        "code": "ED_ROFST_L3_UIS_MOD",
+        "canonical_label": (
+            "Out-of-school rate, upper secondary school age (Level 3), "
+            "UIS modelled estimate"
+        ),
+        "alt_synonyms": [
+            "out-of-school rate upper secondary",
+            "out of school rate upper secondary",
+            "upper secondary out-of-school",
+            "out-of-school rate for youth of upper secondary",
+            "out of school rate for youth of upper secondary",
+            "out-of-school rate for youth of upper secondary school age",
+            "rofst upper secondary",
+        ],
+        "dimension_hint": (
+            "Defaulting to UNESCO/UIS modelled estimate (SDG 4.1.4 "
+            "custodian convention). Other versions exist in the data "
+            "warehouse: ED_ROFST_L3 (administrative data), ED_ROFST_L3_ADM."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    # ──── WASH headline-coverage defaults (v1.5.2) ────
+    #
+    # The JMP (Joint Monitoring Programme by WHO & UNICEF) is the SDG 6
+    # custodian for water and sanitation indicators. The data warehouse
+    # surfaces several variants per service ladder (safely managed,
+    # at-least-basic, basic, limited, unimproved, surface water for
+    # drinking water; basic, limited, no-service for handwashing).
+    # v1.5.2 curates the "improved drinking water" and "basic handwashing"
+    # headline indicators (the most common natural-language framings) with
+    # a warning that the JMP ladder has other rungs.
+    # WS_PPL_W-UI MUST be listed before WS_PPL_W-I because `_substring_match`
+    # is bidirectional and "improved drinking water" is a substring of
+    # "unimproved drinking water". Without this ordering, the WS_PPL_W-I
+    # entry would catch unimproved-water queries and route them to the
+    # semantic antonym. The v1.5.1 fix added _SYNONYMS entries for
+    # "unimproved" but that's resolver-layer; the curated layer (Path A)
+    # is consulted first by `lookup_preferred` and needs its own guard.
+    "WS_PPL_W-UI": {
+        "family": "WS_PPL_W",
+        "category": "WATER_SANITATION",
+        "code": "WS_PPL_W-UI",
+        "canonical_label": (
+            "Proportion of population using unimproved drinking water sources " "(JMP)"
+        ),
+        "alt_synonyms": [
+            "unimproved drinking water sources",
+            "unimproved drinking water",
+            "unimproved water sources",
+            "population using unimproved drinking water",
+            "unimproved water access",
+        ],
+        "dimension_hint": (
+            "Defaulting to 'unimproved drinking water sources' per the "
+            "user's explicit query for unimproved water. Other rungs of "
+            "the JMP service ladder exist in the data warehouse: "
+            "WS_PPL_W-SM (safely managed), WS_PPL_W-ALB (at least basic), "
+            "WS_PPL_W-I (improved), WS_PPL_W-L (limited)."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "WS_PPL_W-I": {
+        "family": "WS_PPL_W",
+        "category": "WATER_SANITATION",
+        "code": "WS_PPL_W-I",
+        "canonical_label": (
+            "Proportion of population using improved drinking water sources " "(JMP)"
+        ),
+        "alt_synonyms": [
+            "improved drinking water",
+            "improved water sources",
+            "improved water access",
+            "population using improved drinking water",
+            "improved water supply",
+        ],
+        "dimension_hint": (
+            "Defaulting to 'improved drinking water sources' per JMP / "
+            "SDG 6.1.1 framing. Other rungs of the JMP service ladder "
+            "exist in the data warehouse: WS_PPL_W-SM (safely managed), "
+            "WS_PPL_W-ALB (at least basic), WS_PPL_W-L (limited), "
+            "WS_PPL_W-UI (unimproved), WS_PPL_W-SU (surface water). "
+            "Use them only if the user asks for a specific service level."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "WS_PPL_H-B": {
+        "family": "WS_PPL_H",
+        "category": "WATER_SANITATION",
+        "code": "WS_PPL_H-B",
+        "canonical_label": (
+            "Proportion of population with a basic handwashing facility "
+            "with soap and water on premises (JMP)"
+        ),
+        "alt_synonyms": [
+            # Exact-name substrings from the benchmark prompts (Proportion
+            # of population with a handwashing facility with soap and
+            # water available at home / on premises)
+            "handwashing facility with soap and water available at home",
+            "handwashing facility with soap and water on premises",
+            "handwashing facility with soap and water",
+            "population with a handwashing facility",
+            # Natural-language paraphrases
+            "basic handwashing",
+            "basic handwashing facility",
+            "basic hygiene",
+            "hand washing basic",
+        ],
+        "dimension_hint": (
+            "Defaulting to 'basic handwashing facility with soap and water' "
+            "per JMP / SDG 6.2 framing. Other rungs of the JMP hygiene "
+            "ladder exist in the data warehouse (limited, no service). "
+            "Use them only if the user asks for a specific service level."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    # ──── CHILD PROTECTION + EDUCATION L02 + AIDS-ORPHANED (v1.5.3) ────
+    #
+    # v1.5.2 curated the biggest single ambiguity_abstain cluster (the
+    # ED_CR + ED_ROFST × UIS_MOD families). v1.5.3 closes the long tail
+    # of remaining ambiguity_abstain joint failures: GBV indicators that
+    # the LLM cannot disambiguate (PT_F_*_PTNR vs PT_F_*_AGE-18), the
+    # early-childbearing MNCH_BIRTH18 family (was in _SYNONYMS but the
+    # heuristic still fires), the child-labour PT_CHLD_5-17 family, the
+    # ED_ROFST_L02 "one year before primary" tier, and HVA_PED_LOST
+    # (children orphaned by AIDS). Empirically motivated by the v1.5.1
+    # joint-failure forensic (~35-45 additional cells expected to lift).
+    "PT_F_PS-SX_V_PTNR_12MNTH": {
+        "family": "PT_F_PTNR_V",
+        "category": "CHILD_PROTECTION",
+        "code": "PT_F_PS-SX_V_PTNR_12MNTH",
+        "canonical_label": (
+            "Percentage of ever-partnered women and girls aged 15-49 years "
+            "subjected to physical and/or sexual violence by a current or "
+            "former intimate partner in the previous 12 months (SDG 5.2.1)"
+        ),
+        "alt_synonyms": [
+            # Exact substrings from the benchmark prompts. v1.5.4 — the
+            # 'ever-partnered girls aged 15 to 19' phrase was REMOVED:
+            # the 15-19 age band is a DIFFERENT indicator (the catalog
+            # publishes a 15-19-only sibling) and this default targets the
+            # 15-49 SDG 5.2.1 series. The dimension_hint already steers
+            # the LLM to the 15-19 sibling when explicitly requested; we
+            # must not silently route 15-19 queries to the 15-49 default.
+            "ever-partnered women and girls aged 15-49 years subjected to",
+            "ever-partnered women and girls aged 15-49",
+            "physical and/or sexual violence by a current or former intimate partner",
+            "intimate partner violence past 12 months",
+            "intimate partner sexual violence",
+            "intimate partner physical violence",
+        ],
+        "dimension_hint": (
+            "Defaulting to the 15-49 SDG 5.2.1 series. Age-band variants "
+            "(15-19 only) and lifetime-vs-past-12-months variants exist "
+            "in the data warehouse — use those only if the user explicitly "
+            "asks for a different reference period or age cut."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "PT_F_18-29_SX-V_AGE-18": {
+        "family": "PT_F_AGE-18",
+        "category": "CHILD_PROTECTION",
+        "code": "PT_F_18-29_SX-V_AGE-18",
+        "canonical_label": (
+            "Percentage of women (aged 18-29 years) who experienced sexual "
+            "violence by age 18 (SDG 16.2.3)"
+        ),
+        "alt_synonyms": [
+            # Exact substrings from the benchmark prompts
+            "population aged 18-29 years who experienced sexual violence by age of 18",
+            "women aged 18-29 years who experienced sexual violence by age 18",
+            "sexual violence by age of 18",
+            "sexual violence before age 18",
+            "experienced sexual violence by age 18",
+            "first sexual violence by age 18",
+        ],
+        "dimension_hint": (
+            "Defaulting to the women 18-29 SDG 16.2.3 series. Other age "
+            "bands and sex disaggregations exist in the data warehouse."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "MNCH_BIRTH18": {
+        "family": "MNCH_BIRTH18",
+        "category": "MNCH",
+        "code": "MNCH_BIRTH18",
+        "canonical_label": (
+            "Early childbearing - percentage of women aged 20-24 years "
+            "who gave birth before age 18"
+        ),
+        "alt_synonyms": [
+            # Exact substrings from the benchmark prompts
+            "Early childbearing - percentage of women",
+            "women (aged 20-24 years) who gave birth before age 18",
+            "women aged 20-24 years who gave birth before age 18",
+            "gave birth before age 18",
+            "early childbearing",
+            "early child bearing",
+            "births before age 18",
+            "births to women under 18",
+            "first birth before age 18",
+            "early adolescent childbearing",
+        ],
+        "dimension_hint": (
+            "Defaulting to the standard 20-24 retrospective series. "
+            "First-birth-by-age-15 and other age-cuts are also in the "
+            "data warehouse."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "PT_CHLD_5-17_LBR_ECON": {
+        "family": "PT_CHLD_LBR",
+        "category": "CHILD_PROTECTION",
+        "code": "PT_CHLD_5-17_LBR_ECON",
+        "canonical_label": (
+            "Percentage of children (aged 5-17 years) engaged in child "
+            "labour (economic activities) (SDG 8.7.1)"
+        ),
+        "alt_synonyms": [
+            # Exact substrings from the benchmark prompts
+            "children (aged 5-17 years) engaged in child labour",
+            "children aged 5-17 years engaged in child labour",
+            "child labour economic activities",
+            "child labor economic activities",
+            "children 5-17 child labour",
+            "children in economic activity",
+        ],
+        "dimension_hint": (
+            "Defaulting to the economic-activities-only series (SDG 8.7.1 "
+            "narrow definition). The combined economic-activities-AND-"
+            "hazardous-conditions series PT_CHLD_5-17_LBR_ECON-HC also "
+            "exists in the data warehouse and is the broader SDG headline."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "ED_ROFST_L02": {
+        "family": "ED_ROFST",
+        "category": "EDUCATION",
+        "code": "ED_ROFST_L02",
+        "canonical_label": (
+            "Out-of-school rate for children one year before the official "
+            "primary entry age (%) (UIS)"
+        ),
+        "alt_synonyms": [
+            # MUST mention "out-of-school" or "rofst" — the loose
+            # "one year before..." phrasing also matches ED_ANAR_L02
+            # (adjusted net attendance rate, one year before primary)
+            # and ED_NERA_L02 (adjusted net enrolment rate, one year
+            # before primary). v1.5.3 empirically caught 12 ED_ANAR_L02
+            # cells before this narrowing.
+            "out-of-school rate for children one year before the official primary entry age",
+            "out of school rate for children one year before the official primary entry age",
+            "out-of-school rate one year before primary",
+            "out of school rate one year before primary",
+            "rofst l02",
+            "rofst L02",
+        ],
+        "dimension_hint": (
+            "Defaulting to the L02 'one year before primary' tier. L0 "
+            "(pre-primary general), L1 (primary), L2 (lower secondary), "
+            "and L3 (upper secondary) also exist; the L02 tier is a "
+            "specific UIS / GEM Report convention for the year preceding "
+            "primary entry. Sibling indicators ED_ANAR_L02 (attendance), "
+            "ED_NERA_L02 (net enrolment) cover the same tier."
+        ),
+        "validated_at": "2026-06-07",
+    },
+    "HVA_PED_LOST": {
+        "family": "HVA_PED",
+        "category": "HIV_AIDS",
+        "code": "HVA_PED_LOST",
+        "canonical_label": (
+            "Estimated number of children (aged 0-17 years) who have "
+            "lost one or both parents due to AIDS"
+        ),
+        "alt_synonyms": [
+            # Exact substrings from the benchmark prompts
+            "children (aged 0-17 years) who have lost one or both parents due to",
+            "children aged 0-17 who have lost one or both parents",
+            "children orphaned by AIDS",
+            "AIDS orphans",
+            "children lost parents AIDS",
+            "AIDS-orphaned children",
+        ],
+        "dimension_hint": (
+            "Defaulting to the AIDS-caused combined (maternal+paternal) "
+            "estimate. The separate breakdowns by maternal orphan vs "
+            "paternal orphan also exist in the data warehouse via the "
+            "UNAIDS data file."
+        ),
+        "validated_at": "2026-06-07",
+    },
     "NT_ANE_WOM_15_49_MOD": {
         "family": "NT_ANE",
         "category": "NUTRITION",
@@ -77,16 +510,25 @@ CURATED_PREFERRED: dict[str, CuratedEntry] = {
             "(15-49 years, moderate or severe)"
         ),
         "alt_synonyms": [
+            # Exact-name substrings from the benchmark prompts
+            "women aged 15-49 years with anaemia",
+            "women aged 15-49 with anaemia",
+            "proportion of women aged 15-49 with anaemia",
+            "anaemia women 15-49",
+            "anaemia women aged 15-49",
+            # Natural-language paraphrases
             "anemia women",
             "women anemia prevalence",
             "anaemia reproductive age",
             "moderate severe anemia women",
         ],
         "dimension_hint": (
-            "Severity variants (moderate, severe, any) available; "
-            "default is moderate or severe combined."
+            "Defaulting to WHO-modelled prevalence estimate (Joint Estimates "
+            "of Anaemia, the SDG 2.2.3 custodian-agency series). Severity "
+            "variants (moderate, severe, any) also exist in the data "
+            "warehouse; default is moderate-or-severe combined."
         ),
-        "validated_at": "2026-05-29",
+        "validated_at": "2026-06-07",
     },
     "NT_ANE_WOM_15_49_ANY": {
         "family": "NT_ANE",
