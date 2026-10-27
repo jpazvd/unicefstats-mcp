@@ -1,6 +1,6 @@
 # Concept Note: MCP as Reference Architecture for AI-Ready Official Statistics
 
-**Version:** 1.2 — May 2026
+**Version:** 1.3 — June 2026 (current MCP release: v1.5.5)
 **Author:** Joao Pedro Azevedo
 **Status:** Working draft for discussion
 
@@ -15,6 +15,8 @@ Now AI systems — ChatGPT, Claude, Copilot, and the autonomous agents built on 
 This is not hypothetical. In benchmark testing of an LLM querying UNICEF data, an early version of the `unicefstats-mcp` server was producing fabricated values on ~2.5% of queries where the API returned no data — *higher* than the no-tools baseline (~2.5%), not lower. The MCP layer was reducing magnitude relative to a no-safety-layer baseline but not below the floor a model would have hit reasoning from training data alone. The fabricated numbers looked authoritative because they came from a conversation about real UNICEF data.
 
 Three releases of safety-layer engineering, four engineering fixes in the v0.7.3 cycle, and one corrected evaluator (v1.4 extractor that respects refusal language) were required before the MCP version of the model fabricated *less* often than the no-tools baseline: hall_b 1.00% vs hall_a 2.50% on the original 40-country sample, hall_b 2.25% vs hall_a 2.50% on a disjoint 20-country validation sample.
+
+A second empirical pillar — the **v9 Arm B 1484-cell paired benchmark** introduced during the v1.5.x cycle (June 2026) — measures EQA at a different granularity. It scores each MCP vintage cell-by-cell against a fixed v1.2.4 baseline so the contribution of each shipped change can be isolated. v1.5.5 (current release) measures mean EQA **0.749** on that benchmark — **+29.1pp over the v1.2.4 baseline (p = 2×10⁻¹⁰⁵)**. The v1.5.x lift came primarily from a new pattern: **`CURATED_PREFERRED` defaults to the custodian-agency series** (UIS modelled for education completion / out-of-school; JMP for water and sanitation; WHO Joint Estimates for anaemia) with each entry's `dimension_hint` explicitly listing the alternative versions in the data warehouse. This trades one bit of editorial policy (the default) for a measurable reduction in LLM abstention on ambiguous queries.
 
 Current data APIs were built for human analysts who can spot a missing value. They return empty results and trust the user to notice. AI systems do not notice. They fill the silence. The architecture below makes that filling pattern visible to the data layer and gives it tools to prevent it — and this concept note documents *both* the architecture and the implementation disciplines (cache monotonicity, error-vs-no-data classification, refusal-respecting evaluators) needed to land its safety property empirically.
 

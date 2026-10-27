@@ -53,13 +53,13 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 | Document | Description |
 |---|---|
 | [PROVENANCE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/PROVENANCE.md) | Data origin, ownership, distribution pipeline, verification steps |
-| [CHANGELOG.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CHANGELOG.md) | Version history (v0.1.0–v0.4.0) with sources cited |
+| [CHANGELOG.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CHANGELOG.md) | Version history (v0.1.0–v1.5.5) with sources cited |
 | [RELEASE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/RELEASE.md) | Release process checklist and version management |
 | [CONTRIBUTING.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CONTRIBUTING.md) | Development setup, code style, PR guidelines |
 | [CODE_OF_CONDUCT.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CODE_OF_CONDUCT.md) | Contributor Covenant v2.1 |
 | [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) | Full 300-query benchmark analysis with EQA decomposition |
 | [examples/LITERATURE_REVIEW.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/LITERATURE_REVIEW.md) | Literature review: MCP servers for official statistics — ecosystem, patterns, evaluation, 15 papers |
-| [examples/LANDSCAPE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/LANDSCAPE.md) | 20 official statistics MCP servers compared — timeline, feature matrix, strengths/weaknesses |
+| [examples/LANDSCAPE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/LANDSCAPE.md) | Landscape analysis: 20 servers reviewed in depth (March 2026), 92 catalogued with status labels (October 2026) — timeline, feature matrix, strengths/weaknesses |
 | [examples/results/related_work.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/results/related_work.md) | Annotated bibliography — 15 papers on tool-augmented hallucination |
 | [examples/results/statistical_summary.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/results/statistical_summary.md) | Wilcoxon, bootstrap CI, McNemar tests on benchmark results |
 | [examples/MCP-DIRECTORY-STATS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md) | Comprehensive directory of all official statistics MCP servers |
@@ -87,58 +87,102 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 
 ## How it compares to other data MCPs
 
-| Feature | unicefstats-mcp | FRED MCP | World Bank MCP |
-|---|---|---|---|
-| **Tools** | 9 (search → metadata → data → code → identity + strict canonical lookup) | 3 (browse → search → get) | 1 (get only) |
-| **Indicators** | 790+ child-focused indicators | 800,000+ economic series | ~1,600 indicators |
-| **Countries** | 200+ (ISO3) | US-focused (some intl) | 200+ (ISO2) |
-| **Disaggregations** | Sex, age, wealth quintile, residence | Frequency, seasonal adjustment | None |
-| **MCP Prompt** | `compare_indicators` | None | None |
-| **Output modes** | Compact (5 cols) / Full (all cols) | JSON | CSV |
-| **Data summary** | Value range, year range, country count | None | None |
-| **Pagination metadata** | `total_rows_available` vs `rows_returned` | `limit`/`offset` | None (hardcoded 20K) |
-| **Input validation** | ISO3, sex, wealth, residence validated | Zod schemas | None |
-| **Error guidance** | `error` + `tip` with next steps | HTTP status text | Raw exception |
-| **API key** | Not required | FRED_API_KEY required | Not required |
-| **Truncation handling** | `rows_truncated` flag + filter tips | None | None |
+Servers are named by repository and carry a status label (**official**, **independent**, **community** or **commercial**) as defined in [Status labels](#status-labels). "—" means the feature is not documented in that repository's public README. See [About these tables](#about-these-tables) for how counts are taken and how to propose a correction.
+
+| Feature | unicefstats-mcp (this repo) | [data360-mcp](https://github.com/worldbank/data360-mcp) (World Bank, **official**) | [fred-mcp-server](https://github.com/stefanoamorelli/fred-mcp-server) (community) | [world_bank_mcp_server](https://github.com/anshumax/world_bank_mcp_server) (community) |
+|---|---|---|---|---|
+| **Tools** | 9 (search → metadata → data → code → identity + strict canonical lookup) | 16 (search indicators/datasets → metadata → data → disaggregation → codelist lookup → list; summarize / rank / compare countries; country-group expansion; single- and multi-indicator Vega-Lite viz specs; API-URL; plus an interactive-choice UI tool) | 3 (browse → search → get) | 1 (get only) |
+| **Indicators** | 790+ child-focused indicators | Data360 catalogue, multiple databases (WB_WDI, WB_SSGD, …) | 800,000+ economic series | ~1,600 indicators |
+| **Countries** | 200+ (ISO3) | 200+ (ISO3 `REF_AREA`) | US-focused (some intl) | 200+ (ISO2) |
+| **Disaggregations** | Sex, age, wealth quintile, residence | Sex, age, urbanisation (per indicator, via `data360_get_disaggregation`) | Frequency, seasonal adjustment | None |
+| **MCP Prompts** | 5 (`compare_indicators`, `trend_analysis`, `country_profile`, `sdg_progress`, `write_unicefdata_code`) | 7 | None | None |
+| **MCP Resources** | 6 (`system-prompt`, `context`, `llm-instructions`, `categories`, `countries`, `glossary`) | 11 (`system-prompt`, `context`, `agent-recipe`, `databases`, `codelists`, `data-schema`, `data-filters`, `metadata-fields`, `search-usage`, `viz/chart-grammar`, …) | None | None |
+| **Output modes** | Compact (5 cols) / Full (all cols) | SDMX-shaped JSON with a per-observation `claim_id` (8-char "proof-carrying numbers" hash); compact serializer for aggregation tools | JSON | CSV |
+| **Data summary** | Value range, year range, country count | `summarize_data`, `rank_countries`, `compare_countries` tools; Vega-Lite chart specs | None | None |
+| **Pagination metadata** | `total_rows_available` vs `rows_returned` | `limit`/`offset` with `total_count`, `has_more`, `next_offset` (MCP best-practice pattern) | `limit`/`offset` | None (hardcoded 20K) |
+| **Input validation** | ISO3, sex, wealth, residence validated | Codelist resolution tool + server-side country-coverage check (`required_country`) | Zod schemas | None |
+| **Error guidance** | `error` + `tip` with next steps | Structured `error_code` (e.g. `http_error:search`) + message, raised as MCP `ToolError` | HTTP status text | Raw exception |
+| **API key** | Not required | Not required | FRED_API_KEY required | Not required |
+| **Truncation handling** | `rows_truncated` flag + filter tips | Payload stripping to core fields with `claim_id` preserved (`docs/payload_analysis.md`) | None | None |
+| **Published** | PyPI | PyPI | npm | No |
 
 ## Landscape: MCP servers for official statistics
 
-This project is part of a growing ecosystem of MCP servers for international and official statistics. As of March 2026:
+This project is part of a growing ecosystem of MCP servers for international and official statistics. Tables group servers by the **data source** they wrap; the **Status** column says who maintains them, using the labels defined in [Status labels](#status-labels).
+
+### About these tables
+
+#### Status labels
+
+Status describes **who maintains a server**, not its quality or the quality of its data.
+
+- **Official**: published by the organisation that produces the data, or that operates the platform it is served from, under that organisation's account or announced on its own website. A qualifier marks maturity where the organisation states it: *(beta)*, *(lab)*, *(pilot)*.
+- **Independent**: built by staff of that organisation in a personal capacity, as stated in the README or the maintainer's profile, and not endorsed by the organisation. This repository is in this category.
+- **Community**: built by individuals or groups with no stated affiliation to the data producer.
+- **Commercial**: offered by a company as part of a product or a hosted or paid service, with no stated affiliation to the data producer.
+
+*Official* refers to the server, not the data. Servers whose data are not official statistics, such as research estimates, are listed separately in the directory; a research producer that maintains its own server is labelled *producer-maintained*, not official.
+
+When the evidence is ambiguous, we do not claim official or independent status: the row is labelled community and the note says why. Affiliations we cannot see can be added through the landscape-correction issue template below.
+
+#### Counts and corrections
+
+The comparison and landscape tables are a snapshot, not a registry. Every count (tools, prompts, resources, stars) describes what is visible on each repository's **public default branch on the date of the commit that last touched the row** — currently 2026-10-24 to 2026-10-27 — and the ecosystem moves faster than this README. The same rule applies to every server, including this one: we do not use figures supplied privately by a maintainer unless a public artefact backs them.
+
+If you maintain one of these servers, or know one that is missing or mis-described, please [open a landscape-correction issue](https://github.com/jpazvd/unicefstats-mcp/issues/new?template=landscape_correction.md) with the repository link and what should change. Corrections, additions and clarifications are all welcome, and are applied with the date they were verified.
+
+The World Bank entries were corrected in October 2026 after Olivier Dupriez and Aivin Solatorio of the World Bank pointed out that a community wrapper had been labelled as the Bank's server and the official `data360-mcp` was missing. Aivin's comparison of the official server is the basis of the `data360-mcp` column above. Thank you to both. The naming rule, the Status column and these label definitions came out of that exchange.
 
 ### UN Agencies
 
-| Server | Data Source | Tools | SDMX | Published |
-|---|---|---|---|---|
-| **unicefstats-mcp** (this repo) | UNICEF Data Warehouse | 7 | Yes | PyPI |
-| [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) | Any SDMX registry | 23 | Yes | No |
-| [unicef-datawarehouse-mcp](https://github.com/tryolabs/unicef-datawarehouse-mcp) | UNICEF Data Warehouse | 3 | Yes | No |
-| [mcp_unhcr](https://github.com/rvibek/mcp_unhcr) | UNHCR refugee data | 5 | No | No |
-| [medical-mcp](https://github.com/JamesANZ/medical-mcp) | WHO GHO / FDA / PubMed | 18 | No | npm |
+| Server | Data Source | Status | Tools | SDMX | Published |
+|---|---|---|---|---|---|
+| **unicefstats-mcp** (this repo) | UNICEF Data Warehouse | independent | 9 | Yes | PyPI |
+| [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) | Any SDMX registry | **official** (UNICEF DRP, beta) | 31 | Yes | No (Docker / Fly) |
+| [UN System Data Commons](https://github.com/UNStats/OpenSourceWeek2026) | data.un.org — public data from 26 UN entities (Data Commons platform, launched 17 Sep 2026) | **official** (UN DESA / UNSD) | 2 | No | Hosted MCP endpoint |
+| [unicef-datawarehouse-mcp](https://github.com/tryolabs/unicef-datawarehouse-mcp) | UNICEF Data Warehouse | community (built by Tryolabs; UNICEF involvement not stated) | 3 | Yes | No |
+| [faostat-mcp](https://github.com/berba-q/faostat-mcp) | FAO FAOSTAT | community | 23 | No | PyPI |
+| [uis-mcp-server](https://github.com/SidneyBissoli/uis-mcp-server) | UNESCO UIS | community | 5 | No | Remote |
+| [ilostat-mcp-server](https://github.com/cyanheads/ilostat-mcp-server) | ILO ILOSTAT | community | 9 | Yes | npm |
+| [who-gho-mcp-server](https://github.com/cyanheads/who-gho-mcp-server) | WHO Global Health Observatory | community | 6 | No | npm |
+| [un-comtrade-mcp-server](https://github.com/cyanheads/un-comtrade-mcp-server) | UN Comtrade | community | 9 | No | npm |
+| [unhcr-opendata-gateway-mcp](https://github.com/Edouard-Legoupil/unhcr-opendata-gateway-mcp) | UNHCR open data (federating gateway) | independent (UNHCR staff) | 8 | No | No |
+| [mcp_unhcr](https://github.com/rvibek/mcp_unhcr) | UNHCR refugee data | community | 5 | No | No |
+| [medical-mcp](https://github.com/JamesANZ/medical-mcp) | WHO GHO / FDA / PubMed | community | 18 | No | npm |
 
 ### International Organizations
 
-| Server | Data Source | Tools | SDMX | Published |
-|---|---|---|---|---|
-| [fred-mcp-server](https://github.com/stefanoamorelli/fred-mcp-server) | FRED (800K+ series) | 3 | No | npm |
-| [world_bank_mcp_server](https://github.com/anshumax/world_bank_mcp_server) | World Bank Open Data | 1 | No | No |
-| [imf-data-mcp](https://github.com/c-cf/imf-data-mcp) | IMF (IFS, BOP, WEO) | 10 | Yes | PyPI |
-| [OECD-MCP](https://github.com/isakskogstad/OECD-MCP) | OECD (5,000+ datasets) | 9 | Yes | npm |
-| [eurostat-mcp](https://github.com/ano-kuhanathan/eurostat-mcp) | Eurostat EU statistics | 7 | Yes | No |
+| Server | Data Source | Status | Tools | SDMX | Published |
+|---|---|---|---|---|---|
+| [data360-mcp](https://github.com/worldbank/data360-mcp) | World Bank Data360 | **official** (World Bank) | 16 | No | PyPI |
+| [world_bank_mcp_server](https://github.com/anshumax/world_bank_mcp_server) | World Bank Open Data API | community | 1 | No | No |
+| [fred-mcp-server](https://github.com/stefanoamorelli/fred-mcp-server) | FRED (800K+ series) | community | 3 | No | npm |
+| [imf-data-mcp](https://github.com/c-cf/imf-data-mcp) | IMF (IFS, BOP, WEO) | community | 5 | Yes | No (uvx from Git) |
+| [OECD-MCP](https://github.com/isakskogstad/OECD-MCP) | OECD (5,000+ datasets) | community | 9 | Yes | npm |
+| [eurostat-mcp](https://github.com/ano-kuhanathan/eurostat-mcp) | Eurostat EU statistics | community | 7 | Yes | No |
+| [ecb-mcp](https://github.com/scka-de/ecb-mcp) | European Central Bank | community | 8 | Yes | npm |
 
 ### National Statistics Offices
 
-| Server | Data Source | Tools | Published |
-|---|---|---|---|
-| [us-census-bureau-data-api-mcp](https://github.com/uscensusbureau/us-census-bureau-data-api-mcp) | US Census Bureau (official) | 5 | No |
-| [us-gov-open-data-mcp](https://github.com/lzinga/us-gov-open-data-mcp) | 40+ US Gov APIs | 300+ | npm |
-| [ibge-br-mcp](https://github.com/SidneyBissoli/ibge-br-mcp) | Brazil IBGE (227 tests) | 22 | npm |
-| [ukrainian-stats-mcp-server](https://github.com/VladyslavMykhailyshyn/ukrainian-stats-mcp-server) | Ukraine SDMX v3 | 8 | npm |
-| [istat_mcp_server](https://github.com/ondata/istat_mcp_server) | Italy ISTAT SDMX | 7 | No |
+| Server | Data Source | Status | Tools | Published |
+|---|---|---|---|---|
+| [us-census-bureau-data-api-mcp](https://github.com/uscensusbureau/us-census-bureau-data-api-mcp) | US Census Bureau | **official** | 5 | No |
+| [esankhyiki-mcp](https://github.com/nso-india/esankhyiki-mcp) | India MoSPI / NSO | **official** (beta) | 4 | No |
+| [datagouv-mcp](https://github.com/datagouv/datagouv-mcp) | France data.gouv.fr | **official** (platform operator) | 10 | Hosted |
+| [McpDiffusion](https://github.com/InseeFrLab/McpDiffusion) | France INSEE | **official** (lab, beta) | 12 | Hosted (beta) |
+| [Idescat MCP](https://github.com/idescat/mcp) | Catalonia (Idescat) | **official** | 7 | Hosted |
+| [us-gov-open-data-mcp](https://github.com/lzinga/us-gov-open-data-mcp) | 40+ US Gov APIs | community | 300+ | npm |
+| [ibge-br-mcp](https://github.com/SidneyBissoli/ibge-br-mcp) | Brazil IBGE (227 tests) | community | 23 | npm |
+| [ukrainian-stats-mcp-server](https://github.com/VladyslavMykhailyshyn/ukrainian-stats-mcp-server) | Ukraine SDMX v3 | community | 8 | npm |
+| [istat_mcp_server](https://github.com/ondata/istat_mcp_server) | Italy ISTAT SDMX | community | 8 | No |
+| [mcp-statcan](https://github.com/Aryan-Jhaveri/mcp-statcan) | Statistics Canada | community | — | PyPI (uvx) |
+| [swiss-statistics-mcp](https://github.com/malkreide/swiss-statistics-mcp) | Switzerland BFS | community | 15 | PyPI (uvx) |
+| [korea-stats-mcp](https://github.com/Dayoooun/korea-stats-mcp) | Statistics Korea (KOSIS) | community | — | npm |
+| [estat-mcp](https://github.com/ajtgjmdjp/estat-mcp) | Japan e-Stat | community | 4 | PyPI |
 
 ### Known gaps
 
-No MCP server exists for: **FAO/FAOSTAT**, **UNESCO/UIS** (4,000+ education indicators), **ILO/ILOSTAT**, **UNSD SDG API**, **UN DESA Population**, **UNDP/HDI**.
+Community servers now cover UNESCO UIS (since February 2026), WHO GHO and UN Comtrade (since May 2026) and ILOSTAT (since August 2026), so those are no longer open gaps; none is maintained by the agency itself. Still no MCP server found (2026-10-26) for **UNDP/HDI**, the **UNSD SDG Global Database API** (the UN System Data Commons endpoint covers some SDG series), **UN DESA Population**, **UNAIDS**, **WFP** or **WTO**; **BIS** has no dedicated server, though the community aggregator `openecon-data` queries it. No official server was found from Eurostat, the IMF, the OECD or any central bank. The tables above are a selection; the directory below lists 92 servers for official statistics, plus research and other related sources and a long-tail list.
 
 Full directory with install commands: [MCP-DIRECTORY-STATS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md)
 
@@ -210,6 +254,23 @@ v1.1.0 is **additive**: v1.0.0's `ambiguity_flag`, `candidates`, and `abstain_in
 
 **Verdict: ALLOW** (no behavioural regression; advisory fields fire on 23/30 Sonnet and 26/30 Haiku paired stuck queries; see `internal/v1.1.0_design/ab_results.md`).
 
+## What v1.5.x adds (Jun 2026)
+
+The v1.5.x series targeted the long tail of cases where the v1.0.0/v1.1.0 ambiguity gate fired but the model still couldn't pick the right indicator. Six releases shipped over 7 days, all additive to the v1.1.x decision order.
+
+| version | scope | mechanism |
+|---|---|---|
+| **v1.5.0** | Search-layer ambiguity reductions | Single-dataflow guard at heuristic Path B; all-matches accumulation in the differentiator; tiered fuzzy synonym scorer (data360-mcp pattern); cooperative `abstain_instruction` (faostat-mcp pattern) |
+| **v1.5.1** | Tier 2c misroute fixes | Jaccard threshold bump (70→75); substring tier length-ratio guard (≤1.5); explicit antonym synonyms (`unimproved drinking water` → `WS_PPL_W-UI`); explicit qualifier synonyms (`antenatal care 4+ visits` → `MNCH_ANC4`) |
+| **v1.5.2** | Custodian-agency defaults | `CURATED_PREFERRED` entries default education completion (`ED_CR_L1/L2/L3_UIS_MOD`) and out-of-school rate (`ED_ROFST_L1/L2/L3_UIS_MOD`) queries to the **UIS modelled** series per SDG 4 custodian convention. WASH JMP headlines (`WS_PPL_W-I`, `WS_PPL_H-B`) and the antonym-safe `WS_PPL_W-UI` ordering guard. Every entry's `dimension_hint` explicitly lists the alternative versions in the data warehouse |
+| **v1.5.3** | Long-tail curated clusters | PT_F intimate-partner violence (SDG 5.2.1), PT_F sexual violence by 18 (SDG 16.2.3), MNCH_BIRTH18, PT_CHLD_5-17 child labour, ED_ROFST_L02, HVA_PED_LOST (UNAIDS AIDS-orphaned children) |
+| **v1.5.4** | Copilot-driven correctness fixes | Removed misleading 15-19 synonym from the PT_F 15-49 default; reworded HVA_PED_LOST `dimension_hint` to say "AIDS-caused combined" (not "all-cause") |
+| **v1.5.5** | Batch-use hardening (opt-in) | Two new env vars: `UNICEFSTATS_SDMX_THROTTLE_MS` (inter-call delay) and `UNICEFSTATS_SDMX_RETRY_403=1` (exponential backoff 30/60/120s on 403s). Default behaviour unchanged for normal use; recommended for large-batch / benchmark scenarios |
+
+**Empirical validation** — v1.5.5 1484-cell paired re-validation against the v1.2.4 Jun 1 baseline measured mean EQA **0.749 (+29.1pp, p = 2×10⁻¹⁰⁵)** on the v9 Arm B sample (a different, larger benchmark than the 300-query EQA test below). See [Benchmark Results](#benchmark-results) for both scoreboards.
+
+**Curated-agency default policy** — for indicator families where the catalogue ships both an administrative-data series and a custodian-agency modelled series (UIS for education, JMP for water/sanitation, WHO/UNICEF Joint Estimates for nutrition), v1.5.x defaults natural-language queries to the modelled / custodian series and surfaces the other variants in `dimension_hint`. Users who explicitly want the raw / administrative figures can re-route via the hint; the LLM has full visibility of both.
+
 ## Tools
 
 | Tool | Purpose | API call? |
@@ -266,8 +327,8 @@ These codes will return no hits from `search_indicators` and a not-found error f
 
 **For cross-organisation queries, use a sister MCP:**
 
-- [`data360-mcp`](https://github.com/worldbank/data360-mcp) — World Bank's multi-source aggregator covering WDI, ILO, UN, and other official providers under one tool surface.
-- [`worldbank-mcp`](https://github.com/anshumax/world_bank_mcp_server) — World Bank Open Data only.
+- [`data360-mcp`](https://github.com/worldbank/data360-mcp) — the World Bank's **official** server for its Data360 platform, covering WDI, ILO, UN, and other official providers under one tool surface.
+- [`world_bank_mcp_server`](https://github.com/anshumax/world_bank_mcp_server) — community wrapper (anshumax) around the World Bank Open Data API only; not a World Bank product.
 
 For SDMX power-user queries against arbitrary registries (Eurostat, OECD, national NSOs), see [`sdmx-mcp`](https://github.com/unicef-drp/sdmx-mcp) — the generic SDMX protocol server discussed under [Relationship to sdmx-mcp](#relationship-to-sdmx-mcp).
 
@@ -737,7 +798,16 @@ This bridges the gap between conversational exploration (via MCP tools) and repr
 
 We benchmarked the MCP against a bare LLM (Claude Sonnet 4, no tools) using the [EQA metric](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) from Azevedo (2025). 300 queries across 10 indicators, 20 countries, 2 prompt types, and 2 hallucination test categories.
 
-### Current canonical numbers (v0.7.3 + fixes, May 2026)
+### Two benchmark pillars
+
+The repo maintains two empirical scoreboards:
+
+1. **300-query EQA test** (10 indicators × 20 countries × 2 prompts × 2 hallucination categories) — the original Azevedo (2025) benchmark used through v1.0.x / v1.1.x. Numbers below labelled "v0.7.3 + fixes".
+2. **v9 Arm B 1484-cell paired benchmark** — larger, more granular, introduced during the v1.5.x curated-defaults cycle. Compares each MCP vintage cell-by-cell against the v1.2.4 Jun 1 baseline. v1.5.5 measured **mean EQA 0.749 (+29.1pp, p = 2×10⁻¹⁰⁵)**.
+
+The two are scored under different rubrics on different samples; they are complementary, not directly comparable.
+
+### Current canonical numbers — 300-query EQA test (v0.7.3 + fixes, May 2026)
 
 The numbers below are the current canonical scoreboard. They reflect (a) four engineering fixes in the v0.7.3 cycle (see CHANGELOG) and (b) a scoring correction from the v1.4 extractor that respects refusal language. Both samples (mcp060: 40 countries; mcp073: disjoint 20-country validation sample) score under the same v1.4 rules.
 
@@ -800,6 +870,24 @@ The accuracy headline (~7× lift) has held up across every rescoring. The halluc
 
 sdmx-mcp's raw SDMX-JSON output is hard for LLMs to parse (VA ≈ 0.11), but its anti-hallucination guardrails are highly effective (0% fabrication). See [Relationship to sdmx-mcp](#relationship-to-sdmx-mcp) for details.
 
+### v9 Arm B paired benchmark (1484 cells, Jun 2026)
+
+The v1.5.x cycle introduced a second, larger benchmark — **v9 Arm B**, 1484 cells, master_seed=42 — that compares each MCP vintage cell-by-cell against a fixed v1.2.4 baseline. Unlike the 300-query EQA test (which scores indicator + year + value extraction quality), v9 Arm B measures **paired ΔEQA** so it can isolate the contribution of each vintage's changes.
+
+| vintage | date | mean EQA | Δ vs v1.2.4 | p-value |
+|---|---|---|---|---|
+| v1.2.4 | Jun 1 2026 | 0.458 | — | — |
+| v1.4.0 | Jun 4 2026 | 0.481 | +2.3pp | 0.0003 |
+| v1.5.1 | Jun 6 2026 | 0.681 | +22.3pp | 7×10⁻⁷⁶ |
+| **v1.5.5** | **Jun 7 2026** | **0.749** | **+29.1pp** | **2×10⁻¹⁰⁵** |
+
+- 4 of 5 decision-rule gates PASS for v1.5.5
+- 430 FIRE_RECOVERABLE cells lift at +0.97 EQA each
+- Lost:rescued ratio 0.03 (vs v1.4.0's 0.41)
+- Cascade-attributable lift on FIRE_ALTERED: +0.80 [+0.77, +0.83]
+
+This benchmark is what validates the **+29.1pp claim**. The 300-query EQA test above still applies and remains the canonical reference for hallucination-rate measurement.
+
 Full analysis, per-indicator decomposition, and methodology: **[examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)**
 
 Benchmark data (parquet with full LLM responses): **[examples/results/](https://github.com/jpazvd/unicefstats-mcp/tree/main/examples/results/)**
@@ -844,6 +932,24 @@ unicefstats-mcp --transport sse --port 8000
 ```bash
 docker build -t unicefstats-mcp .
 docker run -p 8000:8000 unicefstats-mcp
+```
+
+### Environment variables
+
+The MCP runs with no required configuration. Two opt-in environment variables (v1.5.5+) help large-batch / benchmark use survive UNICEF SDMX's WAF / per-IP rate-limiter:
+
+| variable | default | effect when set |
+|---|---|---|
+| `UNICEFSTATS_SDMX_THROTTLE_MS` | `0` (off) | Minimum inter-call delay (ms) between SDMX `unicefData()` calls in this process. Recommended `200`–`500` for batch use so the request rate stays below the empirically-observed ~50-100 calls/min WAF trigger threshold. |
+| `UNICEFSTATS_SDMX_RETRY_403` | unset | When set to `1` / `true` / `yes` / `on`, retries `SDMXForbiddenError` (HTTP 403) with exponential backoff (30s, 60s, 120s; max 3 retries) instead of failing immediately. Lets a long-running batch survive transient WAF bursts. |
+
+For **normal interactive MCP server use** (single-query conversational tasks via Claude / Cursor / etc.), leave both unset — defaults preserve fast-fail behaviour.
+
+For **benchmark / batch use** (1000+ sequential queries from one IP):
+
+```sh
+export UNICEFSTATS_SDMX_THROTTLE_MS=300
+export UNICEFSTATS_SDMX_RETRY_403=1
 ```
 
 ## Development

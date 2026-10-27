@@ -1,10 +1,11 @@
 # mcp-smoke-test
 
 A self-contained example of fetching real time-series data from **five**
-stdio-MCP servers — `unicefstats-mcp` (this repo), the World Bank
-`world-bank-mcp-server`, the Federal Reserve `fred-mcp-server`,
-`data360-mcp`, and Google's `datacommons-mcp` — then rendering one
-matplotlib figure per source.
+stdio-MCP servers — `unicefstats-mcp` (this repo), the community
+`world_bank_mcp_server` (anshumax; wraps the World Bank Open Data API,
+not a World Bank product), the community `fred-mcp-server` (Federal
+Reserve data), the World Bank's official `data360-mcp`, and Google's
+`datacommons-mcp` — then rendering one matplotlib figure per source.
 
 Use it as a worked reference for:
 
@@ -20,10 +21,10 @@ Use it as a worked reference for:
 | `mcp-figures.py` | Per-source smoke test — speaks JSON-RPC to 5 MCPs, deterministic, no LLM in the loop, renders one matplotlib figure per source. |
 | `mcp-multimodel-smoketest.py` | Cross-provider LLM smoke test — sends 3 canonical prompts (1 POS + 1 T1 + 1 T2) to N models (Anthropic, OpenAI, Google, OpenRouter) with unicefstats-mcp attached as a tool layer. Surfaces tool-engagement, refusal discipline, and cost-per-question by tier. ~$1 / run on the 6-model MVP set. See "Cross-model smoke test" below. |
 | `figures/mcp-figure-unicefstats-CME_MRY0-IND-2026-05-08.png` | UNICEF SDMX, India, 72 obs (1953-2024). Two-line footnote: variable code + server identity (line 1), UTC timestamp + host + invoking agent (line 2). |
-| `figures/mcp-figure-world-bank-SH.DYN.MORT-IND-2026-05-08.png` | World Bank, India, 65 obs (1960-2024). Server reports as `mysql_mcp_server v1.26.0` because the upstream package was forked from a MySQL template and never renamed its FastMCP `name` — the footnote captures this faithfully (which is exactly what reproducibility metadata is for). |
+| `figures/mcp-figure-world-bank-SH.DYN.MORT-IND-2026-05-08.png` | Community `world_bank_mcp_server` (anshumax) over the World Bank Open Data API — not a World Bank product. India, 65 obs (1960-2024). The figure title still reads `world-bank (WB API)`: these May 2026 PNGs were not regenerated when the label was corrected in the script (October 2026); the next run will carry the new label. Server reports as `mysql_mcp_server v1.26.0` because the upstream package was forked from a MySQL template and never renamed its FastMCP `name` — the footnote captures this faithfully (which is exactly what reproducibility metadata is for). |
 | `figures/mcp-figure-combined-IND-2026-05-08.png` | Overlay (UNICEF vs WB) — surfaces a real **labeling drift**: UNICEF's `CME_MRY0` tracks ~30% below WB's `SH.DYN.MORT`, confirming UNICEF labels the code as "Infant mortality rate" (0-1 yr) while WB returns "Under-5 mortality rate" (0-5 yr) for what would otherwise look like comparable codes. The footnote lists both server identities side-by-side. |
 | `figures/mcp-figure-fred-UNRATE-2026-05-07.png` | FRED, US Unemployment Rate, 938 monthly obs (1948-2026). Pre-footnote — regenerate when `FRED_API_KEY` is set. |
-| `figures/mcp-figure-data360-WB_WDI_SH_DYN_MORT-IND-2026-05-07.png` | data360 (WB WDI), India, 65 obs (1960-2024). Pre-footnote — upstream `worldbank/data360-mcp` is HTTP/SSE only, not stdio, so this script can't drive it as-is. |
+| `figures/mcp-figure-data360-WB_WDI_SH_DYN_MORT-IND-2026-05-07.png` | The World Bank's official `data360-mcp` (WB WDI), India, 65 obs (1960-2024). Pre-footnote — upstream `worldbank/data360-mcp` is HTTP/SSE only, not stdio, so this script can't drive it as-is. |
 | (not yet rendered) `figures/mcp-figure-data-commons-MortalityRate_Person_Upto5Years-IND-*.png` | Google Data Commons, India, U5MR series — needs free `DC_API_KEY` from <https://apikeys.datacommons.org>. |
 | `figures/mcp-figures-summary-IND-2026-05-08.md` | Last-run summary report (Source / Code / n obs / MCP server table). |
 

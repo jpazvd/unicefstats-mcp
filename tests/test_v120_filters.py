@@ -24,14 +24,10 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
-import pytest
 
 from unicefstats_mcp.server import get_data
 
-
-@pytest.fixture(autouse=True)
-def _isolate_frontier_cache(monkeypatch):
-    monkeypatch.setattr("unicefstats_mcp.server._data_frontier_cache", {})
+# Frontier-cache isolation is provided by the autouse fixture in conftest.py.
 
 
 # Common DataFrame shape for the mocked unicefData() return — covers the

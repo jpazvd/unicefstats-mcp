@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pytest
 
-from unicefstats_mcp.server import _is_client_error, _retry
+from unicefstats_mcp.server import _is_client_error, _looks_not_found, _retry
 
 
 class _FakeResponse:
@@ -61,6 +61,49 @@ class TestIsClientError:
             RuntimeError("403 Client Error: Forbidden for url: https://sdmx...")
         ) is True
 
+    def test_structured_429_is_not_client_error(self):
+        # 429 Too Many Requests is transient by definition — the correct
+        # response is retry-with-backoff, so it must NOT short-circuit as a
+        # client error. Pre-fix, the structured path treated all 4xx as
+        # non-retryable while the text-fallback regex (which omits 429)
+        # would have retried the same error arriving as message text.
+        assert _is_client_error(_StatusError("too many requests", 429)) is False
+
+    def test_structured_408_is_not_client_error(self):
+        # 408 Request Timeout: same reasoning as 429.
+        assert _is_client_error(_StatusError("request timeout", 408)) is False
+
+    def test_text_429_is_not_client_error(self):
+        # Consistency with the structured path: "429" as message text should
+        # also be retryable (the regex deliberately omits it).
+        assert _is_client_error(RuntimeError("429 Too Many Requests for url")) is False
+
+    def test_structured_429_with_4xx_like_number_in_message_still_retries(self):
+        # Structured status must be authoritative. Pre-fix, a structured 429
+        # fell through to the text regex, so an unrelated "400" in the message
+        # (here a retry-after hint) classified it as a client error and
+        # `_retry` aborted after one attempt instead of backing off.
+        assert _is_client_error(
+            _StatusError("429 Too Many Requests; retry after 400 seconds", 429)
+        ) is False
+
+    def test_structured_408_with_404_in_url_still_retries(self):
+        assert _is_client_error(
+            _StatusError("408 Request Timeout for url: https://sdmx.example/data/404", 408)
+        ) is False
+
+    def test_structured_5xx_with_404_in_url_is_not_client_error(self):
+        # A 502 whose diagnostic URL happens to end in "/404" is still a
+        # server error and must consume retry budget.
+        assert _is_client_error(
+            _StatusError("502 Bad Gateway for url: https://sdmx.example/rest/data/404", 502)
+        ) is False
+
+    def test_structured_5xx_with_not_found_phrase_is_not_client_error(self):
+        assert _is_client_error(
+            _StatusError("503 upstream not found in pool", 503)
+        ) is False
+
     def test_403_access_denied_phrase_is_client_error(self):
         # Same incident, the unicefdata library wraps the upstream 403 as a
         # second message variant: `Access Denied (403): You do not have
@@ -68,6 +111,56 @@ class TestIsClientError:
         assert _is_client_error(
             RuntimeError("Access Denied (403): You do not have permission to access 'CME_MRY0T4'")
         ) is True
+
+
+class TestLooksNotFound:
+    """`_looks_not_found` gates `get_data`'s authoritative no_data envelope —
+    the response that instructs the model the warehouse "confirmed this data
+    does not exist". It must therefore be word-bounded: the v0.7.1 substring
+    bug (`"404" in str(exc)` matching "4040") was fixed in `_is_client_error`
+    in v0.7.3 but survived in the no_data classifier until this helper."""
+
+    def test_structured_404(self):
+        assert _looks_not_found(_StatusError("nope", 404)) is True
+
+    def test_word_bounded_404_in_text(self):
+        assert _looks_not_found(RuntimeError("HTTP 404 Not Found")) is True
+
+    def test_4040_in_text_is_not_not_found(self):
+        # A transient 5xx whose body mentions "4040" must never be presented
+        # to the model as an authoritative absence-of-data verdict.
+        assert _looks_not_found(
+            RuntimeError("upstream returned 4040 chars of HTML")
+        ) is False
+
+    def test_structured_500_is_not_not_found(self):
+        assert _looks_not_found(_StatusError("server boom", 500)) is False
+
+    def test_structured_502_with_404_in_url_is_not_not_found(self):
+        # Structured status is authoritative: a 502 whose diagnostic URL ends
+        # in "/404" is a server failure, and must never trigger the
+        # authoritative no_data envelope. Pre-fix the text regex matched.
+        assert _looks_not_found(
+            _StatusError("502 Bad Gateway for url: https://sdmx.example/rest/data/404", 502)
+        ) is False
+
+    def test_structured_503_with_not_found_phrase_is_not_not_found(self):
+        assert _looks_not_found(
+            _StatusError("503 Service Unavailable: backend not found in pool", 503)
+        ) is False
+
+    def test_structured_404_with_misleading_text_is_not_found(self):
+        # And the converse: a structured 404 is not-found regardless of text.
+        assert _looks_not_found(_StatusError("upstream error 500", 404)) is True
+
+    def test_cascade_end_message_is_not_found(self):
+        # unicefdata's cascade-end exception (lowercase "not found").
+        assert _looks_not_found(
+            RuntimeError("Indicator 'NT_ANT_HAZ_NE2' not found in any dataflow.")
+        ) is True
+
+    def test_does_not_exist_phrase(self):
+        assert _looks_not_found(RuntimeError("Indicator FOO does not exist")) is True
 
 
 class TestRetry:
@@ -123,6 +216,21 @@ class TestRetry:
         with patch("unicefstats_mcp.server._time.sleep"):
             assert _retry(fn, base_delay=0.0) == "ok"
         assert calls["n"] == 2
+
+    def test_retries_on_structured_429_then_succeeds(self):
+        # A rate-limit response must consume backoff budget, not abort.
+        calls = {"n": 0}
+
+        def fn():
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise _StatusError("too many requests", 429)
+            return "ok"
+
+        with patch("unicefstats_mcp.server._time.sleep") as sleep_mock:
+            assert _retry(fn, base_delay=0.0) == "ok"
+        assert calls["n"] == 2
+        assert sleep_mock.call_count == 1
 
     def test_raises_last_exc_after_exhausting_retries(self):
         def fn():

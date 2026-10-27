@@ -95,7 +95,7 @@ from __future__ import annotations  # allow modern type hints on Python 3.10+
 # --- standard library ---------------------------------------------------------
 import argparse  # parse the command-line flags (--countries, --combined…)
 import contextlib  # tiny helper used to suppress benign exceptions cleanly
-import csv  # World Bank MCP returns CSV; this reads it
+import csv  # world_bank_mcp_server (community) returns CSV; this reads it
 import io  # wraps the CSV string so csv.DictReader can read it
 import json  # encode/decode every JSON-RPC message + every parser
 import os  # read environment variables, manipulate the env dict
@@ -469,7 +469,7 @@ def parse_unicefstats(text: str) -> tuple[str, str, dict[str, list[tuple[int, fl
 
 
 def parse_world_bank(text: str) -> tuple[str, str, dict[str, list[tuple[int, float]]]]:
-    """Parse the World Bank MCP response (CSV format).
+    """Parse the world_bank_mcp_server (community WB Open Data wrapper) response (CSV format).
 
     Expected response shape (CSV with dotted column names, mirroring the
     World Bank Open Data API's flat layout):
@@ -504,7 +504,7 @@ def parse_world_bank(text: str) -> tuple[str, str, dict[str, list[tuple[int, flo
         by_country.setdefault(country, []).append((year, v))
     for v in by_country.values():
         v.sort()
-    return ("world-bank (WB API)", indicator_name, by_country)
+    return ("world_bank_mcp_server (community, WB Open Data API)", indicator_name, by_country)
 
 
 def parse_data360(text: str) -> tuple[str, str, dict[str, list[tuple[int, float]]]]:
@@ -1447,7 +1447,8 @@ def main() -> int:
             print(f"FAILED: {e}")
 
     # ------------------------------------------------------------------
-    # Source 2 of 5: World Bank world_bank_mcp_server (anshumax/...).
+    # Source 2 of 5: community world_bank_mcp_server (anshumax/...) — wraps the
+    # World Bank Open Data API; not a World Bank product (that is data360-mcp, source 4).
     #   - Tool: get_indicator_for_country (one country per call)
     #   - Returns: CSV with country.value, date, value, indicator.value
     #   - Auth: none (WB Open Data API is open access)
@@ -1455,10 +1456,10 @@ def main() -> int:
     if "world-bank" in servers:
         print("[world-bank] fetching SH.DYN.MORT …", end=" ", flush=True)
         try:
-            # World Bank MCP fetches one country per call.
+            # world_bank_mcp_server fetches one country per call.
             by_country_all: dict[str, list[tuple[int, float]]] = {}
             indicator_name = "?"
-            label = "world-bank (WB API)"
+            label = "world_bank_mcp_server (community, WB Open Data API)"
             server_info = None
             for c in countries:
                 resp = fetch(

@@ -262,32 +262,39 @@ def compute_trend(df: pd.DataFrame, window: int = 5) -> dict[str, Any] | None:
     trends: dict[str, Any] = {}
 
     for country, group in df.groupby(countries_col):
-        group = group.dropna(subset=["value", "period"]).sort_values("period")
-        if len(group) < 2:
-            continue
-
-        latest = group.iloc[-1]
-        latest_year = _period_as_year(latest["period"])
-        if latest_year is None:
-            continue
-        # Find the observation closest to `window` years before latest. Coerce
-        # each period through `_period_as_year` so quarterly strings sort as
-        # their year prefix (good enough for AARC over multi-year windows).
-        years_series = group["period"].map(_period_as_year)
+        group = group.dropna(subset=["value", "period"])
         # Drop rows whose period couldn't be coerced — the docstring promises
-        # per-period skipping, not whole-country skipping. The previously
-        # validated `latest` (latest_year is not None) survives this filter.
+        # per-period skipping, not whole-country skipping.
+        years_series = group["period"].map(_period_as_year)
         parseable = years_series.notna()
         years_series = years_series[parseable]
         group = group.loc[parseable]
         if len(group) < 2:
             continue
+
+        # Sort on (coerced year, period-as-string), never the raw column: an
+        # object column mixing int and string periods (annual 2019 alongside
+        # quarterly "2019-Q4" in a mixed-frequency series) raises TypeError
+        # under sort_values and would kill the whole get_data response. The
+        # string tiebreak keeps quarterly rows within a year in their SDMX
+        # order ("2019-Q1" < "2019-Q4"), matching the previous behaviour for
+        # single-type columns.
+        group = group.assign(
+            _trend_year=years_series,
+            _trend_period_str=group["period"].astype(str),
+        ).sort_values(["_trend_year", "_trend_period_str"], kind="stable")
+        years_series = group["_trend_year"]
+
+        latest = group.iloc[-1]
+        latest_year = float(years_series.iloc[-1])
         target_year = latest_year - window
         mask = years_series <= target_year + 0.5
-        earlier_row = group.iloc[0] if not mask.any() else group[mask].iloc[-1]
-        earlier_year = _period_as_year(earlier_row["period"])
-        if earlier_year is None:
-            continue
+        if mask.any():
+            earlier_row = group[mask].iloc[-1]
+            earlier_year = float(years_series[mask].iloc[-1])
+        else:
+            earlier_row = group.iloc[0]
+            earlier_year = float(years_series.iloc[0])
 
         v_start = float(earlier_row["value"])
         v_end = float(latest["value"])

@@ -9,17 +9,8 @@ import pytest
 
 from unicefstats_mcp.server import get_data
 
-
-@pytest.fixture(autouse=True)
-def _isolate_frontier_cache(monkeypatch):
-    """Give every test a fresh empty `_data_frontier_cache`.
-
-    Replaces the v0.7.1 pattern of mutating the module global directly
-    (which leaked between tests). monkeypatch restores the original cache
-    object after each test, so any real-process cache survives outside
-    the test session.
-    """
-    monkeypatch.setattr("unicefstats_mcp.server._data_frontier_cache", {})
+# The autouse `_isolate_frontier_cache` fixture lives in conftest.py so it
+# covers every test file, not just this one.
 
 
 @pytest.fixture
@@ -539,6 +530,30 @@ class TestUnicefdataCascadeIsNoData:
 
         assert "error" in result
         assert result.get("status") == "no_data"
+
+    @patch("unicefstats_mcp.server._get_ud")
+    def test_4040_in_error_body_is_not_classified_as_no_data(self, mock_ud):
+        """Regression: the pre-fix classifier used raw `"404" in exc_str`,
+        so a transient 5xx whose body contained "4040" was mislabelled
+        `no_data` — and the no_data envelope tells the model the warehouse
+        authoritatively confirmed absence. Word-bounded matching
+        (`_looks_not_found`) must classify this as a plain error instead."""
+        ud = MagicMock()
+        ud.unicefData.side_effect = Exception(
+            "502 Bad Gateway: upstream returned 4040 chars of HTML"
+        )
+        mock_ud.return_value = ud
+
+        # A 5xx is (correctly) retryable, so silence the backoff sleeps.
+        with patch("unicefstats_mcp.server._time.sleep"):
+            result = get_data(indicator="CME_MRY0T4", countries=["BRA"])
+
+        assert "error" in result
+        assert result.get("status") == "error", (
+            "A transient 5xx mentioning '4040' must surface as a generic "
+            "error, not an authoritative no_data verdict."
+        )
+        assert result.get("status") != "no_data"
 
 
 class TestNonNumericPeriods:

@@ -56,7 +56,7 @@ def validate_query(query: str) -> str | None:
 def validate_region(region: str | None) -> str | None:
     """Return error message if region filter is too long, else None."""
     if region is not None and len(region) > MAX_REGION_LEN:
-        return f"region too long ({len(region)} chars). Maximum is {MAX_REGION_LEN}."
+        return f"Region too long ({len(region)} chars). Maximum is {MAX_REGION_LEN}."
     return None
 
 
@@ -127,7 +127,7 @@ def validate_age(age: str | None) -> str | None:
         )
     if len(age) > 30:
         return (
-            f"age too long ({len(age)} chars). Pass a single SDMX AGE code "
+            f"Age too long ({len(age)} chars). Pass a single SDMX AGE code "
             "like 'Y15T19' or 'Y0T4'."
         )
     return None

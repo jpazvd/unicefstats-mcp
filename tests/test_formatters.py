@@ -131,6 +131,41 @@ class TestComputeTrend:
         trend = compute_trend(df, window=5)
         assert trend is None
 
+    def test_mixed_int_and_string_periods_do_not_crash(self):
+        # Regression (issue #112 item 3): an object period column mixing
+        # annual ints with quarterly strings — plausible for mixed-frequency
+        # SDMX series — raised TypeError inside sort_values("period") and
+        # killed the whole get_data response. The sort now runs on the
+        # year-coerced key.
+        df = pd.DataFrame(
+            {
+                "country_code": ["BRA"] * 5,
+                "period": [2016, 2017, "2018-Q4", 2019, "2021-Q2"],
+                "value": [20.0, 19.0, 18.0, 17.0, 15.0],
+            }
+        )
+        trend = compute_trend(df, window=5)
+        assert trend is not None
+        assert trend["BRA"]["direction"] == "declining"
+        assert trend["BRA"]["end_year"] == 2021
+        assert trend["BRA"]["start_year"] == 2016
+
+    def test_unparseable_latest_period_skips_row_not_country(self):
+        # Per-period skipping promise: garbage in the newest slot must not
+        # discard the whole country — the trend is computed from the
+        # parseable rows.
+        df = pd.DataFrame(
+            {
+                "country_code": ["BRA"] * 4,
+                "period": [2016, 2018, 2020, "garbage"],
+                "value": [20.0, 18.0, 16.0, 1.0],
+            }
+        )
+        trend = compute_trend(df, window=5)
+        assert trend is not None
+        assert trend["BRA"]["end_year"] == 2020
+        assert trend["BRA"]["direction"] == "declining"
+
 
 class TestOkEnvelope:
     def test_default_fields(self):

@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import time as _time
 import types
 from collections.abc import Callable
@@ -66,32 +67,76 @@ T = TypeVar("T")
 logger = logging.getLogger(__name__)
 
 
-def _is_client_error(exc: BaseException) -> bool:
-    """Heuristic: is this a 4xx-style client error we should NOT retry?
+def _http_status(exc: BaseException) -> int | None:
+    """Extract a structured HTTP status code from an exception, if any.
 
-    Prefers structured signals (HTTP status code attribute, exception class) over
-    substring matching. Substring is the last-resort fallback for `RuntimeError`s
-    raised by `unicefdata` whose only signal is the message text. The check is
-    word-bounded to avoid the v0.7.1 failure mode where `"404"` matched against a
-    response body containing the literal characters (e.g. status `"4040"`).
+    requests.HTTPError carries .response.status_code; urllib HTTPError IS the
+    response and carries .code; some SDKs put .status_code on the exception.
     """
-    # Structured signals first. requests.HTTPError carries .response.status_code;
-    # urllib HTTPError IS the response and carries .code.
     status = getattr(exc, "status_code", None)
     if status is None:
         resp = getattr(exc, "response", None)
         status = getattr(resp, "status_code", None) if resp is not None else None
     if status is None:
         status = getattr(exc, "code", None)
-    if isinstance(status, int) and 400 <= status < 500:
-        return True
+    return status if isinstance(status, int) else None
 
-    # Fallback: word-bounded substring match. Match HTTP status as a standalone
-    # token, not a substring (so "4040" / "404 Not Found" are handled correctly).
-    import re as _re
+
+def _is_client_error(exc: BaseException) -> bool:
+    """Heuristic: is this a 4xx-style client error we should NOT retry?
+
+    A structured signal (HTTP status code attribute) is authoritative: when one
+    is present the verdict comes from it alone and the message text is never
+    consulted. Substring matching is reserved for `RuntimeError`s raised by
+    `unicefdata` whose only signal is the message text (none of its exception
+    classes carry a status attribute). The check is word-bounded to avoid the
+    v0.7.1 failure mode where `"404"` matched against a response body containing
+    the literal characters (e.g. status `"4040"`).
+    """
+    status = _http_status(exc)
+    if status is not None:
+        # 408 (Request Timeout) and 429 (Too Many Requests) are 4xx by number
+        # but transient by nature — retry-with-backoff is the correct response,
+        # so they are excluded here. Returning here for *every* structured
+        # status (not just the 4xx match) matters: a structured 429 whose
+        # message says "retry after 400 seconds", or a 502 whose diagnostic URL
+        # ends in "/404", must not fall through to the text regex and lose its
+        # retry.
+        return 400 <= status < 500 and status not in (408, 429)
+
+    # Fallback (no structured status): word-bounded substring match. Match HTTP
+    # status as a standalone token, not a substring (so "4040" / "404 Not Found"
+    # are handled correctly).
+    text = str(exc)
+    if re.search(r"\b(?:400|401|403|404|405|409|410|422)\b", text):
+        return True
+    text_lower = text.lower()
+    return "not found" in text_lower or "does not exist" in text_lower
+
+
+def _looks_not_found(exc: BaseException) -> bool:
+    """Word-bounded check: does this exception signal 404 / data-not-found?
+
+    Used to decide whether a failed fetch may be presented as an authoritative
+    `no_data` verdict (the envelope tells the model the warehouse "confirmed
+    this data does not exist"). A transient 5xx mislabelled as no_data is the
+    worst failure class for that contract, so this must never match on loose
+    substrings: the v0.7.1 bug where `"404" in str(exc)` matched a body
+    containing "4040" was fixed in `_is_client_error` (v0.7.3) but survived in
+    `get_data`'s no_data classifier until this helper unified the two.
+
+    The lowercase "not found" phrase also catches `unicefdata`'s cascade-end
+    `SDMXNotFoundError: Indicator 'X' not found in any dataflow.` — see
+    TestUnicefdataCascadeIsNoData in tests/test_get_data.py.
+    """
+    status = _http_status(exc)
+    if status is not None:
+        # Structured status is authoritative. A 502 whose diagnostic URL ends
+        # in "/404" must not be reported to the model as confirmed absence.
+        return status == 404
 
     text = str(exc)
-    if _re.search(r"\b(?:400|401|403|404|405|409|410|422)\b", text):
+    if re.search(r"\b404\b", text):
         return True
     text_lower = text.lower()
     return "not found" in text_lower or "does not exist" in text_lower
@@ -121,9 +166,10 @@ def _retry(
                 raise
             if attempt < max_attempts - 1:
                 delay = min(base_delay * (2**attempt), max_delay)
-                # Sanitize: strip embedded newlines/control chars from the
-                # exception message before it lands in a log line.
-                exc_safe = str(exc).replace("\n", " ").replace("\r", " ")
+                # Sanitize: strip embedded control chars (newlines, carriage
+                # returns, ANSI escapes, NUL, ...) from the exception message
+                # before it lands in a log line.
+                exc_safe = re.sub(r"[\x00-\x1f\x7f]", " ", str(exc))
                 logger.info(
                     "Retry %d/%d after %.1fs: %s",
                     attempt + 1,
@@ -2091,7 +2137,7 @@ def get_data(
     # who pass the removed `wealth_quintile=` / `residence=` kwargs
     # alongside a malformed `age=` / `filters` see the migration
     # guidance first (the more actionable signal), not a generic
-    # "filters must be a dict" / "age too long" error that hides the
+    # "filters must be a dict" / "Age too long" error that hides the
     # actual root cause.
     removed_v1_1 = [
         name
@@ -2371,22 +2417,10 @@ def get_data(
             lambda: ud.unicefData(**ud_kwargs)
         )  # v1.5.5 — throttle + 403 retry
     except Exception as exc:
-        exc_str = str(exc)
-        exc_lower = exc_str.lower()
-        # "not found" (lowercase) catches `unicefdata.unicefdata.SDMXNotFoundError:
-        # Indicator 'X' not found in any dataflow.` — the cascade-end exception
-        # raised after `unicefdata` walks its hardcoded fallback dataflow chain
-        # for indicators whose primary dataflow returned 404. Treating that as
-        # no_data lets the model receive a clean "no data" verdict and refuse
-        # honestly, instead of receiving a generic error that confuses its
-        # tool-loop heuristics. See unicefdata-dev issue tracking the upstream
-        # behavior (filed alongside this commit).
-        is_not_found = (
-            "404" in exc_str
-            or "not found" in exc_lower
-            or "does not exist" in exc_lower
-            or "not found in any dataflow" in exc_lower
-        )
+        # Word-bounded 404 / not-found classification — see _looks_not_found.
+        # A no_data verdict is authoritative for the model, so a transient
+        # 5xx whose body happens to contain "404x" must never qualify.
+        is_not_found = _looks_not_found(exc)
         return error(
             f"Data fetch failed: {exc}",
             tip=(
@@ -2841,6 +2875,35 @@ def get_api_reference(
 # ---------------------------------------------------------------------------
 
 
+def _prompt_display(value: str, max_len: int = 100) -> str:
+    """Sanitize a user-supplied prompt argument for interpolation into prose.
+
+    Prompt args bypass the tool-boundary validators, so a value containing
+    newlines could inject extra "instruction" lines into the rendered prompt
+    body, and an unbounded one could blow up its size. Collapse control
+    characters to spaces and clamp the length. Code positions in prompt
+    bodies use `json.dumps` literals instead — this is only for display.
+    """
+    cleaned = re.sub(r"[\x00-\x1f\x7f]+", " ", value).strip()
+    if len(cleaned) > max_len:
+        cleaned = cleaned[:max_len] + "…"
+    return cleaned
+
+
+def _prompt_year(value: str, default: int) -> int:
+    """Coerce a prompt year argument to a plausible int, else the default.
+
+    Year args are interpolated unquoted into `get_data(start_year=..., ...)`
+    call examples in prompt bodies; anything non-numeric would land there
+    verbatim. Fall back to the documented default instead.
+    """
+    try:
+        year = int(str(value).strip())
+    except (ValueError, TypeError):
+        return default
+    return year if 1900 <= year <= 2100 else default
+
+
 # --- compare_indicators ---
 
 
@@ -2864,21 +2927,29 @@ def compare_indicators(
     """
     # repr-safe formatting: use json.dumps for the country list literal so that
     # any embedded quote/special character in user input is escaped instead of
-    # silently breaking the rendered Python literal in the prompt body.
-    country_list = [c.strip().upper() for c in countries.split(",") if c.strip()]
+    # silently breaking the rendered Python literal in the prompt body. Prose
+    # positions get the control-char-stripped, length-clamped display form,
+    # and the year args are coerced to real ints — they are interpolated
+    # unquoted into the get_data() call example below.
+    indicator_clean = _prompt_display(indicator, 50)
+    indicator_literal = json.dumps(indicator_clean)
+    country_list = [
+        _prompt_display(c, 60).upper() for c in countries.split(",") if c.strip()
+    ][:MAX_COUNTRIES]
     country_display = ", ".join(country_list)
     country_list_literal = json.dumps(country_list)
-    indicator_literal = json.dumps(indicator)
+    start_y = _prompt_year(start_year, 2015)
+    end_y = _prompt_year(end_year, 2023)
 
     return (
-        f"I need to compare the UNICEF indicator {indicator} across "
-        f"{country_display} from {start_year} to {end_year}.\n\n"
+        f"I need to compare the UNICEF indicator {indicator_clean} across "
+        f"{country_display} from {start_y} to {end_y}.\n\n"
         f"Please:\n"
         f"1. Call get_indicator_info({indicator_literal}) to understand what this "
         f"indicator measures\n"
         f"2. Call get_data(indicator={indicator_literal}, "
         f"countries={country_list_literal}, "
-        f"start_year={start_year}, end_year={end_year}, format='compact') "
+        f"start_year={start_y}, end_year={end_y}, format='compact') "
         f"to fetch the data\n"
         f"3. Analyze the results:\n"
         f"   - Show a summary table of values by country and year\n"
@@ -2953,15 +3024,25 @@ def trend_analysis(
         start_year: Start year (default "2000")
         end_year: End year (default "2024")
     """
+    # Same repr-safe treatment as compare_indicators: json.dumps for code
+    # positions, display-clamped prose, int-coerced years.
+    indicator_clean = _prompt_display(indicator, 100)
+    indicator_literal = json.dumps(indicator_clean)
+    country_clean = _prompt_display(country, 100)
+    country_literal = json.dumps(country_clean)
+    start_y = _prompt_year(start_year, 2000)
+    end_y = _prompt_year(end_year, 2024)
+
     return (
-        f"Analyze the trend for UNICEF indicator '{indicator}' in {country} "
-        f"from {start_year} to {end_year}.\n\n"
+        f"Analyze the trend for UNICEF indicator {indicator_literal} in {country_clean} "
+        f"from {start_y} to {end_y}.\n\n"
         f"Steps:\n"
-        f"1. If '{indicator}' is not an indicator code, call search_indicators('{indicator}') "
+        f"1. If {indicator_literal} is not an indicator code, "
+        f"call search_indicators({indicator_literal}) "
         f"to find the code\n"
         f"2. Call get_indicator_info(code) to understand the indicator, its unit, and SDG target\n"
-        f"3. Call get_data(indicator=code, countries=['{country}'], "
-        f"start_year={start_year}, end_year={end_year}, format='compact') to fetch the series\n"
+        f"3. Call get_data(indicator=code, countries=[{country_literal}], "
+        f"start_year={start_y}, end_year={end_y}, format='compact') to fetch the series\n"
         f"4. Analyze:\n"
         f"   - Report the value at start, end, and any notable inflection points\n"
         f"   - Calculate the annualized rate of change (AARC)\n"
@@ -3000,14 +3081,15 @@ def country_profile(
     indicator_list = "\n".join(
         f"   - {code} ({name})" for code, name in core_indicators
     )
+    country_clean = _prompt_display(country, 100)
 
     return (
-        f"Create a child development profile for {country}.\n\n"
+        f"Create a child development profile for {country_clean}.\n\n"
         f"Steps:\n"
         f"1. For each of these core indicators, call get_data() to fetch the latest value:\n"
         f"{indicator_list}\n"
         f"2. Present a structured country brief:\n"
-        f"   - **Country**: {country} (include region and income group)\n"
+        f"   - **Country**: {country_clean} (include region and income group)\n"
         f"   - **Child Survival**: U5MR + neonatal mortality, trend direction\n"
         f"   - **Nutrition**: stunting + wasting, prevalence and severity classification\n"
         f"   - **Education**: primary completion rate\n"
@@ -3047,9 +3129,10 @@ def sdg_progress(
         f"   - {sdg}: {name} ({code}) — target: {target}"
         for sdg, code, name, target in sdg_map
     )
+    country_clean = _prompt_display(country, 100)
 
     return (
-        f"Assess {country}'s progress on child-related SDG targets.\n\n"
+        f"Assess {country_clean}'s progress on child-related SDG targets.\n\n"
         f"SDG indicator mapping:\n{map_text}\n\n"
         f"Steps:\n"
         f"1. For each SDG indicator, call get_data() to fetch the latest value and "

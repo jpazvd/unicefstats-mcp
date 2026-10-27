@@ -95,7 +95,8 @@ class TestParseUnicefstats:
 
 
 class TestParseWorldBank:
-    """World Bank MCP returns CSV. Header row uses dotted column names."""
+    """world_bank_mcp_server (community WB Open Data wrapper) returns CSV.
+    Header row uses dotted column names."""
 
     def test_basic_csv(self):
         text = (
@@ -105,7 +106,10 @@ class TestParseWorldBank:
             "Kenya,KEN,2020,40.0,Mortality rate (per 1000)\n"
         )
         label, indicator, by_country = mcp_figures.parse_world_bank(text)
-        assert "world-bank" in label
+        # Label names the repository slug and its community status — not
+        # "World Bank" alone, which reads as an institutional product.
+        assert "world_bank_mcp_server" in label
+        assert "community" in label
         assert indicator == "Mortality rate (per 1000)"
         assert by_country["India"] == [(2020, 32.5), (2021, 30.1)]
         assert by_country["Kenya"] == [(2020, 40.0)]

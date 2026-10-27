@@ -3,6 +3,9 @@
 **Date:** March 2026 (refreshed April 2026)
 **Author:** Joao Pedro Azevedo
 **Context:** Review conducted as part of the [unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) project
+**Inventory:** the server counts in this review refer to the April 2026 cohort (45 servers). The [server directory](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md) was refreshed in October 2026 and lists 92 for official statistics; gap statements updated in October are marked as such.
+
+**Help keep this current.** If you maintain an MCP server for official statistics, or know one that is missing, out of date or mis-labelled, please [open a landscape-correction issue](https://github.com/jpazvd/unicefstats-mcp/issues/new?template=landscape_correction.md). Additions, updates and clarifications are all welcome; each is applied with the date it was verified.
 
 ---
 
@@ -10,7 +13,7 @@
 
 The Model Context Protocol (MCP), released by Anthropic in November 2024, enables Large Language Models (LLMs) to interact with external data sources through standardized tool interfaces. Within 18 months, an ecosystem of MCP servers has emerged for querying official statistics from international organizations, UN agencies, and national statistics offices.
 
-This review documents the state of this ecosystem as of March 2026 (refreshed April 2026), covering 45 MCP server implementations, their architectural patterns, and the academic literature on evaluating tool-augmented LLMs for statistical data retrieval. The cohort approximately doubled between the original March cataloguing (~20 servers) and the April 2026 refresh (45 confirmed), driven by official-institutional adoption (World Bank data360, France data.gouv.fr, India MoSPI) and a wave of new community NSO servers covering smaller markets and developing-country statistical offices.
+This review documents the state of this ecosystem as of March 2026 (refreshed April 2026), covering 45 MCP server implementations (92 for official statistics by the October 2026 refresh), their architectural patterns, and the academic literature on evaluating tool-augmented LLMs for statistical data retrieval. The cohort approximately doubled between the original March cataloguing (~20 servers) and the April 2026 refresh (45 confirmed), driven by official-institutional adoption (World Bank data360, France data.gouv.fr, India MoSPI) and a wave of new community NSO servers covering smaller markets and developing-country statistical offices.
 
 ---
 
@@ -20,23 +23,25 @@ This review documents the state of this ecosystem as of March 2026 (refreshed Ap
 
 The MCP ecosystem for official statistics evolved in three waves:
 
-**Wave 1 (2024-Q4): Economic data pioneers.** The first MCP servers targeted well-known economic APIs with large user bases: FRED (800,000+ time series, stefanoamorelli/fred-mcp-server, 72 stars) and World Bank (anshumax/world_bank_mcp_server, 45 stars). These used simple REST API wrappers with 3-5 tools.
+**Wave 1 (2024-Q4): Economic data pioneers.** The first MCP servers targeted well-known economic APIs with large user bases: FRED (800,000+ time series, stefanoamorelli/fred-mcp-server, 72 stars) and the World Bank Open Data API (community wrapper anshumax/world_bank_mcp_server, 45 stars — not a World Bank product; the Bank's official server, data360-mcp, arrived in Wave 3). These used simple REST API wrappers with 3-5 tools.
 
 **Wave 2 (2025-Q1–Q3): National statistics offices adopt SDMX.** Statistical agencies began building MCP servers on top of their existing SDMX APIs: Netherlands CBS (Go), Australia ABS (TypeScript/SDMX-ML), Ukraine State Statistics (TypeScript/SDMX v3, 49 stars), Italy ISTAT (Python/SDMX with two-layer caching). The US Census Bureau released the first official government MCP server (CC0 license, 57 stars). Brazil's IBGE produced the most thoroughly tested implementation (227 tests, 22 tools).
 
 **Wave 3 (2025-Q4–2026): UN agencies, domain-specific servers, and institutional adoption.** UNICEF entered with three implementations: a generic SDMX server (unicef-drp/sdmx-mcp), a dataflow-based wrapper (tryolabs/unicef-datawarehouse-mcp), and a domain-optimized server with benchmarking (jpazvd/unicefstats-mcp). The OECD MCP emerged as the architectural gold standard (9 tools + 7 resources + 7 prompts, npm published). IMF published to PyPI. UNHCR received three independent implementations (rvibek, shahzadarain, mhadeli). Google Data Commons released the agent-toolkit (Sept 2025), an officially maintained server connecting AI to UN agencies, government surveys, and census data at scale.
 
-**Wave 3 expansion (2026-Q1–Q2): Official institutional servers and FAO gap closure.** The World Bank shipped data360-mcp — first bank-official server with anti-hallucination reasoning templates built in (system-prompt and runtime-context resources, pattern adopted by unicefstats-mcp v0.5.0). France launched datagouv-mcp (Feb 2026, "world first" official national open-data MCP). India MoSPI released esankhyiki-mcp (Feb 2026 beta) — first developing-country NSO with an official server. The European Central Bank gained an ecb-mcp community implementation. MacroNorm-mcp unified IMF + World Bank + FRED. faostat-mcp (April 2026, v1.2.2, community) closed the long-standing FAO gap with 245 countries, 1961-present, 21 tools. A cohort of additional community NSO servers covered Australia (ABS), Germany (Destatis), Mexico (INEGI), Sweden (Kolada — municipal), Mongolia (NSO 1212), Israel (CBS), South Korea (data.go.kr).
+**Wave 3 expansion (2026-Q1–Q2): Official institutional servers and FAO gap closure.** The World Bank shipped data360-mcp — first bank-official server with anti-hallucination reasoning templates built in (system-prompt and runtime-context resources, pattern adopted by unicefstats-mcp v0.5.0). France launched datagouv-mcp (public since November 2025, launch reported February 2026; an official national open-data MCP). India MoSPI released esankhyiki-mcp (Feb 2026 beta) — first developing-country NSO with an official server. The European Central Bank gained an ecb-mcp community implementation. MacroNorm-mcp unified IMF + World Bank + FRED. faostat-mcp (April 2026, v1.2.2, community) closed the long-standing FAO gap with 245 countries, 1961-present, 21 tools. A cohort of additional community NSO servers covered Australia (ABS), Germany (Destatis), Mexico (INEGI), Sweden (Kolada — municipal), Mongolia (NSO 1212), Israel (CBS), South Korea (data.go.kr).
+
+**Wave 3 continued (2026-Q2–Q4): official NSO labs, a UN system endpoint, and community coverage of the remaining UN agencies.** UNSD opened an official MCP endpoint for the UN System Data Commons (June 2026), and the Data Commons itself launched at data.un.org on 17 September 2026. INSEE (through INSEE Lab) and Catalonia's Idescat published official servers (July–August 2026), and IHME published its own connector for GBD 2023 research estimates, which the directory lists separately because GBD estimates are not official statistics. Community developers closed the WHO GHO, UN Comtrade, ILOSTAT and UNESCO UIS gaps, though none of those agencies maintains its own server. By 27 October 2026 the directory listed 92 servers for official statistics, 9 of them official.
 
 ### 2.2 Coverage Map
 
 | Data source | MCP exists? | Implementation quality | SDMX? |
 |---|---|---|---|
 | **FRED** | Yes (5+ implementations) | Excellent (72 stars, npm, tests) | No |
-| **World Bank** | Yes (4 implementations, incl. official data360-mcp) | Excellent (official, active maintenance, anti-hallucination templates) | No |
-| **UNICEF** | Yes (3 implementations) | Excellent (benchmarked, tested) | Yes |
+| **World Bank** | Yes (5 implementations plus a long tail, incl. official data360-mcp) | Excellent (official, active maintenance, anti-hallucination templates) | No |
+| **UNICEF** | Yes (3 implementations; UNICEF Data Warehouse content also on the UN System Data Commons) | Excellent (benchmarked, tested) | Yes |
 | **OECD** | Yes | Excellent (resources, prompts, npm) | Yes |
-| **IMF** | Yes | Good (PyPI published) | Yes |
+| **IMF** | Yes (2 plus a long tail) | Good | Yes |
 | **Eurostat** | Yes | Good (dual SDMX 3.0 + 2.1) | Yes |
 | **ECB** | Yes (community) | Basic | Yes |
 | **US Census** | Yes (official) + community alt | Excellent (CC0, tests) | No |
@@ -51,23 +56,32 @@ The MCP ecosystem for official statistics evolved in three waves:
 | **CBS (Israel)** | Yes (community, April 2026) | Basic | -- |
 | **data.go.kr (South Korea)** | Yes (community, April 2026) | Multi-server monorepo | -- |
 | **MoSPI (India)** | Yes (official, Feb 2026 beta) | Good (PLFS, CPI, GDP, +5 datasets) | -- |
-| **France data.gouv.fr** | Yes (official, Feb 2026) | "World first" official national open-data MCP, free, no API key | -- |
+| **France data.gouv.fr** | Yes (official, public since Nov 2025) | Official national open-data MCP, free, no API key | -- |
 | **Ukraine Stats** | Yes | Good (49 stars) | Yes |
 | **IBGE (Brazil)** | Yes | Excellent (227 tests, 97% coverage) | No |
 | **Canada (gov-ca-mcp)** | Yes | Good | No |
-| **UNHCR** | Yes (3 implementations) | Basic | No |
-| **WHO** | Partial (via medical-mcp) | -- | No |
+| **Statistics Canada (dedicated)** | Yes (community, found Oct 2026: mcp-statcan, on PyPI since Feb 2026; maplestats-mcp) | Basic | No |
+| **INSEE (France)** | Yes (official, INSEE Lab, beta, Aug 2026) | 12 tools incl. SPARQL over the RMES graph | No |
+| **Idescat (Catalonia)** | Yes (official, Jul 2026) | Hosted; JSON-stat data, 7 tools | No |
+| **ONS (UK), CSO (Ireland), BFS (Switzerland)** | Yes (community, found Oct 2026) | Basic | No |
+| **KOSIS (Korea), e-Stat (Japan), NBS (China), TNSO (Thailand), TÜİK (Türkiye)** | Yes (community, found Oct 2026) | Basic | TNSO, TÜİK: Yes |
+| **Central banks (BCB, CBRT, NBB, CBN, CBSL)** | Yes (community, found Oct 2026); ECB already listed | Basic | NBB: Yes |
+| **UNHCR** | Yes (6, incl. two independent servers by UNHCR staff; one earlier implementation deleted) | Basic | No |
+| **WHO** | Yes (community since May 2026: gho-mcp, who-gho-mcp-server) | Basic | No |
 | **FAO** | Yes (community, April 2026) | Good (faostat-mcp v1.2.2: 245 countries, 21 tools, 3-tier caching) | -- |
 | **Data Commons (multi-agency)** | Yes (Google, official, Sept 2025) | Excellent (UN agencies, surveys, census, climate at scale) | -- |
 | **MacroNorm (IMF+WB+FRED)** | Yes (community, March 2026) | Basic (unified interface) | -- |
-| **UNESCO/UIS** | **No** | Gap | -- |
-| **ILO** | Partial (via cluster-mcp) | -- | Yes |
-| **UNSD SDG API** | **No** | Gap | -- |
+| **UN System Data Commons (UNSD)** | Yes (official; MCP endpoint June 2026, platform launched 17 Sep 2026) | Data from 26 UN entities; series metadata being completed under the federated governance arrangement among participating entities | No |
+| **IHME GBD 2023** (research estimates) | Yes (IHME's own connector, hosted; listed under related sources) | Uncertainty intervals; not official statistics | No |
+| **UN Comtrade** | Yes (community since May 2026: un-comtrade-mcp-server) | Basic | No |
+| **UNESCO/UIS** | Yes (community since Feb 2026: unesco-mcp, global-education-mcp, uis-mcp-server; missed in the April inventory) | Basic | -- |
+| **ILO** | Yes (community since Aug 2026: ilo-mcp-server, ilostat-mcp-server) | Basic | Yes |
+| **UNSD SDG API** | Partial (official UN System Data Commons endpoint, June 2026) | -- | -- |
 | **UN DESA Population** | **No** | Gap | -- |
 | **UNDP** | **No** | Gap | -- |
-| **BIS, WTO, IAEA** | **No** | Gap | -- |
+| **BIS, WTO, IAEA** | No dedicated server (BIS via community aggregator openecon-data) | Gap | -- |
 
-**~55% of implementations use SDMX**, reflecting the protocol's dominance in international statistical data exchange. The April 2026 refresh closed the FAO gap (faostat-mcp). Remaining major gaps: UNESCO, ILO, UNSD, UN DESA, BIS, WTO.
+**About a quarter of servers use SDMX, and the share is not trending.** Across the October 2026 directory, 20 of the 81 servers whose protocol is known use SDMX (25%); by launch half-year the share moves between 17% and 32% with no clear direction. It differs by producer: 8 of 15 servers for international organisations use SDMX, against 6 of 41 for national offices, which more often wrap REST/JSON, PxWeb or OData APIs. The 55% in the March deep-review cohort (11 of 20) reflected that cohort's composition, which over-represented international SDMX servers, rather than a period of higher use. The April 2026 refresh closed the FAO gap (faostat-mcp). The October 2026 refresh found community servers for UNESCO UIS (since February 2026, so already present when the April refresh called it a gap), WHO GHO and UN Comtrade (May 2026) and ILOSTAT (August 2026). Remaining major gaps: UNSD SDG API (partly covered by the UN System Data Commons), UN DESA, UNDP, WTO, and a dedicated BIS server (BIS data is reachable through the community aggregator openecon-data).
 
 ---
 
@@ -100,20 +114,22 @@ The 20 servers use three architectural models:
 
 ### 3.3 Language Distribution
 
-For the original 20-server cohort (March 2026): Python 11 (55%), TypeScript 8 (40%), Go 1 (5%). The April 2026 expansion to 45 servers preserved the same distribution roughly — Python remains dominant via FastMCP; TypeScript second via the MCP SDK; Go remains rare.
+For the original 20-server cohort (March 2026): Python 11 (55%), TypeScript 8 (40%), Go 1 (5%). The April 2026 expansion to 45 servers preserved the same distribution roughly — Python remains dominant via FastMCP; TypeScript second via the MCP SDK; Go remains rare. Not re-counted for the October 2026 directory.
 
 ### 3.4 Quality Metrics
 
 Counts below cover the original 20-server March cohort which received deep code review. The 25 servers added in the April 2026 refresh have not yet been comparably audited; aggregate fractions are noted as estimates where applicable.
 
-| Metric | Count (deep-review cohort) | Percentage | Notes for full 45-server cohort |
-|---|---|---|---|
-| Has tests | 7/20 | 35% | IBGE remains the gold standard (227 tests); most April additions are basic |
-| Published to registry (PyPI/npm) | 8/20 | 40% | Several April additions ship clone-only |
-| Uses SDMX | 11/20 | 55% | New SDMX-native April additions: ECB (`ecb-mcp`), FAO (`faostat-mcp`). SDMX share roughly stable. (`mcp-server-abs` for Australia ABS was already in the original 20-server cohort.) |
-| Has MCP Resources | 2/20 | 10% | + World Bank data360-mcp + unicefstats-mcp v0.5.0 = 4/45 (≈9%) |
-| Has MCP Prompts | 2/20 | 10% | Largely unchanged in April additions |
-| Has benchmark/evaluation | 1/20 | 5% | unicefstats-mcp remains the only server with a published accuracy benchmark; v0.5.0 adds anti-extrapolation skill (system-prompt + context resources) |
+| Metric | Count (deep-review cohort) | Percentage | Notes for full 45-server cohort | October 2026 directory (92) |
+|---|---|---|---|---|
+| Has tests | 7/20 | 35% | IBGE remains the gold standard (227 tests); most April additions are basic | not re-audited |
+| Published to registry (PyPI/npm) | 8/20 | 40% | Several April additions ship clone-only | 34/92 (37%); 46/92 (50%) counting 12 hosted endpoints |
+| Uses SDMX | 11/20 | 55% | New SDMX-native April additions: ECB (`ecb-mcp`), FAO (`faostat-mcp`). SDMX share roughly stable. (`mcp-server-abs` for Australia ABS was already in the original 20-server cohort.) | 20/81 where known (25%) |
+| Has MCP Resources | 2/20 | 10% | + World Bank data360-mcp + unicefstats-mcp v0.5.0 = 4/45 (≈9%) | not re-audited (data360-mcp now 11, unicefstats-mcp 6, sdmx-mcp 3) |
+| Has MCP Prompts | 2/20 | 10% | Largely unchanged in April additions | not re-audited (data360-mcp 7, unicefstats-mcp 5) |
+| Has benchmark/evaluation | 1/20 | 5% | unicefstats-mcp remains the only server with a published accuracy benchmark; v0.5.0 adds anti-extrapolation skill (system-prompt + context resources) | not re-audited; no other published accuracy benchmark found |
+| Official status | — | — | — | 9/92 (10%); 3 independent, 79 community, 1 commercial |
+| Active (pushed since 2026-05-01) | — | — | — | 68/92 (74%) |
 
 unicefstats-mcp is still the only server with a published accuracy benchmark. The World Bank data360-mcp is the second server to ship dedicated anti-hallucination resources (system-prompt + context); unicefstats-mcp v0.5.0 adopts that pattern.
 
@@ -217,7 +233,7 @@ This effect is strongest for well-known indicators (child mortality) and weakest
 
 22. **57th UN Statistics Commission (February 2026).** Seminar on "AI-readiness for official data and statistics" — first dedicated UNSC session on AI integration with official statistics. Available at [unstats.un.org](https://unstats.un.org/UNSDWebsite/events-details/un57sc-ai-readiness-for-official-data-and-statistics-27Feb2026/).
 
-23. **HLG-MOS AI-Ready Dissemination Project (January 2026).** UNECE-hosted technical body launches a work programme targeting "accessible, findable, interpretable, authentic, traceable, and integral" statistical outputs for AI consumption — names co-development of open-source MCP servers among its deliverables. Available at [unece.org](https://unece.org/statistics/modernstats/projects).
+23. **HLG-MOS AI-Ready Dissemination Project (January–December 2026).** A project of the UNECE High-Level Group for the Modernisation of Official Statistics. Its work package on quality frameworks is to recommend how statistical data quality frameworks should be revised for AI, "especially with attention to accessibility, findability, interpretability, authenticity, traceability and integrity". Its technical work package lists sandboxes in which statistical organisations test approaches such as MCP servers. Source: *HLG-MOS Work Programme for 2026*, [unece.org](https://unece.org/sites/default/files/2026-03/HLG-MOS%20Work%20Programme%20for%202026.pdf); project page at [unece.org](https://unece.org/statistics/modernstats/projects).
 
 24. **UN80 Initiative — UN Data Commons (Work Package 16).** Operationalises an interoperable AI-ready pipeline across 25+ UN agencies, co-led by UNICEF, DESA, and the Secretary-General's office; federated model with initial delivery targeted for UNGA 2026. Available at [unstats.un.org](https://unstats.un.org/UNSDWebsite/undatacommons/).
 
@@ -232,13 +248,13 @@ The April 2026 refresh closed the FAO gap (community [faostat-mcp](https://githu
 | Agency | Data platform | API available? | Difficulty | Status |
 |---|---|---|---|---|
 | ~~**FAO**~~ | ~~FAOSTAT~~ | ~~Yes (REST)~~ | ~~Medium~~ | **Closed April 2026** (community faostat-mcp) |
-| **UNESCO** | UIS | Yes (REST, 4,000+ indicators) | Medium | Open |
-| **ILO** | ILOSTAT | Yes (SDMX) | Low (cluster-mcp partial) | Open |
-| **UNSD** | SDG API | Yes (REST at unstats.un.org) | Low | Open |
+| **UNESCO** | UIS | Yes (REST, 4,000+ indicators) | Medium | Community servers since Feb 2026; no official server |
+| **ILO** | ILOSTAT | Yes (SDMX) | Low | Community servers since Aug 2026; no official server |
+| **UNSD** | SDG API | Yes (REST at unstats.un.org) | Low | Partial — official UN System Data Commons endpoint (June 2026) |
 | **UN DESA** | Population Division | Yes (data portal) | Medium | Open |
 | **UNDP** | HDR | Shut down (bulk only) | High | Open |
-| **WHO** (dedicated) | GHO | Yes (REST) | Medium | Open (partial via medical-mcp) |
-| **BIS, WTO, IAEA** | Various | Yes | Medium-High | Open (no MCPs found in 2026-04-30 search) |
+| **WHO** (dedicated) | GHO | Yes (REST) | Medium | Community servers since May 2026; no official server |
+| **BIS, WTO, IAEA** | Various | Yes | Medium-High | Open — no dedicated server (2026-10-26); BIS via community aggregator openecon-data |
 
 ### 6.2 Quality Gaps
 
@@ -254,11 +270,11 @@ The April 2026 refresh closed the FAO gap (community [faostat-mcp](https://githu
 
 ## 7. Conclusion
 
-The MCP ecosystem for official statistics is young (18 months) but growing rapidly. The cohort doubled between the original March 2026 cataloguing (~20 servers) and the April 2026 refresh — 45 servers now cover major international data sources, with SDMX as the dominant protocol (~55%). The quality varies widely, from minimal REST wrappers with no tests to production-grade servers with hundreds of tests and published benchmarks. Three trends define the expansion: (1) official-institutional adoption (World Bank data360, France data.gouv.fr, India MoSPI, Google Data Commons agent-toolkit), (2) anti-hallucination resources moving from advisory tool descriptions into structural skill / system-prompt resources (data360-mcp, then unicefstats-mcp v0.5.0), and (3) coverage expansion into smaller markets and developing-country NSOs.
+The MCP ecosystem for official statistics is young (two years) but growing rapidly. The cohort doubled between the original March 2026 cataloguing (~20 servers) and the April 2026 refresh (45), and doubled again by October: 92 servers for official statistics, 9 of them official. SDMX accounts for about a quarter of the servers whose protocol is known, mostly those for international organisations; the 55% seen in the March cohort reflected that cohort's composition. The space is also changing fast: of the 39 servers in the published directory, two had been deleted or archived by October and 34 of the remaining 37 had new figures, most because the servers kept adding features. The quality varies widely, from minimal REST wrappers with no tests to production-grade servers with hundreds of tests and published benchmarks. Three trends define the expansion: (1) official-institutional adoption (World Bank data360, France data.gouv.fr, India MoSPI, Google Data Commons agent-toolkit), (2) anti-hallucination resources moving from advisory tool descriptions into structural skill / system-prompt resources (data360-mcp, then unicefstats-mcp v0.5.0), and (3) coverage expansion into smaller markets and developing-country NSOs.
 
 The key finding from our evaluation work is that **domain-specific optimization matters enormously**: unicefstats-mcp's compact formatted output delivers EQA = 0.990 versus 0.074 for the generic SDMX server, a 13× difference, on identical queries. However, generic servers achieve better hallucination prevention (0% vs 36% T2 fabrication on the v4 layered framework with R1+R2 pooled), suggesting that the ideal architecture combines domain-specific formatting with generic refusal patterns. The v0.5.0 anti-extrapolation skill (system-prompt + context resources) is unicefstats-mcp's structural answer to that gap.
 
-The major remaining gaps are institutional (UNESCO, ILO, UNSD, UN DESA, BIS, WTO have no dedicated MCP servers — though the FAO gap was closed in April 2026 by community faostat-mcp) and methodological (only 1 of 45 servers has a published accuracy benchmark; the World Bank data360-mcp is the second to ship dedicated anti-hallucination resources). Addressing these gaps — through new server implementations, standardized evaluation, and shared skill / system-prompt patterns — would significantly advance the use of AI tools for official statistics.
+The major remaining gaps are institutional (UN DESA, UNDP and WTO have no MCP servers and BIS has none of its own, though the community aggregator openecon-data reaches it; UNESCO UIS, ILOSTAT, WHO GHO, UN Comtrade and FAOSTAT now have community servers but none maintained by the agency; as of 2026-10-26 the official servers are UNICEF's sdmx-mcp, UNSD's Data Commons endpoint, the World Bank's data360-mcp, Google Data Commons, and the US Census, India MoSPI, France data.gouv.fr/INSEE and Catalonia Idescat national servers) and methodological (only 1 of 45 servers has a published accuracy benchmark; the World Bank data360-mcp is the second to ship dedicated anti-hallucination resources). Addressing these gaps — through new server implementations, standardized evaluation, and shared skill / system-prompt patterns — would significantly advance the use of AI tools for official statistics.
 
 ---
 

@@ -154,6 +154,19 @@ MOCK_COUNTRIES: dict[str, str] = {
 }
 
 
+@pytest.fixture(autouse=True)
+def _isolate_frontier_cache(monkeypatch):
+    """Give every test in the suite a fresh empty `_data_frontier_cache`.
+
+    Previously duplicated file-locally in test_get_data.py and
+    test_v120_filters.py, which left other files (e.g.
+    test_response_envelope.py) seeding the REAL module-level cache through
+    their `get_data()` calls — a latent cross-file test-order dependence.
+    monkeypatch restores the original cache object after each test.
+    """
+    monkeypatch.setattr("unicefstats_mcp.server._data_frontier_cache", {})
+
+
 @pytest.fixture
 def mock_indicators():
     return MOCK_INDICATORS.copy()

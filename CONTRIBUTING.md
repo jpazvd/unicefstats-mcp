@@ -56,6 +56,15 @@ Open an [issue](https://github.com/jpazvd/unicefstats-mcp/issues) using the **Fe
 - No PR template needed for docs-only changes
 - Keep the README concise — detailed analysis belongs in `examples/RESULTS.md`
 
+#### Naming third-party servers
+
+Landscape and comparison tables are read as statements about who built what, so:
+
+- Name a server by its **repository slug and maintainer** (`world_bank_mcp_server`, anshumax), never by a shortened institutional name ("World Bank MCP"). The slug is the maintainer's choice; the shortening would be ours.
+- Every table that lists servers carries a **Status** column using the four labels defined once in the README, [Status labels](README.md#status-labels): **official** (with a *beta*, *lab* or *pilot* qualifier where the organisation states one), **independent**, **community** and **commercial**. Do not restate the definitions elsewhere; link to them. When the evidence is ambiguous, label the row community and say why.
+- Counts (tools, prompts, resources, stars) describe the **public default branch on a stated date**. Do not use figures supplied by a maintainer without a public artefact; offer them a review of their row instead.
+- Do not rewrite dated CHANGELOG entries to fix an attribution; add a new entry that records the correction.
+
 ### Benchmark contributions
 
 Run the EQA benchmark on different models and share results:
