@@ -68,7 +68,7 @@ The MCP ecosystem for official statistics emerged in early 2025, a few months af
          ├── macronorm-mcp (donkachii) — unified IMF + WB + FRED
          ├── nso1212-mcp (Mongolia NSO)
          ├── WHO GHO, UN Comtrade, World Bank, IMF, OECD, Eurostat servers (cyanheads, May–Jun 2026) — community
-         ├── UN System Data Commons (UNSD, Jun 2026) — official MCP endpoint, first opened at UN Open Source Week; the Data Commons launched at data.un.org on 17 Sep 2026
+         ├── UN System Data Commons (Jun 2026) — official MCP endpoint, first opened at UN Open Source Week; the Data Commons launched at data.un.org on 17 Sep 2026
          ├── tnso-mcp-server — Thailand TNSO, community
          └── fed-data-mcp-registry (GSA-TTS — official curated registry, not a server)
          ┊

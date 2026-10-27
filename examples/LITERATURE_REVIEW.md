@@ -71,7 +71,7 @@ The MCP ecosystem for official statistics evolved in three waves:
 | **FAO** | Yes (community, April 2026) | Good (faostat-mcp v1.2.2: 245 countries, 21 tools, 3-tier caching) | -- |
 | **Data Commons (multi-agency)** | Yes (Google, official, Sept 2025) | Excellent (UN agencies, surveys, census, climate at scale) | -- |
 | **MacroNorm (IMF+WB+FRED)** | Yes (community, March 2026) | Basic (unified interface) | -- |
-| **UN System Data Commons (UNSD)** | Yes (official; MCP endpoint June 2026, platform launched 17 Sep 2026) | Data from 26 UN entities; series metadata being completed under the federated governance arrangement among participating entities | No |
+| **UN System Data Commons** | Yes (official; MCP endpoint June 2026, platform launched 17 Sep 2026) | Data from 26 UN entities; series metadata being completed under the federated governance arrangement among participating entities | No |
 | **IHME GBD 2023** (research estimates) | Yes (IHME's own connector, hosted; listed under related sources) | Uncertainty intervals; not official statistics | No |
 | **UN Comtrade** | Yes (community since May 2026: un-comtrade-mcp-server) | Basic | No |
 | **UNESCO/UIS** | Yes (community since Feb 2026: unesco-mcp, global-education-mcp, uis-mcp-server; missed in the April inventory) | Basic | -- |
