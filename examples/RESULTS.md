@@ -213,26 +213,15 @@ This is a fundamental LLM behavior, not specific to this MCP.
 
 ---
 
-## 4. 3-Way Comparison: LLM alone vs unicefstats-mcp vs sdmx-mcp
+## 4. Comparison with sdmx-mcp (withdrawn)
 
-Using the same R1 queries (300), we compared unicefstats-mcp against the generic [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) server.
+Until 15 November 2026 this section reported a three-way comparison on the R1 queries: the LLM alone, with unicefstats-mcp, and with the generic [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) server. It has been withdrawn, for three reasons.
 
-| Metric | A (alone) | B (unicefstats) | C (sdmx-mcp) |
-|---|---|---|---|
-| **EQA (all positive)** | 0.147 | **0.990** | 0.074 |
-| T1 hallucination | 12% | 8% | **0%** |
-| T2 hallucination | 12% | 34% | **0%** |
-| Cost (300 queries) | $0.89 | $5.47 | $26.20 |
-| Latency (avg) | 5.0s | 9.8s | 60.0s |
-| Tool rounds (avg) | -- | 2.0 | 3.7 |
+1. **The published fabrication rates did not match the run.** The table gave sdmx-mcp 0% on both absent-data query types. That run's own results file gives 0% on T1 and 28% on T2. The published figures came from a combined file in which sdmx-mcp's responses were attached to the wrong queries.
+2. **The scoring rule was superseded.** The run was scored under v1.3 and never re-scored under v1.4, which is the rule behind every current figure on this page.
+3. **The runs are not comparable.** It was a single March 2026 run of an early version of sdmx-mcp on the R1 sample. The current unicefstats-mcp figures (R4 and R5) come from May 2026, on different samples.
 
-**unicefstats-mcp dominates on accuracy** (EQA 0.990 vs 0.074). sdmx-mcp extracts values (ER=0.64) but they are wrong (VA=0.11) because raw SDMX-JSON is hard for the LLM to parse.
-
-**sdmx-mcp dominates on hallucination** (0% on both T1 and T2). Its `assistant_guidance` fields and `validate_query_scope` pattern effectively prevent fabrication.
-
-**sdmx-mcp is 4.8x more expensive** and 6x slower due to multi-step tool chaining (search -> describe -> build_key -> query_data).
-
-The ideal system combines unicefstats-mcp's formatted output with sdmx-mcp's anti-hallucination guardrails.
+A fair comparison needs both servers run on the same sample under the same scoring rule. Until that is done, this page reports unicefstats-mcp against the LLM alone, and makes no claim about sdmx-mcp's accuracy, fabrication rate, cost or speed.
 
 ---
 
@@ -309,7 +298,7 @@ BENCHMARK_SEED=20260326 BENCHMARK_OUTPUT_DIR=examples/ground_truth_r2 BENCHMARK_
     python examples/00_build_ground_truth.py
 python examples/benchmark_eqa.py --ground-truth examples/ground_truth_r2/sample.csv --tag r2v2
 
-# 3-way comparison (requires sdmx-mcp installed)
+# Condition C, sdmx-mcp (requires sdmx-mcp installed; not part of the reported results, see section 4)
 python examples/02_run_sdmx_mcp_benchmark.py
 ```
 

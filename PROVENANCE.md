@@ -123,7 +123,7 @@ The `get_server_metadata()` tool returns machine-readable identity and provenanc
 - **The MCP adds a formatting layer.** Compact output (5 columns) omits disaggregation details, observation status, and confidence intervals available in the full SDMX response.
 - **Row limits apply.** `get_data()` returns a maximum of 500 rows per call. Large queries require filtering or multiple calls.
 - **AI interpretation is not guaranteed.** The MCP measurably improves LLM accuracy but does not eliminate hallucination. Two empirical pillars in this repo:
-  - **300-query EQA test** (v0.7.3 + fixes era): POS EQA = 0.990 on the `baseline_latest` prompt, ~10% T2 hallucination rate after the v1.4 extractor correction.
+  - **500-query EQA test** (v0.7.3 + fixes, May 2026, v1.4 scoring): POS EQA 0.891 and 0.909 on two disjoint country samples; fabrication on absent-data queries 1.00% and 2.25%, below the 2.50% without tools.
   - **v9 Arm B 1484-cell paired benchmark** (v1.5.x cycle, Jun 2026): v1.5.5 measures mean EQA 0.749 (+29.1pp over the v1.2.4 baseline, p = 2×10⁻¹⁰⁵). Different sample, different rubric — the two scores are complementary, not directly comparable.
 
   The LLM may still fabricate data when the API returns no results. See [README §Benchmark Results](README.md#benchmark-results) for both scoreboards.

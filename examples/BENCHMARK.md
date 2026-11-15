@@ -82,7 +82,7 @@ python -m analysis.cross_version_analysis
 | [`benchmark_eqa.py`](benchmark_eqa.py) | Live (sync) benchmark. Submits queries one at a time. Best for development; expensive at scale. | ~$15 | ~30 min |
 | [`benchmark_eqa_batch.py`](benchmark_eqa_batch.py) | **Recommended.** Uses Anthropic's Message Batches API (50% discount). Wave-batches multi-turn tool use. Per-wave checkpoint architecture (PR #53) so a crash is recoverable. | ~$10 | ~30–90 min wall-clock; up to 24 h if Anthropic is busy |
 | [`benchmark_live.py`](benchmark_live.py) | Older sync variant kept for archaeology. Use `benchmark_eqa.py` instead. | n/a | n/a |
-| [`02_run_sdmx_mcp_benchmark.py`](02_run_sdmx_mcp_benchmark.py) | 3-way comparison: LLM alone vs unicefstats-mcp vs `sdmx-mcp` (generic SDMX). | ~$30 | ~1 h |
+| [`02_run_sdmx_mcp_benchmark.py`](02_run_sdmx_mcp_benchmark.py) | Runs the same queries through `sdmx-mcp` (generic SDMX). Its March 2026 results are no longer reported: see [RESULTS.md](RESULTS.md), section 4. | ~$30 | ~1 h |
 
 ### Recover from crashes
 

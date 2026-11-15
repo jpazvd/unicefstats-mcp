@@ -59,7 +59,7 @@ Data source: [UNICEF SDMX API](https://sdmx.data.unicef.org/ws/public/sdmxapi/re
 | [CODE_OF_CONDUCT.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/CODE_OF_CONDUCT.md) | Contributor Covenant v2.1 |
 | [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md) | Full 300-query benchmark analysis with EQA decomposition |
 | [examples/LITERATURE_REVIEW.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/LITERATURE_REVIEW.md) | Literature review: MCP servers for official statistics — ecosystem, patterns, evaluation, 15 papers |
-| [examples/LANDSCAPE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/LANDSCAPE.md) | Landscape analysis: 20 servers reviewed in depth (March 2026), 92 catalogued with status labels (October 2026) — timeline, feature matrix, strengths/weaknesses |
+| [examples/LANDSCAPE.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/LANDSCAPE.md) | Landscape analysis: 20 servers reviewed in depth (March 2026), 97 catalogued with status labels (October 2026) — timeline, feature matrix, strengths/weaknesses |
 | [examples/results/related_work.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/results/related_work.md) | Annotated bibliography — 15 papers on tool-augmented hallucination |
 | [examples/results/statistical_summary.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/results/statistical_summary.md) | Wilcoxon, bootstrap CI, McNemar tests on benchmark results |
 | [examples/MCP-DIRECTORY-STATS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md) | Comprehensive directory of all official statistics MCP servers |
@@ -116,8 +116,8 @@ This project is part of a growing ecosystem of MCP servers for international and
 
 Status describes **who maintains a server**, not its quality or the quality of its data.
 
-- **Official**: published by the organisation that produces the data, or that operates the platform it is served from, under that organisation's account or announced on its own website. A qualifier marks maturity where the organisation states it: *(beta)*, *(lab)*, *(pilot)*.
-- **Independent**: built by staff of that organisation in a personal capacity, as stated in the README or the maintainer's profile, and not endorsed by the organisation. This repository is in this category.
+- **Official**: presented as its own service by the organisation that produces the data, or that operates the platform it is served from: announced on its website, in a press release or at a launch event, or documented as a service it offers. Publication under the organisation's account is not enough by itself. A qualifier marks maturity where the organisation states it: *(beta)*, *(lab)*, *(pilot)*.
+- **Independent**: built by staff of that organisation, or by one of its units, and not presented by the organisation as its own service: a personal project, as stated in the README or the maintainer's profile, or a prototype. This repository is in this category, as a personal project.
 - **Community**: built by individuals or groups with no stated affiliation to the data producer.
 - **Commercial**: offered by a company as part of a product or a hosted or paid service, with no stated affiliation to the data producer.
 
@@ -133,12 +133,14 @@ If you maintain one of these servers, or know one that is missing or mis-describ
 
 The World Bank entries were corrected in October 2026 after Olivier Dupriez and Aivin Solatorio of the World Bank pointed out that a community wrapper had been labelled as the Bank's server and the official `data360-mcp` was missing. Aivin's comparison of the official server is the basis of the `data360-mcp` column above. Thank you to both. The naming rule, the Status column and these label definitions came out of that exchange.
 
+Sancera was added to the directory in November 2026 at the request of its maintainer, [@aalbin2](https://github.com/aalbin2), who proposed the row in [issue #1](https://github.com/jpazvd/unicefstats-mcp/issues/1): the first addition received through the correction template. Thank you.
+
 ### UN Agencies
 
 | Server | Data Source | Status | Tools | SDMX | Published |
 |---|---|---|---|---|---|
 | **unicefstats-mcp** (this repo) | UNICEF Data Warehouse | independent | 9 | Yes | PyPI |
-| [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) | Any SDMX registry | **official** (UNICEF DRP, beta) | 31 | Yes | No (Docker / Fly) |
+| [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) | Any SDMX registry | **independent** (UNICEF DRP prototype, beta) | 31 | Yes | No (Docker / Fly) |
 | [UN System Data Commons](https://github.com/UNStats/OpenSourceWeek2026) | data.un.org — public data from 26 UN entities (Data Commons platform, launched 17 Sep 2026) | **official** (UN DESA / UNSD) | 2 | No | Hosted MCP endpoint |
 | [unicef-datawarehouse-mcp](https://github.com/tryolabs/unicef-datawarehouse-mcp) | UNICEF Data Warehouse | community (built by Tryolabs; UNICEF involvement not stated) | 3 | Yes | No |
 | [faostat-mcp](https://github.com/berba-q/faostat-mcp) | FAO FAOSTAT | community | 23 | No | PyPI |
@@ -169,7 +171,7 @@ The World Bank entries were corrected in October 2026 after Olivier Dupriez and 
 | [us-census-bureau-data-api-mcp](https://github.com/uscensusbureau/us-census-bureau-data-api-mcp) | US Census Bureau | **official** | 5 | No |
 | [esankhyiki-mcp](https://github.com/nso-india/esankhyiki-mcp) | India MoSPI / NSO | **official** (beta) | 4 | No |
 | [datagouv-mcp](https://github.com/datagouv/datagouv-mcp) | France data.gouv.fr | **official** (platform operator) | 10 | Hosted |
-| [McpDiffusion](https://github.com/InseeFrLab/McpDiffusion) | France INSEE | **official** (lab, beta) | 12 | Hosted (beta) |
+| [McpDiffusion](https://github.com/InseeFrLab/McpDiffusion) | France INSEE | **independent** (INSEE Lab, beta) | 12 | Hosted (beta) |
 | [Idescat MCP](https://github.com/idescat/mcp) | Catalonia (Idescat) | **official** | 7 | Hosted |
 | [us-gov-open-data-mcp](https://github.com/lzinga/us-gov-open-data-mcp) | 40+ US Gov APIs | community | 300+ | npm |
 | [ibge-br-mcp](https://github.com/SidneyBissoli/ibge-br-mcp) | Brazil IBGE (227 tests) | community | 23 | npm |
@@ -182,13 +184,13 @@ The World Bank entries were corrected in October 2026 after Olivier Dupriez and 
 
 ### Known gaps
 
-Community servers now cover UNESCO UIS (since February 2026), WHO GHO and UN Comtrade (since May 2026) and ILOSTAT (since August 2026), so those are no longer open gaps; none is maintained by the agency itself. Still no MCP server found (2026-10-26) for **UNDP/HDI**, the **UNSD SDG Global Database API** (the UN System Data Commons endpoint covers some SDG series), **UN DESA Population**, **UNAIDS**, **WFP** or **WTO**; **BIS** has no dedicated server, though the community aggregator `openecon-data` queries it. No official server was found from Eurostat, the IMF, the OECD or any central bank. The tables above are a selection; the directory below lists 92 servers for official statistics, plus research and other related sources and a long-tail list.
+Community servers now cover UNESCO UIS (since February 2026), WHO GHO and UN Comtrade (since May 2026) and ILOSTAT (since August 2026), so those are no longer open gaps; none is maintained by the agency itself. Still no dedicated MCP server found (2026-10-26) for **UNDP/HDI**, the **UNSD SDG Global Database API**, **UN DESA Population**, **UNAIDS**, **WFP** or **WTO**, though the UN System Data Commons endpoint carries some SDG series and, checked on 1 November 2026, HDI, UNAIDS and population series; **BIS** has no dedicated server, though the community aggregator `openecon-data` queries it. No official server was found from Eurostat, the IMF, the OECD or any central bank. The tables above are a selection; the directory below lists 97 servers for official statistics, plus research and other related sources and a long-tail list.
 
 Full directory with install commands: [MCP-DIRECTORY-STATS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md)
 
 ## Relationship to sdmx-mcp
 
-UNICEF also maintains [`sdmx-mcp`](https://github.com/unicef-drp/sdmx-mcp), a generic SDMX protocol MCP server. The two servers are **complementary, not competing**:
+[`sdmx-mcp`](https://github.com/unicef-drp/sdmx-mcp) is a generic SDMX protocol MCP server, developed in UNICEF's Chief Statistician's office as a prototype and published under the `unicef-drp` account. UNICEF has not announced an official MCP server, so it is labelled independent here (see [Status labels](#status-labels)). The two servers are **complementary, not competing**:
 
 | | unicefstats-mcp (this repo) | [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) |
 |---|---|---|
@@ -196,18 +198,12 @@ UNICEF also maintains [`sdmx-mcp`](https://github.com/unicef-drp/sdmx-mcp), a ge
 | **Tools** | 7 (analyst-friendly, 4-step workflow) | 23 (SDMX power-user, structural queries) |
 | **Data layer** | Wraps `unicefdata` Python package | Direct SDMX REST API calls via `httpx` |
 | **Output** | Formatted for LLMs (compact tables, summaries, tips) | Raw SDMX-JSON/CSV |
-| **Accuracy (EQA)** | **0.891** (v0.7.3 + fixes) | 0.074 |
-| **Hallucination** | hall_b 1.00% (mcp060) / 2.25% (mcp073) — below the no-tools hall_a baseline (2.50%) | **0% T1 / 0% T2** |
-| **Cost per query** | ~$0.04 | $0.087 |
-| **Latency** | ~10s avg | 60s avg |
 
-**Key tradeoff**: unicefstats-mcp is dramatically more accurate (EQA 0.891 vs 0.074) because its formatted output is optimized for LLM parsing. sdmx-mcp achieves zero hallucination on absent-data queries through aggressive `assistant_guidance` fields and a `validate_query_scope` pattern; its accuracy floor is too low to be useful, but the refusal discipline is exemplary. unicefstats-mcp v0.7.3 + fixes is the first version where MCP demonstrably makes the model safer than the no-tools baseline on absent-data queries (hall_b < hall_a), achieved without sdmx-mcp's accuracy cost.
+**Benchmark comparison withdrawn (15 November 2026).** Earlier versions of this page set the two servers' benchmark scores side by side (accuracy, fabrication, cost and latency). That comparison has been withdrawn. The sdmx-mcp figures came from one March 2026 run, on a different sample and under an older scoring rule than the figures now reported for unicefstats-mcp, and a check in November 2026 found that the fabrication rates published for sdmx-mcp did not match that run's own results file. A fair comparison needs both servers run on the same sample under the same scoring rule, and that has not been done. Results for unicefstats-mcp alone are in [examples/RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md).
 
 **When to use which:**
-- Use **unicefstats-mcp** for UNICEF child development analysis — it's simpler, faster, and far more accurate
+- Use **unicefstats-mcp** for UNICEF child development analysis, through a short workflow with output formatted for language models
 - Use **sdmx-mcp** when you need to query non-UNICEF SDMX registries, explore dataflow structures, or work with hierarchical codelists
-
-Full 3-way benchmark (LLM alone vs unicefstats-mcp vs sdmx-mcp): [examples/results/](https://github.com/jpazvd/unicefstats-mcp/tree/main/examples/results/)
 
 ## Quick Start
 
@@ -858,17 +854,17 @@ The accuracy headline (~7× lift) has held up across every rescoring. The halluc
 
 5. **The confidence effect**: When the MCP tool returns "no data" but the LLM has strong domain priors (e.g., child mortality for well-known countries), it overrides the tool and fabricates anyway. This is a fundamental LLM behavior, not MCP-specific.
 
-### 3-way comparison (vs sdmx-mcp)
+### With and without the server
 
-| Metric | LLM alone | unicefstats-mcp (v0.7.3 + fixes) | sdmx-mcp |
-|---|---|---|---|
-| **EQA (POS)** | 0.121 | **0.891** | 0.074 |
-| hall_b combined (T1+T2) | hall_a 2.50% | **1.00% (mcp060) / 2.25% (mcp073)** | **0%** |
-| MCP safer than no-tools? | — | **Yes** | Yes (zero by construction) |
-| Cost per query | ~$0.003 | ~$0.04 | $0.087 |
-| Avg latency | ~5s | ~10s | 60s |
+| Metric | LLM alone | unicefstats-mcp (v0.7.3 + fixes) |
+|---|---|---|
+| **EQA (POS)** | 0.121 | **0.891** |
+| hall_b combined (T1+T2) | hall_a 2.50% | **1.00% (mcp060) / 2.25% (mcp073)** |
+| MCP safer than no-tools? | — | **Yes** |
+| Cost per query | ~$0.003 | ~$0.04 |
+| Avg latency | ~5s | ~10s |
 
-sdmx-mcp's raw SDMX-JSON output is hard for LLMs to parse (VA ≈ 0.11), but its anti-hallucination guardrails are highly effective (0% fabrication). See [Relationship to sdmx-mcp](#relationship-to-sdmx-mcp) for details.
+This table used to carry a third column for sdmx-mcp. It was withdrawn on 15 November 2026: see [Relationship to sdmx-mcp](#relationship-to-sdmx-mcp).
 
 ### v9 Arm B paired benchmark (1484 cells, Jun 2026)
 

@@ -55,7 +55,7 @@ dev = [
     "pytest-cov",
     "pytest-asyncio",
     "mypy",
-    "ruff",
+    "ruff==0.17.4",  # pinned: a new release can add lint rules and fail CI; bump on purpose
 ]
 benchmark = [
     "anthropic>=0.40",

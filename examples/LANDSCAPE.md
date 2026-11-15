@@ -1,9 +1,9 @@
 # MCP Servers for Official Statistics: Landscape Analysis
 
 **Date:** March 2026 (refreshed April 2026; inventory refreshed October 2026)
-**Scope:** 92 MCP servers for official statistics across UN agencies, international organizations, and national statistics offices as of 27 October 2026 (9 official), plus 4 research and other related sources listed separately; see the [directory](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md). The analysis sections cover the 45 servers catalogued by April 2026. The original cohort (March 2026, ~20 servers) received deep code review; the April 2026 refresh added 25 catalogued entries — see "Citation" section below for review-depth disclosure.
+**Scope:** 97 MCP servers for official statistics across UN agencies, international organizations, and national statistics offices as of 27 October 2026 (7 official), plus 4 research and other related sources listed separately; see the [directory](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md). The analysis sections cover the 45 servers catalogued by April 2026. The original cohort (March 2026, ~20 servers) received deep code review; the April 2026 refresh added 25 catalogued entries — see "Citation" section below for review-depth disclosure.
 
-**October 2026:** the [server directory](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md) now lists 92 servers for official statistics with a dated status label for each, plus research and other related sources listed separately ([definitions](https://github.com/jpazvd/unicefstats-mcp#status-labels)). The analysis below still describes the April 2026 cohort, except where a row or gap is marked as updated in October.
+**October 2026:** the [server directory](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md) now lists 97 servers for official statistics with a dated status label for each, plus research and other related sources listed separately ([definitions](https://github.com/jpazvd/unicefstats-mcp#status-labels)). The analysis below still describes the April 2026 cohort, except where a row or gap is marked as updated in October.
 
 **Help keep this current.** If you maintain an MCP server for official statistics, or know one that is missing, out of date or mis-labelled, please [open a landscape-correction issue](https://github.com/jpazvd/unicefstats-mcp/issues/new?template=landscape_correction.md). Additions, updates and clarifications are all welcome; each is applied with the date it was verified.
 
@@ -49,7 +49,7 @@ The MCP ecosystem for official statistics emerged in early 2025, a few months af
          ├── estat-mcp — Japan e-Stat, community
          ├── unesco-mcp (Feb 2026), global-education-mcp (Mar 2026) — UNESCO UIS, community; missed in the April inventory
          ├── mcp-statcan — Statistics Canada, community
-         ├── sdmx-mcp (unicef-drp, official, beta) — generic SDMX for any registry
+         ├── sdmx-mcp (unicef-drp, independent, prototype) — generic SDMX for any registry
          ├── us-gov-open-data-mcp — 40+ US APIs, 300+ tools
          ├── cluster-mcp — multi-source monorepo (WB/OECD/ILO/WHO)
          ├── istat_mcp_server — Italy (2-layer cache, blacklist, SDMX)
@@ -76,7 +76,7 @@ The MCP ecosystem for official statistics emerged in early 2025, a few months af
          ├── tuik-mcp — Türkiye TÜİK, community
          ├── cnbs-mcp-server — China NBS, community
          ├── Idescat MCP (Catalonia, Jul 2026) — official, hosted
-         ├── McpDiffusion (INSEE Lab, Aug 2026) — official, beta
+         ├── McpDiffusion (INSEE Lab, Aug 2026) — independent, beta
          ├── ghana-data-mcp — Ghana, community
          ├── ilo-mcp-server, ilostat-mcp-server (Aug–Sep 2026) — ILOSTAT, community
          ├── unhcr-opendata-gateway-mcp (Aug 2026) — independent (UNHCR staff)
@@ -84,7 +84,7 @@ The MCP ecosystem for official statistics emerged in early 2025, a few months af
          ├── uis-mcp-server (Sep 2026) — UNESCO UIS, community
          └── maplestats-mcp — Statistics Canada, community
          ┊
-2026-Q4  ┊  5 new servers to 27 October; inventory refresh: 92 servers for official statistics, 9 official, 3 independent
+2026-Q4  ┊  5 new servers to 27 October; inventory refresh: 97 servers for official statistics, 7 official, 5 independent
          └── IHME GBD 2023 connector — research estimates, producer-maintained, hosted; listed with related sources
 ```
 
@@ -137,7 +137,7 @@ The MCP ecosystem for official statistics emerged in early 2025, a few months af
 
 | Server | Innovation | Impact |
 |---|---|---|
-| unicefstats-mcp | EQA benchmark (300 queries), compact format, summaries, trends, source citations | First MCP with quantified accuracy (EQA=0.990) |
+| unicefstats-mcp | EQA benchmark (500 queries, v1.4 scoring), compact format, summaries, trends, source citations | First MCP with quantified accuracy (EQA 0.891 and 0.909) |
 | us-census-bureau-data-api-mcp | Citation/provenance on every response | Verifiable outputs |
 
 **Strengths:** Measurably accurate. Output optimized for LLMs. Human-verifiable.
@@ -172,12 +172,12 @@ Figures from the March 2026 deep review. Tool counts have moved since: as of Oct
 ### UN Agencies
 
 **unicefstats-mcp** (this repo)
-- Strengths: Benchmarked accuracy (EQA=0.990), LLM-optimized output, source citations, MCP Resources, anti-hallucination, code bridge to Python/R/Stata
-- Weaknesses: UNICEF-only, no generic SDMX, 500-row limit, T2 hallucination ~37% raw (~10% corrected)
+- Strengths: Benchmarked accuracy (EQA 0.891 and 0.909 on two country samples), LLM-optimized output, source citations, MCP Resources, anti-hallucination, code bridge to Python/R/Stata
+- Weaknesses: UNICEF-only, no generic SDMX, 500-row limit, residual fabrication on absent-data queries (1.00% and 2.25%, below the 2.50% without tools)
 
 **sdmx-mcp** (unicef-drp)
-- Strengths: Generic SDMX (any registry), 0% hallucination, `assistant_guidance`, `validate_query_scope`, hierarchy resolution
-- Weaknesses: 23 tools at the March review (31 by October 2026) overwhelm LLMs (EQA=0.074), raw SDMX output, no tests, monolithic 2,700-line file
+- Strengths: Generic SDMX (any registry), `assistant_guidance`, `validate_query_scope`, hierarchy resolution
+- Weaknesses: 23 tools at the March review (31 by October 2026), raw SDMX output, no tests, monolithic 2,700-line file
 
 **unicef-datawarehouse-mcp** (Tryolabs)
 - Strengths: Clean code (146 lines), professional quality, `input_arguments` echo in responses
@@ -265,7 +265,7 @@ Figures from the March 2026 deep review. Tool counts have moved since: as of Oct
 - Strengths: Officially maintained, free, no API key required. Marketed as the first official national-platform MCP.
 - Weaknesses: Recent release, no published benchmark.
 
-**Official NSO servers added in October 2026**: **McpDiffusion** (France INSEE, INSEE Lab, beta: key indicators, publications, Melodi datasets, RMES semantic graph; 12 tools) and **Idescat MCP** (Catalonia, hosted: statistics catalogue, table metadata, JSON-stat data; 7 tools).
+**NSO servers added in October 2026**: **McpDiffusion** (France INSEE, INSEE Lab, beta, independent since INSEE does not yet support it officially: key indicators, publications, Melodi datasets, RMES semantic graph; 12 tools) and **Idescat MCP** (Catalonia, hosted: statistics catalogue, table metadata, JSON-stat data; 7 tools).
 
 **Community NSO servers added in October 2026**: Statistics Canada (mcp-statcan, maplestats-mcp), UK ONS, Ireland CSO, Switzerland BFS, Statistics Korea (KOSIS), Japan e-Stat, Türkiye TÜİK, China NBS, Thailand TNSO, Statistics Denmark, Norway, Ghana, Chile, Bangladesh, plus central-bank servers for Brazil, Türkiye, Belgium, Nigeria and Sri Lanka. Full list in the [directory](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/MCP-DIRECTORY-STATS.md).
 
@@ -295,7 +295,7 @@ These cover smaller markets and developing-country NSOs that earlier surveys mis
 | MCP Resources | OECD-MCP + IMF | v0.3.0 | Cost reduction |
 | Status field in responses | ms-mcp-builder audit | v0.2.x | Unambiguous parsing |
 | Anti-hallucination directive | sdmx-mcp (concept) | v0.2.0 | T2 reduction |
-| Compact output format | Original design | v0.1.0 | EQA=0.990 |
+| Compact output format | Original design | v0.1.0 | Higher EQA ([RESULTS.md](RESULTS.md)) |
 | EQA benchmark | Original design | v0.2.0 | Quantified accuracy |
 | `system-prompt` resource | World Bank data360-mcp | v0.5.0 | Anti-extrapolation skill |
 | `context` resource (current_year) | World Bank data360-mcp | v0.5.0 | Temporal-frontier check |
@@ -324,8 +324,8 @@ The April 2026 audit closed one major gap (FAO). The October 2026 refresh found 
 | **UNESCO/UIS** | 4,000+ education | REST API | **Closed by community servers since Feb 2026** (found in the October refresh; the April inventory missed them) — [uis-mcp-server](https://github.com/SidneyBissoli/uis-mcp-server), [unesco-mcp](https://github.com/lpicci96/unesco-mcp), [global-education-mcp](https://github.com/malkreide/global-education-mcp) |
 | **ILO/ILOSTAT** | 1,000+ labor | SDMX API | **Closed by community servers since Aug 2026** — [ilostat-mcp-server](https://github.com/cyanheads/ilostat-mcp-server), [ilo-mcp-server](https://github.com/SidneyBissoli/ilo-mcp-server) |
 | **UNSD SDG API** | 232 SDG indicators | REST API | Open — partly covered by the official [UN System Data Commons](https://github.com/UNStats/OpenSourceWeek2026) endpoint |
-| **UN DESA Population** | Population projections | Data portal | Open — medium |
-| **UNDP/HDI** | Human Development Index | Bulk download only | Open — low (no live API) |
+| **UN DESA Population** | Population projections | Data portal | Open — medium (no dedicated server; population series reachable through the UN System Data Commons endpoint, checked 1 Nov 2026) |
+| **UNDP/HDI** | Human Development Index | Bulk download only from UNDP | Open — low (no UNDP API or dedicated server; HDI series reachable through the UN System Data Commons endpoint, checked 1 Nov 2026) |
 | **WHO (dedicated)** | GHO indicators | REST | **Closed by community servers since May 2026** — [who-gho-mcp-server](https://github.com/cyanheads/who-gho-mcp-server), [gho-mcp](https://github.com/Decilion/gho-mcp) |
 | **UN Comtrade** | Trade flows | REST | **Closed by community servers since May 2026** — [un-comtrade-mcp-server](https://github.com/cyanheads/un-comtrade-mcp-server) |
 | **BIS, WTO, IAEA** | Financial / trade / nuclear stats | REST/SDMX | Open — no dedicated server found (2026-10-26); BIS data reachable via the community aggregator [openecon-data](https://github.com/hanlulong/openecon-data) |
@@ -340,6 +340,6 @@ This landscape analysis was conducted in two phases with **different review dept
 
 **Phase 2 — April 2026 refresh, catalogue-only (25 servers):** Inventory extended from ~20 → 45 confirmed servers. Added entries: cohort of newer community NSO servers (Australia ABS, Germany Destatis, Mexico INEGI, Sweden Kolada, Mongolia NSO, Israel CBS, South Korea data.go.kr, US Census community alt, France data.gouv.fr official, India MoSPI esankhyiki official) + ECB + 2 additional UNHCR implementations + FAO + Google Data Commons + MacroNorm + World Bank data360 official + GSA-TTS fed-data-mcp-registry. **These entries are catalogued from README + manifest only** — they did not receive the Phase 1 source-code review. Quality-metrics tables in Section 3.4 of [LITERATURE_REVIEW.md](LITERATURE_REVIEW.md) preserve the Phase 1 fractions and note this depth distinction explicitly.
 
-**Phase 3 — October 2026 refresh (27 October):** every listed repository re-checked through the GitHub API and a shallow clone (stars, last push, tool registrations); new servers found through the official MCP Registry, GitHub search and web search. Result: 92 servers for official statistics in the directory tables (39 → 92 against the published v1.5.5 directory: 2 dropped, 34 of 37 updated, 56 new; the European Parliament server moved to related sources), 9 official, 3 independent; 4 research and other related sources listed separately; and 52 further implementations listed but not reviewed. Status labels follow the README definitions.
+**Phase 3 — October 2026 refresh (27 October):** every listed repository re-checked through the GitHub API and a shallow clone (stars, last push, tool registrations); new servers found through the official MCP Registry, GitHub search and web search. Result: 97 servers for official statistics in the directory tables (39 → 97 against the published v1.5.5 directory: 2 dropped, 34 of 37 updated, 61 new, four of them from the April internal catalogue and restored on 2026-11-11, and one added on 2026-11-15 at its maintainer's request; the European Parliament server moved to related sources), 7 official, 5 independent (sdmx-mcp and INSEE's McpDiffusion were relabelled from official on 2026-11-15, when the definition of official was tightened); 4 research and other related sources listed separately; and 59 further implementations listed but not reviewed. Status labels follow the README definitions.
 
 For the EQA benchmark methodology, see: Azevedo, J.P. (2025). "AI Reliability for Official Statistics: Benchmarking Large Language Models with the UNICEF Data Warehouse." [RESULTS.md](https://github.com/jpazvd/unicefstats-mcp/blob/main/examples/RESULTS.md)

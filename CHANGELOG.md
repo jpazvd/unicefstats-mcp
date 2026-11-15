@@ -8,6 +8,15 @@ All notable changes to unicefstats-mcp are documented here. Format follows [Keep
 
 Post-v1.5.5 hardening from the v0.7.3 retrospective review (issue #112), merged via PRs #113 and #114.
 
+### Changed
+
+- **Status labels: "official" tightened, "independent" widened (2026-11-15).** A server is official when the producing organisation presents it as its own service; publication under the organisation's account is no longer enough. Independent now also covers a prototype built by one of the organisation's units. `sdmx-mcp` (unicef-drp) is relabelled from official to independent: it is a prototype, and UNICEF has not announced an official MCP server. `McpDiffusion` (INSEE Lab) is relabelled too: INSEE says it is not yet an officially supported product. The directory now has 7 official and 5 independent servers.
+- **Directory: 97 servers for official statistics.** Sancera, a commercial hosted multi-source service, added at the request of its maintainer, [@aalbin2](https://github.com/aalbin2), who proposed the row ([issue #1](https://github.com/jpazvd/unicefstats-mcp/issues/1)).
+
+### Removed
+
+- **Benchmark comparison with sdmx-mcp withdrawn (2026-11-15).** The README, `examples/RESULTS.md` (section 4), `examples/LANDSCAPE.md` and `examples/LITERATURE_REVIEW.md` no longer set unicefstats-mcp's scores against sdmx-mcp's. The sdmx-mcp figures came from one March 2026 run on a different sample, scored under the superseded v1.3 rule, and the fabrication rates published for it (0% on both absent-data query types) did not match that run's own results file (0% and 28%). No comparison is reported until both servers are run on the same sample under the same scoring rule. `examples/LITERATURE_REVIEW.md` now gives unicefstats-mcp's canonical figures (EQA 0.891 and 0.909) in place of the superseded 0.990.
+
 ### Fixed
 
 - **`get_data` no_data classifier used raw substring matching** (`"404" in exc_str`) — the same v0.7.1 bug that v0.7.3 fixed in `_is_client_error` but left in the sibling classifier. A transient 5xx whose body contained `"4040"` was mislabelled `no_data`, and the `no_data` envelope tells the model the warehouse authoritatively confirmed absence. Extracted a shared word-bounded `_looks_not_found(exc)` helper and used it at the classifier site.

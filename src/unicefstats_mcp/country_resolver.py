@@ -91,10 +91,9 @@ def _normalize(s: str) -> str:
         if c.isalnum():
             out.append(c)
             prev_space = False
-        elif c in " -_/.,()":
-            if not prev_space:
-                out.append(" ")
-                prev_space = True
+        elif c in " -_/.,()" and not prev_space:
+            out.append(" ")
+            prev_space = True
         # else: drop apostrophes, quotes, etc.
     return "".join(out).strip()
 

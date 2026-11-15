@@ -293,10 +293,9 @@ def _normalize(s: str) -> str:
         if c.isalnum() or c == "-":
             out.append(c)
             prev_space = False
-        elif c in " _/.,()+":
-            if not prev_space:
-                out.append(" ")
-                prev_space = True
+        elif c in " _/.,()+" and not prev_space:
+            out.append(" ")
+            prev_space = True
         # else: drop apostrophes, quotes, brackets, etc.
     return "".join(out).strip()
 
