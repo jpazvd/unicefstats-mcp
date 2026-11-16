@@ -1,6 +1,6 @@
 # MCP Server Directory
 
-Comprehensive list of pre-built MCP servers researched March 2026, refreshed April 2026, and refreshed again for section 5 on 2026-10-26 (97 official-statistics servers in the tables, including four from the April catalogue restored on 2026-11-11 and one added on 2026-11-15 at its maintainer's request; 7 official and 5 independent as defined under Status labels in the README; 4 research and other related sources in 5g; a long-tail list in 5f).
+Comprehensive list of pre-built MCP servers researched March 2026, refreshed April 2026, and refreshed again for section 5 on 2026-10-26 (100 official-statistics servers in the tables, including four from the April catalogue restored on 2026-11-11 and one added on 2026-11-15 at its maintainer's request; the eligibility rule was applied to every candidate on 2026-11-15, which moved 12 servers to the long tail, brought 16 in from it and excluded one demonstration; 7 official and 5 independent as defined under Status labels in the README; 4 research and other related sources in 5g; a long-tail list in 5f).
 Trust levels (sections 1–4 and 6–24, general-purpose MCP servers): **Official** (maintained by the vendor of the product it connects to), **High** (1K+ stars, reputable org), **Medium** (100+ stars), **Low** (small/unaudited). Section 5 uses the status labels below instead.
 
 ---
@@ -69,24 +69,20 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 |--------|---------|-------------|-------|------|-------|-----------|--------|
 | [unicefstats-mcp](https://github.com/jpazvd/unicefstats-mcp) | `pip install unicefstats-mcp` | UNICEF 790+ child indicators, disaggregations, benchmarked (EQA 0.891 and 0.909 on two country samples) | 9 | Yes | 7 | 2026-06-08 | Independent |
 | [sdmx-mcp](https://github.com/unicef-drp/sdmx-mcp) | Docker / Fly.io | Generic SDMX server, any registry (defaults UNICEF), guided-discovery resources (v0.9.0-beta). Developed in UNICEF's Chief Statistician's office as a prototype and published under the `unicef-drp` account; UNICEF has not announced an official MCP server, so it is labelled independent (relabelled from official on 2026-11-15, when the definition of official was tightened) | 31 | Yes | 2 | 2026-10-26 | Independent (UNICEF DRP prototype, beta) |
-| [unicef-datawarehouse-mcp](https://github.com/tryolabs/unicef-datawarehouse-mcp) | Clone + run | UNICEF dataflows via SDMX. Built by Tryolabs; UNICEF involvement not stated | 3 | Yes | 0 | 2025-11-10 | Community |
 | [UN System Data Commons](https://github.com/UNStats/OpenSourceWeek2026) | Hosted endpoint (`{dc_base_url}/mcp`) | UN DESA / UNSD MCP endpoint for the UN System Data Commons: `search_indicators` + `get_observations`. First opened at UN Open Source Week (June 2026); the Data Commons launched at data.un.org on 17 September 2026 with public data from 26 UN entities | 2 | No | 4 | 2026-06-20 | **Official** (UN DESA / UNSD) |
 | [faostat-mcp](https://github.com/berba-q/faostat-mcp) | `pip install faostat-mcp` | FAOSTAT, 245 countries, 1961–present, 3-tier caching | 23 | No | 18 | 2026-10-02 | Community |
 | [faostat-mcp-server](https://github.com/cyanheads/faostat-mcp-server) | npm `@cyanheads/faostat-mcp-server` | FAOSTAT over a local SQLite mirror | 7 | No | 2 | 2026-10-25 | Community |
 | [uis-mcp-server](https://github.com/SidneyBissoli/uis-mcp-server) | Remote (Cloudflare Workers) | UNESCO UIS education, science and culture statistics; provenance-first | 5 | No | 1 | 2026-10-26 | Community |
 | [unesco-mcp](https://github.com/lpicci96/unesco-mcp) | `uvx unesco-mcp` | UNESCO UIS data API | — | No | 3 | 2026-05-04 | Community |
 | [global-education-mcp](https://github.com/malkreide/global-education-mcp) | `uvx global-education-mcp` | UNESCO UIS (4,000+ indicators) + OECD Education at a Glance | 10 | No | 1 | 2026-10-04 | Community |
-| [uis-sdg4-mcp](https://github.com/yifnli/uis-sdg4-mcp) | Clone + run | UNESCO UIS SDG 4 indicators | — | No | 2 | 2026-05-28 | Community |
 | [ilo-mcp-server](https://github.com/SidneyBissoli/ilo-mcp-server) | Remote (Cloudflare Workers) | ILOSTAT labour statistics; provenance-first | 6 | No | 2 | 2026-10-26 | Community |
 | [ilostat-mcp-server](https://github.com/cyanheads/ilostat-mcp-server) | npm `@cyanheads/ilostat-mcp-server` | ILOSTAT indicators, series comparison, country profiles; ILO SDMX API for breakdowns, default slices and units | 9 | Yes | 1 | 2026-10-17 | Community |
 | [who-gho-mcp-server](https://github.com/cyanheads/who-gho-mcp-server) | npm `@cyanheads/who-gho-mcp-server` | WHO Global Health Observatory, 3,059 indicators, 194 member states | 6 | No | 3 | 2026-10-26 | Community |
-| [gho-mcp](https://github.com/Decilion/gho-mcp) | Clone + run | WHO GHO OData API, comparative health systems | — | No | 0 | 2026-09-15 | Community |
+| [gho-mcp](https://github.com/Decilion/gho-mcp) | `pip install mcp-server-gho` | WHO GHO OData API, comparative health systems (install route verified 2026-11-15) | — | No | 0 | 2026-09-15 | Community |
 | [un-comtrade-mcp-server](https://github.com/cyanheads/un-comtrade-mcp-server) | npm `@cyanheads/un-comtrade-mcp-server` | UN Comtrade trade flows, HS lookups, balances (public preview endpoint) | 9 | No | 4 | 2026-10-17 | Community |
 | [unhcr-refugees-mcp-server](https://github.com/cyanheads/unhcr-refugees-mcp-server) | npm `@cyanheads/unhcr-refugees-mcp-server` | UNHCR refugee, IDP and stateless populations, asylum decisions | 8 | No | 1 | 2026-10-20 | Community |
 | [unhcr-opendata-gateway-mcp](https://github.com/Edouard-Legoupil/unhcr-opendata-gateway-mcp) | Clone + run | Gateway federating domain-specific UNHCR open-data MCP servers; country and operation snapshots, funding gaps | 8 | No | 0 | 2026-08-24 | Independent (UNHCR staff) |
 | [unhcr_iati_mcp](https://github.com/Edouard-Legoupil/unhcr_iati_mcp) | Clone + run | UNHCR IATI financial and programme data | — | No | 0 | 2026-08-28 | Independent (UNHCR staff) |
-| [mcp_unhcr](https://github.com/rvibek/mcp_unhcr) | Clone + run | UNHCR refugee populations, demographics, asylum decisions | 5 | No | 0 | 2025-12-13 | Community |
-| [UNCHR_MCP_Server](https://github.com/mhadeli/UNCHR_MCP_Server) | Clone + run | UNHCR statistics (demo) | — | No | 0 | 2025-10-29 | Community |
 | [medical-mcp](https://github.com/JamesANZ/medical-mcp) | `npm install -g medical-mcp` | WHO GHO, FDA, PubMed, RxNorm | 18 | No | 119 | 2026-10-15 | Community |
 
 ### 5b. International Financial Institutions, OECD and EU
@@ -96,15 +92,18 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 | [data360-mcp](https://github.com/worldbank/data360-mcp) | `pip install data360-mcp` | World Bank Data360. 16 tools on the `dev` default branch (15 data/visualisation tools listed on the project site, plus the `data360_interactive_choices` UI tool; its README tool table lists 6), 11 resources, 7 prompts; per-observation `claim_id` provenance hash; first bank-official server with anti-hallucination templates | 16 | No | 43 | 2026-09-22 | **Official** (World Bank) |
 | [world_bank_mcp_server](https://github.com/anshumax/world_bank_mcp_server) | via Smithery | Wrapper around the World Bank Open Data API. Not a World Bank product | 1 | No | 50 | 2026-09-04 | Community |
 | [worldbank-mcp-server](https://github.com/cyanheads/worldbank-mcp-server) | npm `@cyanheads/worldbank-mcp-server` | 29,500+ World Bank Open Data indicators, 200+ countries | 9 | No | 3 | 2026-10-18 | Community |
-| [world-bank-data-mcp](https://github.com/llnOrmll/world-bank-data-mcp) | Clone + `uv sync` | World Bank Data360: WDI, HNP, GDF, IDS (1,000+ indicators) | 5 | No | 1 | 2026-01-27 | Community |
+| [worldbank-mcp](https://github.com/tianyuio/worldbank-mcp) | `npx worldbank-mcp` | World Bank Open Data API. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: 8 stars, and on npm | — | — | 8 | 2026-03-01 | Community |
+| [world-bank-economic-mcp](https://github.com/guptaprakhariitr/world-bank-economic-mcp) | `npx -y @insnapsprakhar/world-bank-economic-mcp` | World Bank economic indicators. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: published on npm | — | — | 1 | 2026-06-11 | Community |
+| [mcp_wbgapi360](https://github.com/MaykolMedrano/mcp_wbgapi360) | `pip install wbgapi360` | Python client for the World Bank Data360 API with an MCP server. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: published on PyPI | — | — | 2 | 2026-07-22 | Community |
 | [imf-data-mcp](https://github.com/c-cf/imf-data-mcp) | `uvx --from git+https://github.com/c-cf/imf-data-mcp imf-data-mcp` | IMF IFS, BOP, WEO, CDIS, CPIS, MFS, FSI | 5 | Yes | 14 | 2026-04-05 | Community |
 | [imf-mcp-server](https://github.com/cyanheads/imf-mcp-server) | npm `@cyanheads/imf-mcp-server` | IMF SDMX 3.0: 193 dataflows, WEO projections, 190 countries | 6 | Yes | 1 | 2026-10-17 | Community |
 | [OECD-MCP](https://github.com/isakskogstad/OECD-MCP) | `npx -y oecd-mcp` | 5,000+ OECD datasets, 17 categories, 38 countries | 9 | Yes | 8 | 2026-04-22 | Community |
 | [oecd-mcp-server](https://github.com/cyanheads/oecd-mcp-server) | npm `@cyanheads/oecd-mcp-server` | 1,500+ OECD datasets via SDMX, keyless | 8 | Yes | 2 | 2026-10-24 | Community |
 | [eurostat-mcp](https://github.com/ano-kuhanathan/eurostat-mcp) | Clone + run | Eurostat via SDMX 3.0 + Comext SDMX 2.1 | 7 | Yes | 10 | 2026-01-09 | Community |
 | [eurostat-mcp-server](https://github.com/cyanheads/eurostat-mcp-server) | `npx -y @cyanheads/eurostat-mcp-server` | 8,933 Eurostat datasets incl. NUTS regional data | 6 | No | 7 | 2026-10-26 | Community |
-| [eurostat-mcp-suite](https://github.com/ManoloZocco/eurostat-mcp-suite) | Clone + run | Eurostat SDMX 3.0/2.1 + Comext with DuckDB | — | Yes | 1 | 2026-09-02 | Community |
+| [eurostat-statistics](https://registry.modelcontextprotocol.io/v0/servers?search=eurostat-statistics) | Hosted (`https://mcp.edeputat.com/eurostat-statistics/mcp`) | Population statistics from Eurostat, read-only; its publisher calls it experimental. Listed in the official MCP Registry as `io.github.Ukraine-Territorial-MCP/eurostat-statistics` (2026-10-25); no public repository. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: hosted endpoint active in the Registry | — | — | — | — | Community |
 | [ecb-mcp](https://github.com/scka-de/ecb-mcp) | `npx -y ecb-mcp` | ECB exchange rates, interest rates, yield curves, inflation | 8 | Yes | 4 | 2026-03-31 | Community |
+| [mcp-eu-finance](https://github.com/nexusforge-tools/mcp-eu-finance) | `npx -y @nexusforgetools/eu-finance` | ECB rates and Eurostat inflation, GDP and unemployment. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: published on npm | — | — | 1 | 2026-04-19 | Community |
 
 ### 5c. National and Subnational Statistics Offices
 
@@ -122,33 +121,40 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 | [opengov-mcp-server](https://github.com/srobbin/opengov-mcp-server) | `npx -y opengov-mcp-server` | Any Socrata open-data portal (US cities, states and federal agencies): catalogue search, metadata, SoQL queries (in the April 2026 catalogue; restored 2026-11-11) | 1 | No | 14 | 2025-04-09 | Community |
 | [mcp-statcan](https://github.com/Aryan-Jhaveri/mcp-statcan) | `uvx statcan-mcp-server` | Statistics Canada, 7,000+ tables via WDS | — | No | 7 | 2026-10-26 | Community |
 | [gov-ca-mcp](https://github.com/krunal16-c/gov-ca-mcp) | Clone + run | Canada Open Gov (250K+ datasets) + Statistics Canada | 7 | No | 5 | 2025-12-02 | Community |
-| [maplestats-mcp](https://github.com/dsanchezp18/maplestats-mcp) | Clone + run | Canadian public data: StatCan, Census, PUMFs, Bank of Canada, CMHC | — | No | 1 | 2026-10-25 | Community |
+| [maplestats-mcp](https://github.com/dsanchezp18/maplestats-mcp) | Hosted (`https://mcp.maplestats.danielstats.io/mcp`) | Canadian public data: StatCan, Census, PUMFs, Bank of Canada, CMHC (install route verified 2026-11-15) | — | No | 1 | 2026-10-25 | Community |
 | [uk-ons-mcp-server](https://github.com/dwain-barnes/uk-ons-mcp-server) | Clone + run | UK Office for National Statistics beta API | — | No | 0 | 2026-07-09 | Community |
 | [cso-mcp](https://github.com/gav007/cso-mcp) | Clone + run | Ireland Central Statistics Office (PxStat) | — | No | 0 | 2026-09-19 | Community |
 | [ibge-br-mcp](https://github.com/SidneyBissoli/ibge-br-mcp) | `npm install -g ibge-br-mcp` | Brazil IBGE: demographics, SIDRA, census; 227 tests | 23 | No | 12 | 2026-10-26 | Community |
 | [bcb-br-mcp](https://github.com/SidneyBissoli/bcb-br-mcp) | `npm install -g bcb-br-mcp` | Banco Central do Brasil: Selic, IPCA, exchange rates, GDP | 17 | No | 10 | 2026-10-23 | Community |
-| [inegi-mcp-server](https://github.com/gchavez83/inegi-mcp-server) | Clone + run | Mexico INEGI | 12 | — | 1 | 2026-09-08 | Community |
-| [mcp-inegi (Itzamná)](https://github.com/itzamna-mx/mcp-inegi) | Clone + run | Mexico INEGI indicators: population, inflation, employment, GDP, IGAE | — | No | 0 | 2026-10-26 | Community |
+| [mcp-dados-br](https://github.com/lucianoon/mcp-dados-br) | `uvx mcp-dados-br` | Brazilian public data: IBGE, Central Bank, INMET, Chamber of Deputies and Federal Senate. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: published on PyPI | 19 | — | 3 | 2026-11-01 | Community |
+| [INEI-mcp](https://github.com/JOSETRA44/INEI-mcp) | Clone + run | Peru INEI. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: the only dedicated server found for its source | 7 | — | 0 | 2026-08-26 | Community |
+| [mcp-inegi (Itzamná)](https://github.com/itzamna-mx/mcp-inegi) | `uvx mcp-inegi` | Mexico INEGI indicators: population, inflation, employment, GDP, IGAE (install route verified 2026-11-15) | — | No | 0 | 2026-10-26 | Community |
 | [vintage](https://github.com/tucunar-labs/vintage) | REST API + MCP | Chile point-in-time (vintage) macroeconomic data | — | No | 0 | 2026-10-22 | Community |
 | [chilekit](https://github.com/ferando855/chilekit) | CLI + MCP | Chilean public data | — | No | 0 | 2026-10-26 | Community |
 | [ukrainian-stats-mcp-server](https://github.com/VladyslavMykhailyshyn/ukrainian-stats-mcp-server) | `npm install -g ukrainian-stats-mcp-server` | Ukraine State Statistics via SDMX v3 | 8 | Yes | 50 | 2025-11-30 | Community |
 | [istat_mcp_server](https://github.com/ondata/istat_mcp_server) | Clone + run | Italy ISTAT via SDMX, two-layer caching, rate limiting | 8 | Yes | 23 | 2026-10-25 | Community |
-| [istat-mcp](https://github.com/SimonBerg255/istat-mcp) | Clone + run | Italy ISTAT, 4,700+ datasets via SDMX REST | — | Yes | 3 | 2026-03-24 | Community |
 | [destatis-mcp](https://github.com/inooLabs/destatis-mcp) | Clone + run | Germany Destatis | 8 | — | 1 | 2025-12-09 | Community |
 | [swiss-statistics-mcp](https://github.com/malkreide/swiss-statistics-mcp) | `uvx swiss-statistics-mcp` | Swiss Federal Statistical Office (BFS) STAT-TAB, 682 datasets | 15 | No | 2 | 2026-10-14 | Community |
-| [mcp-ine (Spain)](https://github.com/AnCode666/ine-mcp) | Clone + run | Spain INE API | — | No | 2 | 2025-12-30 | Community |
+| [finland-statistics](https://registry.modelcontextprotocol.io/v0/servers?search=finland-statistics) | Hosted (`https://mcp.edeputat.com/finland-statistics/mcp`) | Statistics Finland PxWeb datasets; its publisher calls it experimental. Listed in the official MCP Registry as `io.github.Ukraine-Territorial-MCP/finland-statistics` (2026-10-25); no public repository. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: hosted endpoint active in the Registry | — | — | — | — | Community |
+| [poland-statistics](https://registry.modelcontextprotocol.io/v0/servers?search=poland-statistics) | Hosted (`https://mcp.edeputat.com/poland-statistics/mcp`) | Polish administrative units and BDL statistics (Statistics Poland); its publisher calls it experimental. Listed in the official MCP Registry as `io.github.Ukraine-Territorial-MCP/poland-statistics` (2026-10-25); no public repository. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: hosted endpoint active in the Registry | — | — | — | — | Community |
+| [mcp-ine (manalejandro)](https://github.com/manalejandro/mcp-ine) | Hosted (`https://mcp-ine.manalejandro.com/mcp`) | Spain INE statistical data. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: hosted endpoint answered on that date | — | — | 1 | 2026-08-11 | Community |
 | [tuik-mcp](https://github.com/orhoncan/tuik-mcp) | Clone + run | Türkiye TÜİK via SDMX REST | — | Yes | 16 | 2026-09-20 | Community |
 | [evds-mcp](https://github.com/orhoncan/evds-mcp) | Clone + run | Central Bank of the Republic of Türkiye EVDS | — | No | 2 | 2026-10-26 | Community |
 | [spoerg-dst](https://github.com/Juul94/spoerg-dst) | Clone + run | Statistics Denmark, plain-language queries | — | No | 0 | 2026-10-25 | Community |
-| [Norway-Open-Data-MCP](https://github.com/iamkm1/Norway-Open-Data-MCP) | Clone + run | Norway open data (stdio) | — | No | 0 | 2026-10-16 | Community |
-| [statsmapped-mcp](https://github.com/ActiveGuy/statsmapped-mcp) | Clone + run | Ireland CSO and UK public data via the StatsMapped API | — | No | 0 | 2026-10-23 | Community |
+| [Norway-Open-Data-MCP](https://github.com/iamkm1/Norway-Open-Data-MCP) | `npx -y norway-open-data-mcp` | Norway open data (stdio) (install route verified 2026-11-15) | — | No | 0 | 2026-10-16 | Community |
+| [statsmapped-mcp](https://github.com/ActiveGuy/statsmapped-mcp) | `pip install statsmapped-mcp`; also hosted (`https://mcp.statsmapped.com/mcp`) | Ireland CSO and UK public data via the StatsMapped API (install route verified 2026-11-15) | — | No | 0 | 2026-10-23 | Community |
 | [mcp-cbs-cijfers-open-data](https://github.com/dstotijn/mcp-cbs-cijfers-open-data) | Clone + run | Netherlands CBS Open Data (Go) | 7 | No | 9 | 2025-03-18 | Community |
 | [SCB-MCP](https://github.com/isakskogstad/SCB-MCP) | Hosted (Render) | Statistics Sweden | — | No | 9 | 2026-04-22 | Community |
+| [scb-opendata-mcp](https://github.com/ashwinvis/scb-opendata-mcp) | `pip install scb-opendata-mcp` | Statistics Sweden PxWebApi v2 (unofficial). Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: published on PyPI | — | — | 1 | 2026-03-24 | Community |
 | [Kolada-MCP](https://github.com/isakskogstad/Kolada-MCP) | `npm install -g kolada-mcp-server` | Sweden Kolada municipal data | — | — | 12 | 2026-04-22 | Community |
 | [israel-statistics-mcp](https://github.com/reuvenaor/israel-statistics-mcp) | `npx -y @reuvenorg/israel-statistics-mcp` | Israel CBS | — | — | 4 | 2026-10-07 | Community |
 | [korea-stats-mcp](https://github.com/Dayoooun/korea-stats-mcp) | `npx -y @kimdayoun/korea-stats-mcp` | Statistics Korea KOSIS, natural-language queries | — | No | 16 | 2026-10-01 | Community |
+| [korean-stat-mcp](https://github.com/seolcoding/korean-stat-mcp) | `pip install korean-stat-mcp`; also hosted | Statistics Korea KOSIS OpenAPI. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: published on PyPI | — | — | 1 | 2026-05-01 | Community |
+| [Kosis-mcp](https://github.com/lucidwatper/Kosis-mcp) | Hosted (`https://kosis-mcp-70b9.onrender.com/mcp`) | Statistics Korea KOSIS: search, combine and compare series. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: hosted endpoint answered on that date | — | — | 0 | 2026-04-18 | Community |
 | [data-go-mcp-servers](https://github.com/Koomook/data-go-mcp-servers) | `pip install data-go-mcp.<server>` | South Korea data.go.kr (multi-server monorepo) | 21 | No | 368 | 2025-09-16 | Community |
 | [estat-mcp](https://github.com/ajtgjmdjp/estat-mcp) | `pip install estat-mcp` | Japan e-Stat government statistics | 4 | No | 10 | 2026-08-23 | Community |
+| [japan-official-statistics-mcp (fujimura-ui)](https://registry.modelcontextprotocol.io/v0/servers?search=fujimura-ui/japan-official-statistics-mcp) | Hosted (`https://estat-mcp.plus-synergy.workers.dev/mcp`) | Japan e-Stat government statistics. Listed in the official MCP Registry (2026-07-10); no public repository. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: hosted endpoint active in the Registry | — | — | — | — | Community |
+| [japan-official-statistics-mcp (easakura)](https://registry.modelcontextprotocol.io/v0/servers?search=easakura/japan-official-statistics-mcp) | Hosted (`https://estat-mcp.easakura.workers.dev/mcp`) | Japan e-Stat government statistics. Listed in the official MCP Registry (2026-07-13); no public repository. Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: hosted endpoint active in the Registry | — | — | — | — | Community |
 | [cnbs-mcp-server](https://github.com/Eliseowzy/cnbs-mcp-server) | Clone + run | China National Bureau of Statistics | — | No | 0 | 2026-07-27 | Community |
 | [nso1212-mcp](https://github.com/tsedenbaljir/nso1212-mcp) | Clone + run | Mongolia NSO (1212.mn) | 6 | — | 0 | 2026-04-23 | Community |
 | [tnso-mcp-server](https://github.com/aard-ai/tnso-mcp-server) | Clone + run | Thailand National Statistical Office via SDMX | — | Yes | 0 | 2026-08-10 | Community |
@@ -158,8 +164,8 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 | [australian-public-data-mcp](https://github.com/J-King-Dottie/australian-public-data-mcp) | Hosted | Australian, Pacific and global public data, live catalogue search | — | — | 4 | 2026-10-26 | Community |
 | [ghana-data-mcp](https://github.com/epigos/ghana-data-mcp) | Hosted (Cloudflare Workers) | Ghana Statistical Service, Bank of Ghana, Ghana Stock Exchange | — | No | 3 | 2026-10-05 | Community |
 | [cbn_mcp](https://github.com/Zfinix/cbn_mcp) | Clone + run | Central Bank of Nigeria data and circulars | — | No | 19 | 2025-09-22 | Community |
-| [sl-economy-mcp](https://github.com/Akashwim/sl-economy-mcp) | Clone + run | Central Bank of Sri Lanka economic data (unofficial) | — | No | 1 | 2026-10-16 | Community |
-| [shorkari-mcp](https://github.com/nadimtuhin/shorkari-mcp) | Edge connector | Bangladesh public data (unofficial) | — | No | 0 | 2026-10-22 | Community |
+| [sl-economy-mcp](https://github.com/Akashwim/sl-economy-mcp) | `pip install sl-economy-mcp` | Central Bank of Sri Lanka economic data (unofficial) (install route verified 2026-11-15) | — | No | 1 | 2026-10-16 | Community |
+| [shorkari-mcp](https://github.com/nadimtuhin/shorkari-mcp) | Hosted (`https://bdmcp.nadimtuhin.com/mcp`) | Bangladesh public data (unofficial) (install route verified 2026-11-15) | — | No | 0 | 2026-10-22 | Community |
 | [mcp-nbb](https://github.com/lacausecrypto/mcp-nbb) | `uvx mcp-nbb` | National Bank of Belgium SDMX API: 221 dataflows | 6 | Yes | 3 | 2026-10-26 | Community |
 | [fred-mcp-server](https://github.com/stefanoamorelli/fred-mcp-server) | `npm install fred-mcp-server` | 800,000+ FRED time series | 3 | No | 127 | 2026-08-22 | Community |
 | [mcp-fredapi](https://github.com/Jaldekoa/mcp-fredapi) | Clone + run | FRED series observations, one tool; needs a FRED API key (in the April 2026 catalogue; restored 2026-11-11) | 1 | No | 6 | 2025-04-09 | Community |
@@ -170,15 +176,12 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 |--------|---------|-------------|-------|------|-------|-----------|--------|
 | [agent-toolkit (Data Commons)](https://github.com/datacommonsorg/agent-toolkit) | `pip install datacommons-mcp`; also hosted on Google Cloud | Google Data Commons knowledge graph: UN agencies, surveys, census, climate (PyPI since July 2025; launch announced 24 Sep 2025) | — | No | 149 | 2026-09-15 | **Official** (Google, platform operator) |
 | [openecon-data](https://github.com/hanlulong/openecon-data) | Hosted (openecon.ai) | 330K indicators from FRED, World Bank, IMF, Eurostat and others | — | — | 91 | 2026-10-23 | Community |
-| [cluster-mcp](https://github.com/baraninja/cluster-mcp) | Clone + run | Monorepo: World Bank, Eurostat, OECD, ILO, WHO, Comtrade | 29 | Yes | 1 | 2026-01-01 | Community |
 | [econstats-mcp](https://github.com/joshfwaldman1/econstats-mcp) | `bunx econstats-mcp` | FRED, BLS, BEA, IMF, World Bank, ECB, with an economist's methodology guide | 11 | — | 0 | 2026-04-28 | Community |
-| [socioeconomic-data-mcp](https://github.com/fpanier/socioeconomic-data-mcp) | Clone + run | Eurostat, World Bank, OECD, IMF, FRED | — | — | 2 | 2026-05-29 | Community |
-| [development-data-mcp](https://github.com/lbruce-wq/development-data-mcp) | Clone + run | Discover, retrieve and compare international development data | — | — | 2 | 2026-09-16 | Community |
-| [malja-mcp](https://github.com/marsaplatform/malja-mcp) | Clone + run | Humanitarian open data: UNHCR, World Bank, HDX, ReliefWeb | — | No | 0 | 2026-10-24 | Community |
-| [sdmx-mcp-gateway](https://github.com/Baffelan/sdmx-mcp-gateway) | Clone + run | Gateway for SDMX endpoints that builds query paths. Maintained by Baffelan, a data consultancy; open source, not offered as a product or service, so labelled community | — | Yes | 1 | 2026-10-27 | Community |
-| [macronorm-mcp](https://github.com/donkachii/macronorm-mcp) | Clone + run | Unified IMF + World Bank + FRED interface | — | No | 0 | 2026-03-27 | Community |
+| [development-data-mcp](https://github.com/lbruce-wq/development-data-mcp) | Hosted (`https://indicatorsmcp.impactengines.ai/mcp`) | Discover, retrieve and compare international development data (install route verified 2026-11-15) | — | — | 2 | 2026-09-16 | Community |
+| [sdmx-mcp-gateway](https://github.com/Baffelan/sdmx-mcp-gateway) | Hosted (`https://sdmx-mcp-gateway-production.up.railway.app/mcp`) | Gateway for SDMX endpoints that builds query paths. Maintained by Baffelan, a data consultancy; open source, not offered as a product or service, so labelled community (install route verified 2026-11-15) | — | Yes | 1 | 2026-10-27 | Community |
 | [Pipeworx servers](https://github.com/pipeworx-io) | Hosted | Per-source servers (IMF, UNESCO UIS, UN Comtrade, HDX, INEGI, Statistics Finland, Israel CBS, SDMX structure, …). Some are listed elsewhere as "Official IMF Data MCP Server"; Pipeworx is a third party | — | — | — | 2026-09-28 | Commercial |
 | [Sancera](https://sancera.ai) | Hosted (`https://mcp.sancera.ai/mcp`, sign-in required) | Commercial hosted service, with a free tier, for official statistics and public registers from Sweden, the Nordic countries, the EU and international sources; its site names Statistics Sweden, the Riksbank, Eurostat and the ECB among "100+ sources". The maintainer, [@aalbin2](https://github.com/aalbin2), proposed this row and reports 39 tools and SDMX for some sources ([issue #1](https://github.com/jpazvd/unicefstats-mcp/issues/1)); the endpoint needs sign-in, so neither is verified here. Added on 2026-11-15 from that request; public by 2026-09-19 (first Internet Archive capture of the site) | — | — | — | — | Commercial |
+| [starwell-mcp](https://github.com/Adarsh4052/starwell-mcp) | `npx -y starwell-mcp`; also hosted (`https://starwell.dev/api/starwell/mcp`) | Bridge to the hosted Starwell service, which describes itself as a data layer over official sources (Statistics Canada, FRED, the US Bureau of Labor Statistics, the World Bank, the ECB, the UK ONS, INSEE and others). Moved from the long tail on 2026-11-16 by the eligibility screening of 15 November: published on npm | 12 | — | 0 | 2026-08-13 | Commercial |
 
 ### 5e. Registries and Discovery (not servers themselves)
 
@@ -187,71 +190,59 @@ Repo: <https://github.com/modelcontextprotocol/servers> (81K stars)
 | [fed-data-mcp-registry](https://github.com/GSA-TTS/fed-data-mcp-registry) | Curated registry | US GSA-TTS curated registry of federal-data MCP servers | **Official** (US GSA) |
 | [Official MCP Registry](https://registry.modelcontextprotocol.io/) | Protocol registry | Queryable catalogue of published servers; several statistics servers above are listed there | Official (MCP project) |
 
-### 5f. Also found, not reviewed (2026-10-27)
+### 5f. Also found, not reviewed (screened 2026-11-15)
 
-The tables above include every official and independent server, and the community servers that are either published (package or hosted endpoint), have five or more stars, or are the only server for their source. The servers below are further community or commercial implementations for sources that already have a listed server. They are named for completeness and have not been checked; most have 0–2 stars. One row per implementation: a vendor that offers several servers has a row for each. Business-register servers for SIRENE (France) are out of scope and not listed.
+**How a server gets into the tables.** The tables above hold every official and independent server, and the community and commercial servers that are published (a package on PyPI or npm, or a hosted endpoint), have five or more stars, or are the only dedicated server for their source. The servers below are further implementations for sources that already have a dedicated server in the tables, or multi-source servers that are neither published nor starred. The rule was applied to every candidate on 2026-11-15, in both directions: stars from the GitHub API, a package only if its registry returns it, an endpoint only if it answered or is active in the official MCP Registry. That moved 12 servers from the tables to this list and 16 from this list to the tables, found six entries gone and two out of scope (a catalogue of servers, and geographic boundaries). A source counts as covered when a server dedicated to it is in the tables; multi-source servers do not cover a source. The servers below are named for completeness and have not been assessed. One row per implementation: a vendor that offers several servers has a row for each, and further servers from a vendor already in the tables stay here. Eight entries stay here because the evidence to test them is missing (hosted services with no recorded endpoint, repositories whose install routes were not checked, one of unclear scope). Business-register servers for SIRENE (France) are out of scope and not listed.
 
 | Source | Implementation | Kind |
 |---|---|---|
 | Eurostat | `dcerecedo/eurostat-mcp` | repository |
 | Eurostat | `alexwall1/eurostat-mcp` | repository |
-| Eurostat | `barrylecherous932/eurostat-mcp-server` | repository |
 | Eurostat | `dar4datascience/duckdb-eurostat-mcp` | repository |
 | Eurostat | `aethar-dev/eurostatapi-mcp` | repository |
-| Eurostat | `Taru0208/eurostat-mcp-server` | repository |
-| Eurostat | `Mich120232024/eurostat-mcp-server` | repository |
 | Eurostat | `linimeanie/eurostat-tam-mcp` | repository |
+| Eurostat | `ManoloZocco/eurostat-mcp-suite` | repository |
 | IMF / OECD / World Bank | `jfeferman/imf-mcp` | repository |
-| IMF / OECD / World Bank | `Mich120232024/imf-mcp-server` | repository |
 | IMF / OECD / World Bank | `ToolOracle/oecdoracle` | repository |
-| IMF / OECD / World Bank | `tianyuio/worldbank-mcp` | repository |
-| IMF / OECD / World Bank | `guptaprakhariitr/world-bank-economic-mcp` | repository |
-| IMF / OECD / World Bank | `MaykolMedrano/mcp_wbgapi360` | repository |
+| IMF / OECD / World Bank | `llnOrmll/world-bank-data-mcp` | repository |
 | US Census | `kaman1/mcp_census_server` | repository |
 | US Census | `shawndrake2/mcp-census` | repository |
-| US Census | `shawndrake2/mcp-tigerweb` | repository |
 | US Census | `georgemandis/mcp-census-data` | repository |
 | US Census | `hollandkevint/CensusChat` | repository |
-| US Census | `Taru0208/us-census-mcp-server` | repository |
 | Statistics Canada | `hemaaanth/statcan2` | repository |
 | Statistics Canada | `MillstoneHomes/my-statcan-mcp` | repository |
 | Statistics Canada | `JoseJimenez-M/mcp-statcan-odcaf` | repository |
 | Spain INE | `agmalaga2020/ine-universal-mcp` | repository |
-| Spain INE | `manalejandro/mcp-ine` | repository |
 | Spain INE | `dlbcodes/ine-mcp` | repository |
 | Spain INE | `dcerecedo/ine-mcp` | repository |
-| Statistics Korea (KOSIS) | `seolcoding/korean-stat-mcp` | repository |
-| Statistics Korea (KOSIS) | `lucidwatper/Kosis-mcp` | repository |
+| Spain INE | `AnCode666/ine-mcp` | repository |
 | Statistics Korea (KOSIS) | `042Jason/kosis-mcp` | repository |
 | Statistics Korea (KOSIS) | `dodopd/kosis-mcp` | repository |
 | Japan e-Stat | `koizumikento/e-stats-mcp` | repository |
-| Japan e-Stat | `io.github.easakura/japan-official-statistics-mcp` | registry entry |
-| Japan e-Stat | `io.github.fujimura-ui/japan-official-statistics-mcp` | registry entry |
-| Statistics Sweden | `ashwinvis/scb-opendata-mcp` | repository |
 | France INSEE | `Oshinsu/mcp-insee` | repository |
 | France INSEE | `aureTheDev/insee-mcp` | repository |
-| Peru INEI | `JOSETRA44/INEI-mcp` | repository |
-| Brazil | `lucianoon/mcp-dados-br` | repository |
-| Finland / Poland | `io.github.Ukraine-Territorial-MCP/finland-statistics` | registry entry |
-| Finland / Poland | `io.github.Ukraine-Territorial-MCP/poland-statistics` | registry entry |
-| Finland / Poland | `io.github.Ukraine-Territorial-MCP/eurostat-statistics` | registry entry |
 | Finland / Poland | `Pipeworx mcp-statfin-fi` | hosted (commercial) |
 | UNHCR / WHO | `mhadeli/unhcr_mcp_server` | repository |
 | UNHCR / WHO | `Helloitsaman/unhcr-mcp-server` | repository |
 | UNHCR / WHO | `MaxMLang/who-sentinel-mcp` | repository |
-| Multi-source (community or commercial) | `dregon03/statisticsoftheworld` | repository |
-| Multi-source (community or commercial) | `Adarsh4052/starwell-mcp` | repository |
+| UNHCR / WHO | `rvibek/mcp_unhcr` | repository |
 | Multi-source (community or commercial) | `rabidlego25/macro-mcp` | repository |
 | Multi-source (community or commercial) | `ContentWriterco Economic-Statistics-MCP` | repository |
 | Multi-source (community or commercial) | `ContentWriterco Health-Statistics-MCP` | repository |
 | Multi-source (community or commercial) | `ContentWriterco Labour-Market-Statistics-MCP` | repository |
-| Multi-source (community or commercial) | `nexusforge-tools/mcp-eu-finance` | repository |
-| Multi-source (community or commercial) | `Azreus1991/government-data-mcp-servers` | repository |
 | Multi-source (community or commercial) | `datavilleorg/dataville-mcp` | repository |
 | Multi-source (community or commercial) | `Apify-hosted SDMX scraper` | hosted (commercial) |
 | Multi-source (community or commercial) | `Apify-hosted Eurostat scraper` | hosted (commercial) |
 | Multi-source (community or commercial) | `Apify-hosted OECD scraper` | hosted (commercial) |
 | Multi-source (community or commercial) | `Apify-hosted Comtrade scraper` | hosted (commercial) |
+| Multi-source (community or commercial) | `baraninja/cluster-mcp` | repository |
+| Multi-source (community or commercial) | `fpanier/socioeconomic-data-mcp` | repository |
+| Multi-source (community or commercial) | `marsaplatform/malja-mcp` | repository |
+| Multi-source (community or commercial) | `donkachii/macronorm-mcp` | repository |
+| UNICEF | `tryolabs/unicef-datawarehouse-mcp` | repository |
+| UNESCO UIS | `yifnli/uis-sdg4-mcp` | repository |
+| Mexico INEGI | `gchavez83/inegi-mcp-server` | repository |
+| Italy ISTAT | `SimonBerg255/istat-mcp` | repository |
 
 ### 5g. Research and other related sources (not official statistics)
 
@@ -272,6 +263,15 @@ Servers whose data are not official statistics, listed because users and agents 
 | `Mich120232024/worldbank-mcp-server` | Removed | Archived by its owner |
 | `namiraprita/document-reports-mcp` | Out of scope | World Bank Documents & Reports API: documents, not statistics |
 | `GovInfo MCP (govinfo.gov)` | Out of scope | US GPO's server for official Federal publications (public preview, January 2026): documents, not statistics; in the April 2026 internal catalogue |
+| `mhadeli/UNCHR_MCP_Server` | Out of scope | A demonstration, which the eligibility rule excludes; in the tables until 2026-11-16 |
+| `shawndrake2/mcp-tigerweb` | Out of scope | US Census TIGERweb geographic boundaries, not statistics; was in the long tail |
+| `Azreus1991/government-data-mcp-servers` | Out of scope | A catalogue of hosted servers, not a server; was in the long tail |
+| `barrylecherous932/eurostat-mcp-server` | Removed | Repository no longer exists (HTTP 404, 2026-11-15); was in the long tail |
+| `Taru0208/eurostat-mcp-server` | Removed | Repository no longer exists (HTTP 404, 2026-11-15); was in the long tail |
+| `Taru0208/us-census-mcp-server` | Removed | Repository no longer exists (HTTP 404, 2026-11-15); was in the long tail |
+| `dregon03/statisticsoftheworld` | Removed | Repository no longer exists (HTTP 404, 2026-11-15); was in the long tail |
+| `Mich120232024/eurostat-mcp-server` | Removed | Archived by its owner; was in the long tail |
+| `Mich120232024/imf-mcp-server` | Removed | Archived by its owner; was in the long tail |
 
 ### Known gaps (no dedicated MCP server found, 2026-10-26)
 

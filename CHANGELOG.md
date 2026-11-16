@@ -11,7 +11,8 @@ Post-v1.5.5 hardening from the v0.7.3 retrospective review (issue #112), merged 
 ### Changed
 
 - **Status labels: "official" tightened, "independent" widened (2026-11-15).** A server is official when the producing organisation presents it as its own service; publication under the organisation's account is no longer enough. Independent now also covers a prototype built by one of the organisation's units. `sdmx-mcp` (unicef-drp) is relabelled from official to independent: it is a prototype, and UNICEF has not announced an official MCP server. `McpDiffusion` (INSEE Lab) is relabelled too: INSEE says it is not yet an officially supported product. The directory now has 7 official and 5 independent servers.
-- **Directory: 97 servers for official statistics.** Sancera, a commercial hosted multi-source service, added at the request of its maintainer, [@aalbin2](https://github.com/aalbin2), who proposed the row ([issue #1](https://github.com/jpazvd/unicefstats-mcp/issues/1)).
+- **Directory: eligibility rule applied to every candidate (2026-11-15); 100 servers.** The rule for the tables (official or independent; or published as a package or hosted endpoint; or five or more stars; or the only dedicated server for its source) was applied in both directions, with packages and endpoints verified. Twelve servers moved to the long tail, sixteen came in from it, one demonstration was excluded and six long-tail entries that no longer exist were recorded as removed. Nine rows listed as clone-only now show the package or endpoint that was verified.
+- **Directory: Sancera added.** Sancera, a commercial hosted multi-source service, added at the request of its maintainer, [@aalbin2](https://github.com/aalbin2), who proposed the row ([issue #1](https://github.com/jpazvd/unicefstats-mcp/issues/1)).
 
 ### Removed
 
